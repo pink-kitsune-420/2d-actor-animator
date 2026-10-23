@@ -153,6 +153,7 @@ export class ActorEditor {
     this.pointer = null; this.draft.commit(); if (this.canvas.hasPointerCapture(e.pointerId)) this.canvas.releasePointerCapture(e.pointerId); this.changed();
   }
   cancelGesture() {
+    this.assembly?.viewport?.cancel();
     if (!this.pointer) return; const { id, partId } = this.pointer; this.pointer = null; this.draft.cancel(); this.partId = partId; if (this.canvas.hasPointerCapture(id)) this.canvas.releasePointerCapture(id); this.draw();
   }
   render() {

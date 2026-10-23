@@ -97,3 +97,8 @@ button, summary, input, select { scroll-margin: 8px; }
 .all-tools #project-options > summary, .all-tools #project-options > div > p { display: none; }
 #preview-panel { position: relative; }
 #preview-state { position: absolute; top: 10px; right: 12px; margin: 0; font-size: 12px; }
+
+#actor-preview { touch-action: none; }
+#actor-preview:focus-visible { outline: 2px solid #ffce84; outline-offset: -3px; }
+#viewport-status { display:block; font-size:12px; line-height:1.5; color:#ffce84; }
+#rig-viewport-tools p { margin:4px 0; }

@@ -69,6 +69,8 @@ async function pick(page: Page, kind: 'node' | 'socket' | 'attachment', label: s
 async function message(page: Page) { return (await page.locator('#message').textContent()) ?? ''; }
 
 test('six-limb creature with segmented tail, tool socket and detached accessory: authored, revised, saved and reopened in the real editor', async ({ page }, info) => {
+  // Generated end-to-end authoring includes dozens of validated source operations.
+  test.setTimeout(120_000);
   const errors: string[] = []; page.on('pageerror', e => errors.push(e.message));
   await page.goto('/actor-tools.html'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await part(page, 'Chitin plate');
   await field(page, 'rig-name', 'Skitterling'); await click(page, 'add-rig');

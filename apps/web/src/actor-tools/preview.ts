@@ -1,6 +1,7 @@
 import type { ActorProject, ActorTransform } from '@actor-animator/types';
 import { compileActorProject, createActorPose, evaluateActorPose, createActorAnimationPlayer, evaluateActorAnimation, requestActorAnimationState, describeActorAnimation, type ActorAnimationPlayer, type ActorPose, type CompiledActorProject } from '../../../../packages/actor-tools/src/index';
 import { rasterCanvas } from './png';
+import type { ViewFrame } from './viewport-math';
 
 interface ActorDrawing { raster: HTMLCanvasElement; pivotX: number; top: number; pixelScale: number }
 
@@ -10,6 +11,8 @@ export class ActorPreview {
   private source: ActorProject | null = null;
   private compiled: CompiledActorProject | null = null;
   private pose: ActorPose | null = null;
+  private rasterKeys = new Map<string, string>();
+  overlay: (() => void) | null = null;
   private rasters = new Map<string, HTMLCanvasElement>();
   private drawingsByPart: (ActorDrawing | undefined)[] = [];
   private frame: number | null = null;
@@ -46,9 +49,14 @@ export class ActorPreview {
     const needed = new Set(source.attachments.map(a => a.partId));
     const celParts = new Map((source.cels ?? []).map(c => [c.id, c.partId]));
     for (const c of source.clips) for (const t of c.celTracks ?? []) for (const k of t.keys) needed.add(celParts.get(k.celId)!);
-    try { for (const part of source.parts) if (needed.has(part.id) && part.artwork.layers.length) rasters.set(part.id, rasterCanvas(part)); }
-    catch (error) { for (const c of rasters.values()) c.width = c.height = 0; throw error; }
-    this.releaseRasters(); this.rasters = rasters;
+    const keys = new Map<string, string>();
+    try { for (const part of source.parts) if (needed.has(part.id) && part.artwork.layers.length) {
+      const key = JSON.stringify(part); keys.set(part.id, key);
+      rasters.set(part.id, this.rasterKeys.get(part.id) === key ? this.rasters.get(part.id)! : rasterCanvas(part));
+    } }
+    catch (error) { for (const [id, c] of rasters) if (c !== this.rasters.get(id)) c.width = c.height = 0; throw error; }
+    for (const [id, c] of this.rasters) if (c !== rasters.get(id)) c.width = c.height = 0;
+    this.rasters = rasters; this.rasterKeys = keys;
     this.compiled = compiled; this.pose = pose; this.source = source; this.player = null; this.animator = ''; this.ghost = createActorPose(compiled);
     this.drawingsByPart = compiled.parts.map(part => {
       const raster = rasters.get(part.id); return raster ? { raster, pivotX: part.pivot[0], top: part.artwork.height * part.unitsPerPixel - part.pivot[1], pixelScale: part.unitsPerPixel } : undefined;
@@ -56,6 +64,27 @@ export class ActorPreview {
     // Keep the shown clip time across edits so pose editing stays in place.
     if (!source.clips.some(c => c.id === this.clip)) this.clip = null;
     this.seek(this.clip === null ? 0 : this.time);
+  }
+  /** Host overlay reads retained displayed buffers; never owns runtime state. */
+  get rigCompiled() { return this.compiled; }
+  get rigPose() { return this.pose; }
+  get constraintsApplied() { return this.constraints; }
+  viewFrame(): ViewFrame {
+    const r = this.canvas.getBoundingClientRect();
+    const fit = Math.min(r.width / this.canvas.width, r.height / this.canvas.height);
+    const contained = getComputedStyle(this.canvas).objectFit === 'contain';
+    const cssWidth = contained ? this.canvas.width * fit : r.width, cssHeight = contained ? this.canvas.height * fit : r.height;
+    return { width: this.canvas.width, height: this.canvas.height, cssWidth, cssHeight, offsetX: (r.width - cssWidth) / 2, offsetY: (r.height - cssHeight) / 2,
+      scale: this.scale, viewY: this.viewY, placement: this.placement.slice() };
+  }
+  updateViewFrame(frame: ViewFrame) {
+    frame.width = this.canvas.width; frame.height = this.canvas.height; frame.scale = this.scale; frame.viewY = this.viewY;
+    frame.placement = this.placement;
+  }
+  /** One raw sample at input start, explicitly without constraints/composition. */
+  authoringPose() {
+    if (!this.compiled || this.player) throw new Error('Show Rest or a single clip before editing; composition is preview only.');
+    const raw = createActorPose(this.compiled); evaluateActorPose(this.compiled, this.clip, this.time, raw, false); return raw;
   }
   /** Optional visual constraints in the preview; off shows the raw FK pose. */
   setConstraints(on: boolean) { this.constraints = on; this.draw(); }
@@ -187,6 +216,7 @@ export class ActorPreview {
       if (slot.parent >= 0) { c.moveTo(canvas.width / 2 + w[slot.parent * 6 + 4]! * scale, canvas.height / 2 + (this.viewY - w[slot.parent * 6 + 5]!) * scale); c.lineTo(x, y); }
       c.moveTo(x - 3, y); c.lineTo(x + 3, y); c.moveTo(x, y - 3); c.lineTo(x, y + 3); c.stroke();
     }
+    this.overlay?.();
     this.canvas.dataset.clip = this.player ? this.animator : this.clip ?? 'rest'; this.canvas.dataset.time = String(this.time);
   }
   private paintPose(pose: ActorPose) {
@@ -204,10 +234,10 @@ export class ActorPreview {
       c.translate(-drawing.pivotX, drawing.top); c.scale(drawing.pixelScale, -drawing.pixelScale); c.drawImage(drawing.raster, 0, 0);
     }
   }
-  private releaseRasters() { for (const c of this.rasters.values()) c.width = c.height = 0; this.rasters.clear(); }
+  private releaseRasters() { for (const c of this.rasters.values()) c.width = c.height = 0; this.rasters.clear(); this.rasterKeys.clear(); }
   dispose() {
     if (this.disposed) return;
-    this.pause(); this.disposed = true; this.releaseRasters(); this.drawingsByPart = []; this.source = null; this.compiled = null; this.pose = null; this.ghost = null; this.player = null;
+    this.overlay = null; this.pause(); this.disposed = true; this.releaseRasters(); this.drawingsByPart = []; this.source = null; this.compiled = null; this.pose = null; this.ghost = null; this.player = null;
     this.canvas.width = this.canvas.height = 0;
   }
 }

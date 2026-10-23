@@ -2,6 +2,8 @@ import type { ActorNode, ActorProject, ActorTrackTarget, ActorTransform } from '
 import { identityTransform } from './editing';
 import { restForTarget, sameTarget, setTwoKeyTrack } from './assembly';
 import { ActorPreview } from './preview';
+import { RigViewport } from './rig-viewport';
+import type { ViewTool } from './viewport-math';
 import { SkeletonControls } from './skeleton-panel';
 import { AnimationPanel } from './animation-panel';
 import { CelPanel, type CelHost } from './cel-panel';
@@ -20,6 +22,7 @@ function transformFields(prefix: string, label: string) {
  * IDs/references, all other tracks and inert extension data remain source data. */
 export class AssemblyPanel {
   readonly preview: ActorPreview;
+  readonly viewport: RigViewport;
   readonly skeleton: SkeletonControls;
   readonly animation: AnimationPanel;
   readonly cels: CelPanel;
@@ -43,7 +46,8 @@ export class AssemblyPanel {
       <label>Key B time<input id="key-b-time" type="number" step="any" value="2"></label>${transformFields('key-b', 'Key B')}
       <button id="apply-keys">Apply two keys</button><p>Complete local absolute transforms. Other tracks and clips stay intact. Tracks with more than two keys can be previewed; this small editor preserves them.</p></details></section></div>
       <div id="animation-panel"></div><div id="cel-panel"></div><div id="emote-panel"></div><section id="preview-panel" aria-label="Actor preview workspace"><h2>Preview</h2><p id="preview-help"></p><nav aria-label="Preview"><button id="play">Play clip</button><button id="pause">Pause</button><button id="rest">Show rest pose</button><button id="reset">Reset clip to start</button><label>Preview pixels per unit<select id="preview-zoom"><option>1</option><option>4</option><option selected>16</option><option>64</option><option>128</option></select></label></nav>
-      <div class="preview-viewport"><canvas id="actor-preview" width="640" height="400" aria-label="Actor preview"></canvas></div>
+      <div id="rig-viewport-tools"><label>Viewport tool<select id="viewport-tool"><option value="move">Move transform (children follow)</option><option value="rotate">Rotate local transform</option><option value="joint">Move rest joint (preserve children)</option></select></label><p>Click joints, bones or artwork to select. Drag a pivot to move; Rotate uses the circle to its right. Alt-click cycles overlaps. Arrow keys move 1 CSS pixel; Shift moves 10. Escape cancels. Numeric controls remain available.</p><output id="viewport-status" role="status">Rest edits the base shape; Pose keys the selected clip. Positions: project units, x right / y up. Rotation: CCW radians.</output></div>
+      <div class="preview-viewport"><canvas id="actor-preview" tabindex="0" width="640" height="400" aria-label="Actor preview"></canvas></div>
       <label>Scrub clip<input id="scrub" type="range" min="0" max="2" step="0.001" value="0"></label><label>Seek seconds<input id="seek-time" type="number" step="any" value="0"></label><button id="seek">Seek clip</button><output id="preview-state">Rest · 0 s</output></section>`;
     this.preview = new ActorPreview(this.el<HTMLCanvasElement>('actor-preview'), (time, playing) => {
       this.el<HTMLInputElement>('scrub').value = String(time);
@@ -57,6 +61,12 @@ export class AssemblyPanel {
     this.animation = new AnimationPanel(this.el('animation-panel'), host, this.preview, () => this.clipId, () => this.target(), () => this.render());
     this.cels = new CelPanel(this.el('cel-panel'), host, this.preview, () => this.clipId);
     this.emotes = new EmotePanel(this.el('emote-panel'), host, this.preview, () => this.clipId);
+    this.viewport = new RigViewport(this.preview, host, {
+      selection: () => ({ kind: this.value('item-kind') as 'node' | 'socket' | 'attachment', id: this.itemId, rigId: this.rigId }),
+      select: s => { this.el<HTMLSelectElement>('item-kind').value = s.kind; if (s.rigId) this.rigId = s.rigId; this.itemId = s.id; this.render(); },
+      intent: () => ({ mode: this.value('edit-mode') as 'rest' | 'pose', tool: this.value('viewport-tool') as ViewTool, clip: this.clipId || null, time: this.preview.clipTime() }),
+      refresh: () => this.showTransform(),
+    }, this.el('viewport-status'));
     const signal = host.controller.signal;
     const click = (id: string, action: () => void) => this.el(id).addEventListener('click', () => host.perform(() => { host.cancelGesture(); this.emotes.pause(); action(); }), { signal });
     const mutate = (action: (source: ActorProject) => void) => { host.draft.edit(s => { action(s); syncAnimationCapability(s); syncCelCapability(s); }); host.changed(); };
@@ -93,6 +103,7 @@ export class AssemblyPanel {
       });
       host.message(note);
     });
+    this.el('viewport-tool').addEventListener('change', () => this.viewport.refresh(), { signal });
     this.el('edit-mode').addEventListener('change', () => host.perform(() => {
       host.cancelGesture();
       if (this.value('edit-mode') === 'pose') { if (!this.clipId) { this.el<HTMLSelectElement>('edit-mode').value = 'rest'; throw new Error('Create or select a clip before pose editing.'); } this.preview.select(this.clipId); }
@@ -123,7 +134,7 @@ export class AssemblyPanel {
     click('rest', () => this.preview.rest()); click('reset', () => this.preview.reset(this.clipId));
     click('seek', () => { this.preview.select(this.clipId || null); this.preview.seek(this.num('seek-time')); this.showTransform(); });
     this.el('scrub').addEventListener('input', () => host.perform(() => { const time = this.num('scrub'); this.preview.select(this.clipId || null); this.preview.seek(time); this.showTransform(); }), { signal });
-    this.el('preview-zoom').addEventListener('change', () => host.perform(() => this.preview.zoom(this.num('preview-zoom'))), { signal });
+    this.el('preview-zoom').addEventListener('change', () => host.perform(() => { this.preview.zoom(this.num('preview-zoom')); this.viewport.refresh(); }), { signal });
     for (const id of ['rigs', 'item-kind', 'items', 'clips', 'track-target']) this.el(id).addEventListener('change', () => host.perform(() => {
       host.cancelGesture(); this.preview.pause();
       if (id === 'rigs') { this.rigId = this.value(id); this.itemId = ''; }
@@ -222,8 +233,8 @@ export class AssemblyPanel {
     for (const id of ['play', 'reset', 'seek']) this.el<HTMLButtonElement>(id).disabled = !clip;
     this.el<HTMLInputElement>('scrub').disabled = !clip;
     this.el('preview-help').textContent = !source.attachments.length ? 'No assembled artwork yet. In Rig, choose Part attachment and Create item. Scene attachments need no bones.' : !clip ? 'Artwork is ready. In Animate, name and create a clip; then play or scrub it here.' : 'Choose a clip, then play or drag the time slider. Show rest pose returns to the base shape.';
-    this.skeleton.render(); this.animation.render(); this.cels.render(); this.emotes.render();
+    this.skeleton.render(); this.animation.render(); this.cels.render(); this.emotes.render(); this.viewport.refresh();
   }
   pause() { this.preview.pause(); this.emotes.pause(); }
-  dispose() { this.emotes.dispose(); this.cels.dispose(); this.preview.dispose(); }
+  dispose() { this.viewport.dispose(); this.emotes.dispose(); this.cels.dispose(); this.preview.dispose(); }
 }

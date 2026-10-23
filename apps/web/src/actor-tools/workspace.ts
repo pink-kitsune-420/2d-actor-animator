@@ -72,6 +72,8 @@ export class ActorWorkspace {
   }
   activate(task: Task) {
     this.host.cancelGesture(); this.host.assembly.pause();
+    this.host.assembly.viewport.setEnabled(task === 'rig' || task === 'all');
+    this.host.el('rig-viewport-tools').hidden = task !== 'rig' && task !== 'all';
     this.task = task; this.root.classList.toggle('all-tools', task === 'all');
     this.host.el('assembly').dataset.task = task;
     for (const [id, panel] of this.panels) panel.hidden = task !== 'all' && id !== task;

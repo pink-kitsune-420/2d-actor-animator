@@ -31,10 +31,11 @@ Open http://127.0.0.1:4502/.
 - Indexed raster actor parts with editable layers, palette transparency, pivots and explicit scale.
 - Arbitrary skeletons, multiple roots and rigs, zero-bone scene attachments, cosmetic sockets, joint limits and optional CCD constraints.
 - Transform keys, easing, visibility/order tracks, animation composition, cels/flipbooks and optional solo/two-role choreography preview.
+- Direct joint/bone/artwork selection, local translation/rotation handles and a separate rest-joint move that preserves children.
 - Rest/pose distinction, retained previews, shared Undo/Redo, local recovery and exact editable-source download/reopen.
 - PNG and sampled sprite-sheet exports with timing/pivot metadata. Flattened output does not retain the full rig or editable layers.
 
-The current rig/timeline interface includes numeric controls. Direct viewport bone manipulation, a visual dope sheet/curve editor, broader artwork input and engine adapters are future development. Mesh deformation and general illustration/world/ship/tile editing are outside the current tool.
+The rig interface offers both viewport and numeric controls. See [viewport editing](docs/viewport.md). A visual dope sheet/curve editor, broader artwork input and engine adapters are future development. Mesh deformation and general illustration/world/ship/tile editing are outside the current tool.
 
 ## Use the runtime
 
