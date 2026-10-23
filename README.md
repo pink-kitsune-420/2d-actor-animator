@@ -2,7 +2,7 @@
 
 An independent, actor-focused 2D rigging and animation editor, extracted from Space Lab's MIT-licensed actor tools. Build characters, creatures and robots with freely named parts and skeletons; preserve layered artwork, rigs and animation in editable projects.
 
-This repository is a working extraction baseline. The standalone product and installable runtime are under development. Space Lab's game copy continues independently.
+The editor includes a locally buildable ESM runtime with TypeScript declarations and zero runtime dependencies. Space Lab's game copy continues independently. No registry publication or live engine adapter is supplied.
 
 ## Run locally
 
@@ -34,7 +34,13 @@ Open http://127.0.0.1:4502/.
 - Rest/pose distinction, retained previews, shared Undo/Redo, local recovery and exact editable-source download/reopen.
 - PNG and sampled sprite-sheet exports with timing/pivot metadata. Flattened output does not retain the full rig or editable layers.
 
-The current rig/timeline interface includes numeric controls. Direct viewport bone manipulation, a visual dope sheet/curve editor, broader artwork input, a packaged runtime and engine adapters are future development. Mesh deformation and general illustration/world/ship/tile editing are outside the extraction baseline.
+The current rig/timeline interface includes numeric controls. Direct viewport bone manipulation, a visual dope sheet/curve editor, broader artwork input and engine adapters are future development. Mesh deformation and general illustration/world/ship/tile editing are outside the current tool.
+
+## Use the runtime
+
+`npm run build` produces the editor and a private local `@actor-animator/runtime` package in `dist/runtime`. Run `npm run demo:runtime` to install its archive into a fresh temporary Node consumer and sample two independent nonhuman actors plus zero-bone artwork. For the browser demo, start the production preview above and open http://127.0.0.1:4502/runtime-example/.
+
+See [the selected API and lifecycle](docs/runtime.md) and [editable project contract, units and limits](docs/actor-project.md). The examples consume built JS, and declaration checks require no DOM types. Compilation snapshots source; poses/animation players belong to individual instances. The runtime includes no editor, renderer or game dependency.
 
 ## Space Lab compatibility
 
@@ -47,6 +53,8 @@ Space Lab is a planned optional API/export target. Integrations must use version
 - `apps/web/src/actor-tools/`: retained editor, artwork and previews.
 - `packages/actor-tools/src/`: pure project validation, rigging and animation implementation.
 - `packages/project-types/src/`: local actor-project data contracts.
+- `packages/runtime/`: selected public runtime entry and local package manifest.
+- `examples/runtime/`: original Node and native browser built-package consumers.
 - `examples/modules/actor-project/src/source.ts`: retained first-party analytic data examples; no game module service or manifest.
 - `tests/`: independent mathematical, pixel, source, history and browser journeys.
 
@@ -55,7 +63,7 @@ npm run check
 ANIMATOR_TEST_PORT=4501 npm run test:browser -- --project=chromium
 ```
 
-`check` verifies isolation, actual pinned tool versions, types, all units, production build and licenses. Build before browser tests; keep that build fixed during the run. Chromium, Firefox and WebKit projects are configured. To install the matching browser binaries when absent, run `npx playwright install chromium` (or the required browser names). Installed browser executables are development tools and are not bundled with the editor.
+`check` verifies isolation, actual pinned tool versions, types, all units, production editor/runtime builds, fresh archive imports/declarations/content and licenses. Build before browser tests; keep that build fixed during the run. Chromium, Firefox and WebKit projects are configured. To install the matching browser binaries when absent, run `npx playwright install chromium` (or the required browser names). Installed browser executables are development tools and are not bundled with the editor.
 
 Use this repository's own `npm ci`; do not symlink another project's mutable installation. There are zero third-party runtime dependencies.
 

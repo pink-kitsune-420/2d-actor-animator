@@ -1,6 +1,6 @@
 # Actor-focused architecture
 
-The authoring editor creates editable actor source. A DOM-independent evaluator validates/compiles that source and evaluates one independent retained Float64 pose per instance. The preview draws those results. Future integrations consume source or a packaged runtime through explicit adapters.
+The authoring editor creates editable actor source. A DOM-independent evaluator validates/compiles that source and evaluates one independent retained Float64 pose per instance. The preview draws those results. The local ESM runtime packages the same implementation through an explicitly selected root API in `packages/runtime/src/index.ts`; future engine integrations require explicit adapters.
 
 ## Boundaries
 
@@ -21,5 +21,7 @@ The initial artwork implementation is layered indexed raster. Bounded actor-part
 ## Portability and performance
 
 Keep the core usable without DOM, editor, filesystem or any game engine. Evaluators retain buffers and avoid per-joint/per-frame allocation; constrain resource usage explicitly and keep diagnostics actionable. Games can use a built runtime for live poses; tools that only need rendered frames can use PNG/sheets. Different exporters may lose different features and must disclose that without modifying the editable original.
+
+`npm run build` first builds the editor, then emits `dist/runtime/runtime.js` and a self-contained declaration closure with pinned TypeScript/Vite tooling. The package exports only its root; implementation declarations do not expand the supported API. A fresh temporary archive installation verifies native Node imports and NodeNext types without DOM libraries, source paths or workspace aliases. A native browser example consumes that same ESM artifact. See [runtime lifecycle](docs/runtime.md) and [source contract](docs/actor-project.md). No runtime dependencies, clocks or subscriptions are introduced; release ownership means stopping host scheduling and dropping references.
 
 An actor may bind to application-defined actions without a required humanoid state enum. An adapter negotiates units, coordinate conversion, capabilities, clip fallback and resource teardown. Same source does not imply every engine can reproduce every constraint/blend/artwork feature. Engine-specific material/shader or package code belongs outside the generic core.

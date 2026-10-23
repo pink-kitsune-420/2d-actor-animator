@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Actor runtime example</title>
+<style>
+  body { margin: 2rem auto; max-width: 60rem; padding: 0 1rem; font: 16px system-ui; color: #173343; background: #f5f4ee; }
+  canvas { display: block; width: 100%; height: auto; background: white; border: 1px solid #81969e; }
+  label { display: inline-block; margin: 1rem 2rem 1rem 0; } output { font-variant-numeric: tabular-nums; }
+  pre { white-space: pre-wrap; } a { color: #125774; }
+</style>
+<h1>Two antenna actors and a zero-bone lamp</h1>
+<p>Each antenna has its own pose and time. The lamp has no skeleton. Move either slider to sample the built runtime in project units, CCW radians and seconds.</p>
+<label>Actor A seconds <input id="time-a" type="range" min="0" max="2" step="0.01" value="0.5"> <output id="value-a"></output></label>
+<label>Actor B seconds <input id="time-b" type="range" min="0" max="2" step="0.01" value="1.5"> <output id="value-b"></output></label>
+<canvas width="900" height="320" aria-label="Independent antenna poses and zero-bone artwork"></canvas>
+<pre id="status" role="status"></pre>
+<p><a href="/">Open the authoring editor</a></p>
+<script type="module" src="./browser.mjs"></script>
+</html>

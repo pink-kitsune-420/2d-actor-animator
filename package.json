@@ -11,13 +11,16 @@
     "dev": "vite --host 127.0.0.1 --port 4500 --strictPort",
     "preview": "vite preview --host 127.0.0.1",
     "typecheck": "tsc --noEmit",
-    "build": "npm run typecheck && vite build",
+    "build": "npm run typecheck && vite build && npm run build:runtime",
+    "build:runtime": "node scripts/build-runtime.mjs",
+    "check:runtime": "node scripts/check-runtime.mjs",
+    "demo:runtime": "node scripts/check-runtime.mjs --demo",
     "test": "vitest run",
     "test:browser": "playwright test",
     "check:isolation": "node scripts/check-isolation.mjs",
     "check:toolchain": "node scripts/check-toolchain.mjs",
     "check:licenses": "node scripts/check-licenses.mjs",
-    "check": "npm run check:isolation && npm run check:toolchain && npm run typecheck && npm test && vite build && npm run check:licenses"
+    "check": "npm run check:isolation && npm run check:toolchain && npm run typecheck && npm test && vite build && npm run build:runtime && npm run check:runtime && npm run check:licenses"
   },
   "devDependencies": {
     "@playwright/test": "1.63.0",
