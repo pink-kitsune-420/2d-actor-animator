@@ -102,3 +102,24 @@ button, summary, input, select { scroll-margin: 8px; }
 #actor-preview:focus-visible { outline: 2px solid #ffce84; outline-offset: -3px; }
 #viewport-status { display:block; font-size:12px; line-height:1.5; color:#ffce84; }
 #rig-viewport-tools p { margin:4px 0; }
+
+/* One native scroll surface keeps key hit geometry and seconds aligned. */
+#dope-sheet { position:relative; width:100%; max-height:320px; min-height:130px; overflow:auto; border:1px solid #567; background:#101c28; touch-action:none; overscroll-behavior:contain; }
+#sheet-content { position:relative; min-width:100%; }
+#sheet-ruler { height:32px; position:sticky; top:0; z-index:5; background:#233c50; font-size:11px; cursor:ew-resize; }
+#sheet-ruler > span { position:absolute; height:32px; padding:8px 3px; border-left:1px solid #69869b; white-space:nowrap; }
+#sheet-ruler > .sheet-corner { position:sticky; display:block; left:0; width:184px; z-index:6; background:#233c50; overflow:hidden; border:0; }
+.sheet-row { position:relative; height:32px; border-bottom:1px solid #304354; }
+.sheet-row:nth-child(even) { background:#162635; }
+.sheet-label { position:sticky; left:0; width:184px; height:31px; padding:3px 6px; display:block; border:0; border-right:1px solid #69869b; border-radius:0; background:#203243; font-size:11px; text-align:left; z-index:3; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+.sheet-key { position:absolute; top:5px; width:22px; height:22px; padding:0; border:1px solid #799aaf; border-radius:3px; background:#334d60; color:#d3e9ff; transform:translateX(calc(-50% + var(--key-delta, 0px))); font-size:14px; z-index:2; }
+.sheet-key[aria-pressed=true] { color:#17202b; background:#ffce84; border-color:#fff; z-index:4; }
+#sheet-playhead { position:absolute; top:32px; bottom:0; left:0; width:2px; background:#ff8d8d; pointer-events:none; z-index:2; }
+#sheet-range-box { position:absolute; border:1px solid #ffce84; background:#ffce8420; pointer-events:none; z-index:2; }
+#dope-status, #sheet-clock { display:block; font-size:12px; line-height:1.5; margin:6px 0; overflow-wrap:anywhere; font-variant-numeric:tabular-nums; }
+#visual-timeline nav { gap:6px; } #visual-timeline input[type=number] { width:130px; } #sheet-help { color:#a8c0d2; }
+
+.sheet-label { z-index:5; } #sheet-ruler { z-index:10; } #sheet-ruler > .sheet-corner { z-index:11; }
+#sheet-ruler > span { top:0; }
+#dope-sheet { scroll-padding:36px 12px 8px 196px; }
+.sheet-key { scroll-margin:4px; }

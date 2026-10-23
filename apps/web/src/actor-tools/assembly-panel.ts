@@ -54,16 +54,17 @@ export class AssemblyPanel {
       this.el('preview-state').textContent = `${this.el('actor-preview').dataset.clip === 'rest' ? 'Rest' : playing ? 'Playing' : 'Paused'} · ${time.toFixed(3)} s`;
       this.el('seek-time').setAttribute('placeholder', time.toFixed(3));
       this.skeleton?.status();
+      this.animation?.timeline.time();
     }, message => host.message(message));
     this.skeleton = new SkeletonControls(this.el('skeleton'), host, this.preview,
       () => ({ rigId: this.rigId, kind: this.value('item-kind') as 'node' | 'socket' | 'attachment', itemId: this.itemId }),
       (kind, id) => { this.el<HTMLSelectElement>('item-kind').value = kind; this.itemId = id; this.render(); });
-    this.animation = new AnimationPanel(this.el('animation-panel'), host, this.preview, () => this.clipId, () => this.target(), () => this.render());
-    this.cels = new CelPanel(this.el('cel-panel'), host, this.preview, () => this.clipId);
+    this.animation = new AnimationPanel(this.el('animation-panel'), host, this.preview, () => this.clipId, () => this.target(), () => this.render(), target => this.selectTarget(target), (id, time) => this.cels.selectKey(id, time));
+    this.cels = new CelPanel(this.el('cel-panel'), host, this.preview, () => this.clipId, (id, time) => { const target = { kind: 'attachment' as const, attachmentId: id }; this.selectTarget(target); this.animation.timeline.selectPrecise('celTracks', target, time); });
     this.emotes = new EmotePanel(this.el('emote-panel'), host, this.preview, () => this.clipId);
     this.viewport = new RigViewport(this.preview, host, {
       selection: () => ({ kind: this.value('item-kind') as 'node' | 'socket' | 'attachment', id: this.itemId, rigId: this.rigId }),
-      select: s => { this.el<HTMLSelectElement>('item-kind').value = s.kind; if (s.rigId) this.rigId = s.rigId; this.itemId = s.id; this.render(); },
+      select: s => { if (s.kind === 'node') this.selectTarget({ kind: 'node', rigId: s.rigId!, nodeId: s.id }); else if (s.kind === 'attachment') this.selectTarget({ kind: 'attachment', attachmentId: s.id }); else { this.el<HTMLSelectElement>('item-kind').value = s.kind; if (s.rigId) this.rigId = s.rigId; this.itemId = s.id; this.render(); } },
       intent: () => ({ mode: this.value('edit-mode') as 'rest' | 'pose', tool: this.value('viewport-tool') as ViewTool, clip: this.clipId || null, time: this.preview.clipTime() }),
       refresh: () => this.showTransform(),
     }, this.el('viewport-status'));
@@ -145,8 +146,16 @@ export class AssemblyPanel {
         if (attachment?.rigId) this.rigId = attachment.rigId;
       }
       if (id === 'clips') this.clipId = this.value(id);
+      if (id === 'track-target') { this.selectTarget(this.target()); return; }
       this.render(); if (id === 'clips') this.preview.select(this.clipId || null);
     }), { signal });
+  }
+  private selectTarget(target: ActorTrackTarget) {
+    this.el<HTMLSelectElement>('track-target').value = JSON.stringify(target);
+    this.el<HTMLSelectElement>('item-kind').value = target.kind;
+    if (target.kind === 'node') { this.rigId = target.rigId; this.itemId = target.nodeId; }
+    else { this.itemId = target.attachmentId; const a = this.host.draft.source.attachments.find(a => a.id === target.attachmentId); if (a?.rigId) this.rigId = a.rigId; }
+    this.render();
   }
   private el<T extends HTMLElement = HTMLElement>(id: string) { return this.root.querySelector<T>(`#${id}`)!; }
   private value(id: string) { return this.el<HTMLInputElement>(id).value; }
@@ -236,5 +245,5 @@ export class AssemblyPanel {
     this.skeleton.render(); this.animation.render(); this.cels.render(); this.emotes.render(); this.viewport.refresh();
   }
   pause() { this.preview.pause(); this.emotes.pause(); }
-  dispose() { this.viewport.dispose(); this.emotes.dispose(); this.cels.dispose(); this.preview.dispose(); }
+  dispose() { this.animation.timeline.dispose(); this.viewport.dispose(); this.emotes.dispose(); this.cels.dispose(); this.preview.dispose(); }
 }

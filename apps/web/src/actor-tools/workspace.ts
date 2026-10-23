@@ -38,7 +38,7 @@ export class ActorWorkspace {
     const advanced = document.createElement('details');
     const summary = document.createElement('summary'); summary.textContent = 'Structure, joints & constraints';
     advanced.append(summary, el('skeleton')); rig.append(advanced);
-    const animate = panel('animate', 'Animate'); animate.append(el('clip-editor'), el('animation-panel'), el('cel-panel'));
+    const animate = panel('animate', 'Animate'); animate.append(el('animation-panel'), el('clip-editor'), el('cel-panel'));
     assembly.querySelector(':scope > .assembly-columns')!.remove();
     body.prepend(el('preview-panel'));
     el('preview-panel').querySelector('h2')!.after(el('clip-choice'));

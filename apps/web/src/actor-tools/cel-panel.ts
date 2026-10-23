@@ -21,7 +21,7 @@ interface Prepared { canvas: HTMLCanvasElement; metadata: ActorSheet; epoch: num
 export class CelPanel {
   private celId = ''; private attachmentId = ''; private time: number | undefined; private context = '';
   private metadata: ActorSheet | null = null; private prepared: Prepared | null = null; private disposed = false;
-  constructor(readonly root: HTMLElement, readonly host: CelHost, readonly preview: ActorPreview, readonly clipId: () => string) {
+  constructor(readonly root: HTMLElement, readonly host: CelHost, readonly preview: ActorPreview, readonly clipId: () => string, readonly selected?: (attachmentId: string, time?: number) => void) {
     root.innerHTML = `<details><summary>Cels &amp; flipbooks</summary><h2>Cels and flipbooks</h2><p>Cels reference editable layered parts. Whole-actor flipbooks use a scene attachment with no bones. Incoming override artwork wins at weight ≥ 0.5; additive layers ignore artwork. Each cel keeps its own pivot and pixel density.</p>
       <label>Reusable cel<select id="cels"></select></label><label>Cel name<input id="cel-name" value="New cel"></label>
       <nav><button id="new-blank-cel">New blank cel in painter</button><button id="new-cel">Create cel from selected part</button><button id="duplicate-cel">Duplicate cel reference</button><button id="rename-cel">Rename cel</button><button id="delete-cel">Delete cel</button><button id="edit-cel">Open cel in painter</button><button id="copy-cel-art">Copy cel artwork for editing</button><button id="accept-cel-part">Use selected part in cel</button></nav>
@@ -37,8 +37,8 @@ export class CelPanel {
     const signal=host.controller.signal;
     const edit=(action:(s:ActorProject)=>void)=>{host.draft.edit(s=>{action(s);syncCelCapability(s);syncAnimationCapability(s);});host.changed();};
     const click=(id:string,fn:()=>void)=>this.el(id).addEventListener('click',()=>host.perform(()=>{host.cancelGesture();preview.pause();fn();}),{signal});
-    for(const id of ['cels','cel-attachment'])this.el(id).addEventListener('change',()=>host.perform(()=>{host.cancelGesture();preview.pause();if(id==='cels')this.celId=this.value(id);else this.attachmentId=this.value(id);this.render();}),{signal});
-    this.el('cel-keys').addEventListener('change',()=>host.perform(()=>{this.time=this.value('cel-keys')===''?undefined:this.num('cel-keys');this.showKey();}),{signal});
+    for(const id of ['cels','cel-attachment'])this.el(id).addEventListener('change',()=>host.perform(()=>{host.cancelGesture();preview.pause();if(id==='cels')this.celId=this.value(id);else this.attachmentId=this.value(id);this.render();if(id==='cel-attachment')this.selected?.(this.attachmentId,this.time);}),{signal});
+    this.el('cel-keys').addEventListener('change',()=>host.perform(()=>{this.time=this.value('cel-keys')===''?undefined:this.num('cel-keys');this.showKey();this.selected?.(this.attachmentId,this.time);}),{signal});
     const create=(blank:boolean)=>{
       const id=crypto.randomUUID();let partId=host.part.bind(host);let selected='';
       edit(s=>{if(blank){const p=newPart(this.value('cel-name'),16,16);s.parts.push(p);selected=p.id;}else selected=partId().id;(s.cels??=[]).push({id,name:this.value('cel-name'),partId:selected});});
@@ -51,7 +51,7 @@ export class CelPanel {
     click('edit-cel',()=>host.selectPart(this.cel().partId));
     click('copy-cel-art',()=>{let id='';edit(s=>{const c=this.cel(s),p=structuredClone(s.parts.find(p=>p.id===c.partId)!);p.id=id=crypto.randomUUID();p.name+=' copy';p.revision=1;s.parts.push(p);});host.selectPart(id);host.message('Copied layered artwork. Paint it, then accept the selected part in the desired cel.');});
     click('accept-cel-part',()=>edit(s=>{this.cel(s).partId=host.part().id;}));
-    click('new-cel-key',()=>{this.time=undefined;this.showKey();});
+    click('new-cel-key',()=>{this.time=undefined;this.showKey();this.selected?.(this.attachmentId);});
     click('write-cel-key',()=>{const time=this.num('cel-key-time');edit(s=>editCelKey(s,clipId(),this.attachmentId,time,this.value('cel-key-cel'),()=>crypto.randomUUID(),this.time??time));this.time=time;this.render();preview.select(clipId());preview.seek(time);});
     click('apply-cel-hold',()=>edit(s=>{if(this.time===undefined)throw new Error('Select an authored cel key.');setCelHold(s,clipId(),this.attachmentId,this.time,this.num('cel-key-hold'));}));
     click('delete-cel-key',()=>edit(s=>{if(this.time===undefined)throw new Error('Select an authored cel key.');const c=s.clips.find(c=>c.id===clipId());if(!c)return;for(const t of c.celTracks??[])if(t.target.attachmentId===this.attachmentId)t.keys=t.keys.filter(k=>k.time!==this.time);c.celTracks=c.celTracks?.filter(t=>t.keys.length);this.time=undefined;}));
@@ -61,6 +61,9 @@ export class CelPanel {
     click('download-sheet-metadata',()=>host.download(new Blob([JSON.stringify(this.requirePrepared().metadata,null,2)],{type:'application/json'}),'actor.sheet.json'));
     host.fileInput('sheet-metadata',async file=>{if(file.size>65536)throw new Error('Sheet metadata exceeds 64 KiB.');return openActorSheet(await file.text());},metadata=>{this.metadata=metadata;this.el('sheet-import-status').textContent=`${metadata.name}: ${metadata.frames.length} admitted frames. Select its PNG.`;},false);
     host.fileInput('sheet-png',async file=>{if(!this.metadata)throw new Error('Load sheet metadata first.');const metadata=structuredClone(this.metadata),parts=await decodePngFrames(file,metadata.width,metadata.height,metadata.frames);return{metadata,parts};},result=>{edit(s=>{importActorSheet(s,result.metadata,result.parts,()=>crypto.randomUUID());});host.message('Flattened sheet imported as ordinary layered parts, reusable cels and a zero-bone clip. Original source stays intact.');},false);
+  }
+  selectKey(attachmentId: string, time?: number) {
+    this.attachmentId = attachmentId; this.render(); this.time = time; this.showKey(); this.set('cel-keys', time === undefined ? '' : time);
   }
   private el<T extends HTMLElement=HTMLElement>(id:string){return this.root.querySelector<T>(`#${id}`)!;}
   private value(id:string){return this.el<HTMLInputElement>(id).value;}

@@ -24,6 +24,7 @@ export class ActorDraft {
   private future: string[] = [];
   private pending: string | null = null;
   epoch = 0;
+  documentEpoch = 0;
   constructor(source = emptyProject(), readonly maxHistoryBytes = 8 * 1024 * 1024, readonly maxHistoryCount = 32) {
     this.baseline = saveActorProject(source); this.source = readProject(this.baseline);
   }
@@ -56,7 +57,7 @@ export class ActorDraft {
   undo() { this.cancel(); const text = this.past.pop(); if (text !== undefined) { this.future.push(saveActorProject(this.source)); this.source = readProject(text); this.epoch++; this.bound(); } }
   redo() { this.cancel(); const text = this.future.pop(); if (text !== undefined) { this.past.push(saveActorProject(this.source)); this.source = readProject(text); this.epoch++; this.bound(); } }
   replace(source: ActorProject, recovered = false) {
-    const text = saveActorProject(source); this.cancel(); this.source = readProject(text);
+    const text = saveActorProject(source); this.cancel(); this.source = readProject(text); this.documentEpoch++;
     this.past = []; this.future = []; this.baseline = recovered ? '' : text; this.epoch++;
   }
   acknowledgeRetained() { this.commit(); this.baseline = saveActorProject(this.source); }
