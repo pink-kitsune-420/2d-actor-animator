@@ -51,3 +51,5 @@ cpSync(resolve(root, 'apps/web/src/actor-tools/classic-astronaut.project.json'),
 // Original built-runtime example data, serialized without source-path imports.
 const { createActors } = await import('../examples/runtime/actors.mjs');
 writeFileSync(resolve(profileDemo, 'nonhuman.actorproject'), JSON.stringify(createActors().creature, null, 2) + '\n');
+// Independent PNG + metadata consumer, with no private implementation imports.
+cpSync(resolve(root, 'examples/sheet'), resolve(root, 'dist/sheet-example'), { recursive: true });

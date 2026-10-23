@@ -1,21 +1,22 @@
 import type { ActorProject } from '@actor-animator/types';
-import { deleteActorCel, editCelKey, importActorSheet, openActorSheet, setCelHold, syncAnimationCapability, syncCelCapability, type ActorSheet } from '../../../../packages/actor-tools/src';
+import { deleteActorCel, editCelKey, importActorSheet, openActorSheet, setCelHold, syncAnimationCapability, syncCelCapability, saveActorProject, type ActorSheet } from '../../../../packages/actor-tools/src';
 import type { ActorDraft } from './editing';
 import { newPart } from './editing';
 import { decodePngFrames } from './png';
 import { ActorPreview } from './preview';
+import { sheetRecipe, type SheetRecipe } from './sheet-recipe';
 
 /** Host-owned file generations, source history, downloads and painter selection. */
 export interface CelHost {
-  draft: ActorDraft; controller: AbortController;
+  draft: ActorDraft; controller: AbortController; readonly fileGeneration: number;
   part(): { id: string }; selectPart(id: string): void;
   perform(f: () => void): void; changed(): void; cancelGesture(): void; message(s: string): void;
-  download(blob: Blob, name: string): void;
+  download(blob: Blob, name: string): void; downloadSource(): void;
   downloadCanvas(canvas: HTMLCanvasElement, name: string, valid: () => boolean): void;
   fileInput<T>(id: string, read: (file: File) => Promise<T>, install: (value: T) => void, replaces: boolean): void;
 }
 const number = (id: string, name: string, value: number) => `<label>${name}<input id="${id}" type="number" step="any" value="${value}"></label>`;
-interface Prepared { canvas: HTMLCanvasElement; metadata: ActorSheet; epoch: number }
+interface Prepared { canvas: HTMLCanvasElement; metadata: ActorSheet; text: string; epoch: number; source: ActorProject; clip: string; config: string; generation: number }
 
 /** Shared part painter + discrete timeline. No separate artwork store or clock. */
 export class CelPanel {
@@ -31,8 +32,8 @@ export class CelPanel {
       <nav><button id="write-cel-key">Insert / revise cel key</button><button id="apply-cel-hold">Apply hold</button><button id="delete-cel-key">Delete cel key</button><button id="preview-cel">Preview selected clip</button></nav>
       <pre id="cel-timeline"></pre><p>A hold ends at the next key or clip end. Hold edits move only that next key/end; overlaps or conflicts reject without trimming other channels. Use the shared onion/step/scrub controls above.</p>
       <h3>Flattened sheet and PNG</h3><p id="sheet-warning">Flattened output is lossy: no editable layers, rig, continuous transforms, composition or constraints. It samples the selected clip at fixed frame holds. Download complete editable source separately; export never changes that source. Metadata preserves sampled timing, pivots and density.</p>
-      <nav>${number('sheet-frames','Sheet frame count (1–64)',4)}${number('sheet-columns','Sheet columns',2)}${number('sheet-frame-width','Frame width (pixels)',64)}${number('sheet-frame-height','Frame height (pixels)',64)}${number('sheet-scale','Pixels per project unit',32)}${number('sheet-centre-y','Sheet view centre Y',.95)}</nav>
-      <nav><button id="prepare-sheet">Prepare flattened sheet</button><button id="download-sheet">Download sheet PNG</button><button id="download-sheet-metadata">Download sheet metadata</button></nav><output id="sheet-status"></output>
+      <nav>${number('sheet-frames','Sheet frame count (1–64)',4)}${number('sheet-columns','Sheet columns',2)}${number('sheet-frame-width','Frame width (pixels)',64)}${number('sheet-frame-height','Frame height (pixels)',64)}${number('sheet-scale','Pixels per project unit',32)}${number('sheet-centre-x','Sheet view centre X (project units)',0)}${number('sheet-centre-y','Sheet view centre Y (project units)',.95)}</nav>
+      <label>Sample schedule<select id="sheet-schedule"><option value="uniform">Uniform count</option><option value="explicit">Explicit seconds</option></select></label><label>Explicit sample seconds (comma-separated, start at 0)<input id="sheet-times" value="0, 0.25, 0.75"></label><p>Uniform samples exclude the duplicate endpoint. Explicit samples increase strictly from 0 to before clip end; the final hold ends at clip duration. Unsampled artwork and motion changes are lost. Framing uses x-right/y-up project units; fixed density and clipping apply to every frame.</p><nav><button id="prepare-sheet">Prepare flattened sheet</button><button id="download-sheet">Download sheet PNG</button><button id="download-sheet-metadata">Download sheet metadata</button></nav><output id="sheet-status" role="status"></output><figure id="sheet-contact" hidden><figcaption>Prepared contact sheet — checkerboard is preview only</figcaption><canvas id="sheet-preview" aria-label="Prepared transparent contact sheet" style="image-rendering:pixelated;max-width:100%;width:512px;height:auto;background:repeating-conic-gradient(#324050 0% 25%,#19232d 0% 50%) 0 / 16px 16px"></canvas></figure><pre id="sheet-review" style="white-space:pre-wrap"></pre><button id="sheet-source">Download complete editable source</button><p>PNG, metadata and editable source are separate transfers; retention is unverified. PNG flattens source-order layers and opacity, sampled constraints, cels, visibility and order; it loses rig, composition and continuous motion. Transparent RGB and alpha/colour rounding may change in native raster output. More than 256 colours in a frame can export as RGBA but cannot reimport as indexed artwork; import refuses without quantization.</p>
       <nav><label>Open sheet metadata<input id="sheet-metadata" type="file" accept=".json"></label><label>Import sheet PNG with metadata<input id="sheet-png" type="file" accept="image/png"></label></nav><output id="sheet-import-status">Load metadata before its PNG. Sheets are bounded to 256×256; each frame has its own palette, without quantization.</output></details>`;
     const signal=host.controller.signal;
     const edit=(action:(s:ActorProject)=>void)=>{host.draft.edit(s=>{action(s);syncCelCapability(s);syncAnimationCapability(s);});host.changed();};
@@ -57,11 +58,16 @@ export class CelPanel {
     click('delete-cel-key',()=>edit(s=>{if(this.time===undefined)throw new Error('Select an authored cel key.');const c=s.clips.find(c=>c.id===clipId());if(!c)return;for(const t of c.celTracks??[])if(t.target.attachmentId===this.attachmentId)t.keys=t.keys.filter(k=>k.time!==this.time);c.celTracks=c.celTracks?.filter(t=>t.keys.length);this.time=undefined;}));
     click('preview-cel',()=>{preview.select(clipId());preview.seek(this.num('cel-key-time'));});
     click('prepare-sheet',()=>this.prepare());
-    click('download-sheet',()=>{const p=this.requirePrepared();host.downloadCanvas(p.canvas,'actor.flattened.png',()=>this.prepared===p&&!this.disposed&&p.epoch===host.draft.epoch);});
-    click('download-sheet-metadata',()=>host.download(new Blob([JSON.stringify(this.requirePrepared().metadata,null,2)],{type:'application/json'}),'actor.sheet.json'));
-    host.fileInput('sheet-metadata',async file=>{if(file.size>65536)throw new Error('Sheet metadata exceeds 64 KiB.');return openActorSheet(await file.text());},metadata=>{this.metadata=metadata;this.el('sheet-import-status').textContent=`${metadata.name}: ${metadata.frames.length} admitted frames. Select its PNG.`;},false);
+    click('sheet-source',()=>host.downloadSource());
+    for(const id of this.settingIds) for(const event of ['input','change']) this.el(id).addEventListener(event,()=>{this.invalidate('Settings changed; prepare a new sheet.');this.scheduleControls();},{signal});
+    this.scheduleControls();
+    click('download-sheet',()=>{const p=this.requirePrepared();host.downloadCanvas(p.canvas,'actor.flattened.png',()=>this.prepared===p&&this.valid(p));});
+    click('download-sheet-metadata',()=>host.download(new Blob([this.requirePrepared().text],{type:'application/json'}),'actor.sheet.json'));
+    host.fileInput('sheet-metadata',async file=>{this.metadata=null;this.el('sheet-import-status').textContent='Checking new metadata; previous metadata cleared.';if(file.size>65536)throw new Error('Sheet metadata exceeds 64 KiB.');return openActorSheet(await file.text());},metadata=>{this.metadata=metadata;this.el('sheet-import-status').textContent=`${metadata.name}: ${metadata.frames.length} admitted frames. Select its PNG.`;},false);
     host.fileInput('sheet-png',async file=>{if(!this.metadata)throw new Error('Load sheet metadata first.');const metadata=structuredClone(this.metadata),parts=await decodePngFrames(file,metadata.width,metadata.height,metadata.frames);return{metadata,parts};},result=>{edit(s=>{importActorSheet(s,result.metadata,result.parts,()=>crypto.randomUUID());});host.message('Flattened sheet imported as ordinary layered parts, reusable cels and a zero-bone clip. Original source stays intact.');},false);
   }
+  fileChanged(){this.invalidate('File selection changed; prepare a new sheet.');}
+  private scheduleControls(){const explicit=this.value('sheet-schedule')==='explicit';this.el<HTMLInputElement>('sheet-times').disabled=!explicit;this.el<HTMLInputElement>('sheet-frames').disabled=explicit;}
   selectKey(attachmentId: string, time?: number) {
     this.attachmentId = attachmentId; this.render(); this.time = time; this.showKey(); this.set('cel-keys', time === undefined ? '' : time);
   }
@@ -73,22 +79,35 @@ export class CelPanel {
   private track(){return this.host.draft.source.clips.find(c=>c.id===this.clipId())?.celTracks?.find(t=>t.target.attachmentId===this.attachmentId);}
   private options(id:string,values:{id:string;name:string}[],selected:string){const e=this.el<HTMLSelectElement>(id);e.replaceChildren(...values.map(v=>{const o=document.createElement('option');o.value=v.id;o.textContent=v.name;return o;}));e.value=values.some(v=>v.id===selected)?selected:values[0]?.id??'';return e.value;}
   private showKey(){const keys=this.track()?.keys??[],index=keys.findIndex(k=>k.time===this.time),k=keys[index],c=this.host.draft.source.clips.find(c=>c.id===this.clipId());this.set('cel-key-time',k?.time??this.preview.clipTime());this.set('cel-key-cel',k?.celId??this.celId);this.set('cel-key-hold',k?(keys[index+1]?.time??c!.duration)-k.time:.5);}
-  private clearPrepared(){if(this.prepared)this.prepared.canvas.width=this.prepared.canvas.height=0;this.prepared=null;}
-  private requirePrepared(){const p=this.prepared;if(!p||p.epoch!==this.host.draft.epoch)throw new Error('Prepare the current source sheet first.');return p;}
+  private readonly settingIds = ['sheet-frames','sheet-columns','sheet-frame-width','sheet-frame-height','sheet-scale','sheet-centre-x','sheet-centre-y','sheet-schedule','sheet-times'];
+  private config(){return JSON.stringify(this.settingIds.map(id=>this.value(id)));}
+  private valid(p:Prepared){return !this.disposed&&p.epoch===this.host.draft.epoch&&p.source===this.host.draft.source&&p.clip===this.clipId()&&p.config===this.config()&&p.generation===this.host.fileGeneration;}
+  private clearPrepared(){
+    if(this.prepared)this.prepared.canvas.width=this.prepared.canvas.height=0;this.prepared=null;
+    const canvas=this.el<HTMLCanvasElement>('sheet-preview');canvas.width=canvas.height=0;
+    this.el('sheet-contact').hidden=true;this.el('sheet-review').textContent='';
+  }
+  private invalidate(message:string){this.clearPrepared();this.el('sheet-status').textContent=message;this.el<HTMLButtonElement>('download-sheet').disabled=this.el<HTMLButtonElement>('download-sheet-metadata').disabled=true;}
+  private requirePrepared(){const p=this.prepared;if(!p||!this.valid(p)){this.invalidate('Source, clip, file or settings changed; prepare a new sheet.');throw new Error('Prepare the current source sheet first.');}return p;}
   private prepare(){
-    const source=this.host.draft.source,clip=source.clips.find(c=>c.id===this.clipId());if(!clip)throw new Error('Select a clip.');
-    const count=this.num('sheet-frames'),cols=this.num('sheet-columns'),fw=this.num('sheet-frame-width'),fh=this.num('sheet-frame-height'),scale=this.num('sheet-scale'),centre=this.num('sheet-centre-y');
-    if(![count,cols,fw,fh].every(Number.isInteger)||count<1||count>64||cols<1||cols>count||fw<1||fh<1||cols*fw>256||Math.ceil(count/cols)*fh>256||scale<=0)throw new Error('Sheet needs 1–64 frames fitting 256×256 with positive density.');
-    const metadata:ActorSheet={format:'spacelab-actor-sheet/1',width:cols*fw,height:Math.ceil(count/cols)*fh,name:`${clip.name} flattened`,duration:clip.duration,playback:clip.playback,sourceProjectId:source.id,sourceVersion:source.version,metresPerUnit:source.units.metresPerUnit,frames:Array.from({length:count},(_,i)=>({x:i%cols*fw,y:Math.floor(i/cols)*fh,width:fw,height:fh,time:(i/count)*clip.duration,pivot:[fw/(2*scale),fh/(2*scale)-centre],unitsPerPixel:1/scale}))};
-    openActorSheet(JSON.stringify(metadata));
-    const canvas=document.createElement('canvas');canvas.width=metadata.width;canvas.height=metadata.height;const frame=document.createElement('canvas');frame.width=fw;frame.height=fh;
+    this.invalidate('Preparing…');
+    const start=performance.now(),source=this.host.draft.source,clip=source.clips.find(c=>c.id===this.clipId());if(!clip)throw new Error('Select a clip.');
+    const r:SheetRecipe={mode:this.value('sheet-schedule') as SheetRecipe['mode'],times:this.value('sheet-times'),count:this.num('sheet-frames'),columns:this.num('sheet-columns'),width:this.num('sheet-frame-width'),height:this.num('sheet-frame-height'),scale:this.num('sheet-scale'),centreX:this.num('sheet-centre-x'),centreY:this.num('sheet-centre-y')};
+    const metadata=sheetRecipe(source,clip.id,r),text=JSON.stringify(metadata,null,2);
+    const canvas=document.createElement('canvas');canvas.width=metadata.width;canvas.height=metadata.height;const frame=document.createElement('canvas');frame.width=r.width;frame.height=r.height;
     const preview=new ActorPreview(frame,()=>{},m=>{throw new Error(m);},true);
-    try{preview.sync(source);preview.zoom(scale);preview.aids(1,0,false,false,centre);preview.select(clip.id);const c=canvas.getContext('2d')!;c.imageSmoothingEnabled=false;for(const f of metadata.frames){preview.seek(f.time);c.drawImage(frame,f.x,f.y);}}
+    try{preview.sync(source);preview.sheetFraming(r.scale,r.centreX,r.centreY);preview.select(clip.id);const c=canvas.getContext('2d')!;c.imageSmoothingEnabled=false;for(const f of metadata.frames){preview.seek(f.time);c.drawImage(frame,f.x,f.y);}}
     catch(error){canvas.width=canvas.height=0;throw error;}finally{preview.dispose();}
-    this.clearPrepared();this.prepared={canvas,metadata,epoch:this.host.draft.epoch};this.el('sheet-status').textContent=`Prepared ${count} flattened frames. Editable source is unchanged. PNG and metadata are separate downloads.`;this.render();
+    const renderMs=performance.now()-start,serializeStart=performance.now(),sourceText=saveActorProject(source),bytes=new TextEncoder().encode(sourceText),serializeMs=performance.now()-serializeStart;
+    const p:Prepared={canvas,metadata,text,epoch:this.host.draft.epoch,source,clip:clip.id,config:this.config(),generation:this.host.fileGeneration};this.prepared=p;
+    const view=this.el<HTMLCanvasElement>('sheet-preview');view.width=canvas.width;view.height=canvas.height;view.getContext('2d')!.drawImage(canvas,0,0);this.el('sheet-contact').hidden=false;
+    const review=`Clip: ${clip.name} (${clip.id}) · ${metadata.duration}s · ${metadata.playback}\nSchedule: ${r.mode}; ${metadata.frames.map((f,i)=>`${f.time}s hold ${(metadata.frames[i+1]?.time??metadata.duration)-f.time}s`).join('; ')}\nSheet: ${metadata.width}×${metadata.height}px; frames ${r.width}×${r.height}px; ${r.columns} columns\nCentre: (${r.centreX}, ${r.centreY}) project units; ${r.scale}px/unit; pivot (${metadata.frames[0]!.pivot.join(', ')}) from bottom-left; ${1/r.scale}units/pixel; ${metadata.metresPerUnit}metres/unit\nPolicy: single clip, constraints enabled, no composition or cosmetic placement; transparent, no aids. Fixed clipping; changes between samples are lost.\nSource: ${source.id} · version ${source.version} · session epoch ${p.epoch}; ${bytes.length} UTF8 bytes; ${source.parts.length} parts / ${source.rigs.length} rigs / ${source.clips.length} clips\nSynchronous prepare/render: ${renderMs.toFixed(2)}ms; canonical source serialization: ${serializeMs.toFixed(2)}ms. Encoding starts on PNG download; completion is asynchronous.\nCanonical editable-source SHA256: `;
+    this.el('sheet-review').textContent=review+'calculating…';
+    void Promise.resolve().then(()=>crypto.subtle.digest('SHA-256',bytes)).then(hash=>{if(this.prepared===p&&this.valid(p))this.el('sheet-review').textContent=review+Array.from(new Uint8Array(hash),b=>b.toString(16).padStart(2,'0')).join('');}).catch(()=>{if(this.prepared===p&&this.valid(p))this.el('sheet-review').textContent=review+'unavailable; session identity only';});
+    this.el('sheet-status').textContent=`Prepared ${metadata.frames.length} flattened frames. Editable source is unchanged. PNG and metadata are separate downloads; retention is unverified.`;this.render();
   }
   render(){
-    if(this.prepared&&this.prepared.epoch!==this.host.draft.epoch){this.clearPrepared();this.el('sheet-status').textContent='Source changed; prepare a new sheet.';}
+    if(this.prepared&&!this.valid(this.prepared))this.invalidate('Source, clip or file changed; prepare a new sheet.');
     const s=this.host.draft.source;this.celId=this.options('cels',s.cels??[],this.celId);this.attachmentId=this.options('cel-attachment',s.attachments,this.attachmentId);
     const context=this.clipId()+this.attachmentId;if(context!==this.context){this.context=context;this.time=undefined;}
     const cel=s.cels?.find(c=>c.id===this.celId),part=s.parts.find(p=>p.id===cel?.partId);if(cel)this.set('cel-name',cel.name);

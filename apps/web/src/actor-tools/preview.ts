@@ -31,6 +31,7 @@ export class ActorPreview {
   private onion = false;
   private markers = true;
   private viewY = 0;
+  private sheetX = 0;
   private ghost: ActorPose | null = null;
   private placementOn = false;
   private placement = new Float64Array([1,0,0,1,0,0]);
@@ -109,6 +110,11 @@ export class ActorPreview {
   aids(speed: number, grid: number, onion: boolean, markers: boolean, viewY = 0) {
     if (!Number.isFinite(speed) || speed <= 0 || !Number.isFinite(grid) || grid < 0) throw new Error('Speed must be positive; grid must be nonnegative.');
     this.pause(); this.speed = speed; this.grid = grid; this.onion = onion; this.markers = markers; this.viewY = viewY; this.draw();
+  }
+  /** Static sheet-only framing; no scheduler, placement, composition or aids. */
+  sheetFraming(scale: number, x: number, y: number) {
+    if (![scale,x,y,scale*x,scale*y].every(Number.isFinite) || scale<=0) throw new Error('Finite sheet framing required.');
+    this.pause();this.scale=scale;this.sheetX=x;this.viewY=y;this.grid=0;this.onion=false;this.markers=false;this.constraints=true;this.draw();
   }
   configureAnimator(id: string, requests: readonly { time: number; layerId: string; stateId: string }[]) {
     if (!this.compiled) throw new Error('Open a project.');
@@ -225,7 +231,12 @@ export class ActorPreview {
       const slot = pose.drawSequence[k]!; if (!pose.visible[slot]) continue;
       const drawing = this.drawingsByPart[pose.partIndices[slot]!]; if (!drawing) continue;
       const m = slot * 6;
-      if (!this.placementOn) c.setTransform(scale*w[m]!,-scale*w[m+1]!,scale*w[m+2]!,-scale*w[m+3]!,this.canvas.width/2+scale*w[m+4]!,this.canvas.height/2+scale*(this.viewY-w[m+5]!));
+      const a=scale*w[m]!,b=-scale*w[m+1]!,cc=scale*w[m+2]!,d=-scale*w[m+3]!,tx=this.canvas.width/2+scale*(w[m+4]!-this.sheetX),ty=this.canvas.height/2+scale*(this.viewY-w[m+5]!);
+      const left=-drawing.pivotX,right=left+drawing.raster.width*drawing.pixelScale,top=drawing.top,bottom=top-drawing.raster.height*drawing.pixelScale;
+      if (!Number.isFinite(a)||!Number.isFinite(b)||!Number.isFinite(cc)||!Number.isFinite(d)||!Number.isFinite(tx)||!Number.isFinite(ty)||
+        !Number.isFinite(a*left+cc*top+tx)||!Number.isFinite(b*left+d*top+ty)||!Number.isFinite(a*right+cc*bottom+tx)||!Number.isFinite(b*right+d*bottom+ty)||
+        !Number.isFinite(a*right+cc*top+tx)||!Number.isFinite(b*right+d*top+ty)||!Number.isFinite(a*left+cc*bottom+tx)||!Number.isFinite(b*left+d*bottom+ty)) throw new RangeError('Raster framing exceeds Float64 geometry range.');
+      if (!this.placementOn) c.setTransform(scale*w[m]!,-scale*w[m+1]!,scale*w[m+2]!,-scale*w[m+3]!,this.canvas.width/2+scale*(w[m+4]!-this.sheetX),this.canvas.height/2+scale*(this.viewY-w[m+5]!));
       else {
         const p=this.placement,a=p[0]!*w[m]!+p[2]!*w[m+1]!,b=p[1]!*w[m]!+p[3]!*w[m+1]!,cc=p[0]!*w[m+2]!+p[2]!*w[m+3]!,d=p[1]!*w[m+2]!+p[3]!*w[m+3]!,x=p[0]!*w[m+4]!+p[2]!*w[m+5]!+p[4]!,y=p[1]!*w[m+4]!+p[3]!*w[m+5]!+p[5]!;
         if(!Number.isFinite(a)||!Number.isFinite(b)||!Number.isFinite(cc)||!Number.isFinite(d)||!Number.isFinite(x)||!Number.isFinite(y))throw new RangeError('Preview placement exceeds Float64 range');

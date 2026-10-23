@@ -47,7 +47,7 @@ export class ActorEditor {
     click('astronaut', () => { if (this.mayReplace()) { const source = readProject(JSON.stringify(astronautSource)); source.id = `local:${crypto.randomUUID()}`; this.draft.replace(source, true); this.partId = ''; this.changed(); this.message('First-party schematic starter loaded. Not approved production artwork or the bundled default.'); } });
     click('classic-astronaut', () => { if (this.mayReplace()) { this.generation++; this.draft.replace(readProject(JSON.stringify(classicAstronaut)), true); this.partId = ''; this.changed(); this.el<HTMLSelectElement>('preview-zoom').value = '128'; this.assembly.preview.zoom(128); this.el<HTMLInputElement>('preview-origin-y').value = '0.8'; this.assembly.preview.aids(1, 0, false, true, 0.8); this.message('Editable classic astronaut example loaded. Visual review pending; not the game default.'); } });
     click('apply-project', () => { this.draft.edit(s => { s.name = this.value('project-name'); s.version = this.value('project-version'); s.author = this.value('project-author'); s.provenance = this.value('project-provenance'); }); this.changed(); });
-    click('save', () => { const text = saveActorProject(this.draft.source); this.download(new Blob([text], { type: 'application/json' }), 'actor.actorproject'); this.lastDownload = text; this.workspace.render(); this.message('Editable source download initiated. Retention is unverified; dirty state remains until you confirm retaining this exact source.'); });
+    click('save', () => this.downloadSource());
     click('retained', () => { if (this.lastDownload !== saveActorProject(this.draft.source)) throw new Error('Download the current editable source first.'); this.draft.acknowledgeRetained(); this.render(); this.message('You confirmed retaining the current source.'); });
     click('recover', () => { const text = localStorage.getItem(RECOVERY_KEY); if (!text) throw new Error('No local recovery draft.'); const project = readProject(text); if (this.mayReplace()) { this.generation++; this.draft.replace(project, true); this.partId = ''; this.changed(); this.message('Recovered local draft; save editable source to retain a file.'); } });
     click('close', () => { if (this.mayReplace()) { this.closeView(); } });
@@ -101,14 +101,16 @@ export class ActorEditor {
     try { localStorage.setItem(RECOVERY_KEY, saveActorProject(this.draft.source)); } catch { this.message('Local recovery unavailable or full; your current edits remain in memory. Download editable source.'); }
     this.render();
   }
+  downloadSource() { const text = saveActorProject(this.draft.source); this.download(new Blob([text], { type: 'application/json' }), 'actor.actorproject'); this.lastDownload = text; this.workspace.render(); this.message('Editable source download initiated. Retention is unverified; dirty state remains until you confirm retaining this exact source.'); }
+  get fileGeneration() { return this.generation; }
   mayReplace() { return !this.draft.dirty || confirm('Unsaved source edits remain. Replace/close this document? Local recovery is a separate draft, not a retained file.'); }
   /** Register a host-owned picker/decode guarded by document generation and epoch. */
   fileInput<T>(id: string, read: (file: File) => Promise<T>, install: (value: T) => void, replaces: boolean) {
     const input = this.el<HTMLInputElement>(id), signal = this.controller.signal; let approvedEpoch = -1;
-    input.addEventListener('click', e => { this.cancelGesture(); this.assembly.pause(); this.generation++; if (replaces && !this.mayReplace()) { e.preventDefault(); return; } approvedEpoch = this.draft.epoch; }, { signal });
-    input.addEventListener('cancel', () => { this.cancelGesture(); this.assembly.pause(); this.generation++; this.message('File selection cancelled; project retained.'); }, { signal });
+    input.addEventListener('click', e => { this.cancelGesture(); this.assembly.pause(); this.generation++; this.assembly.cels.fileChanged(); if (replaces && !this.mayReplace()) { e.preventDefault(); return; } approvedEpoch = this.draft.epoch; }, { signal });
+    input.addEventListener('cancel', () => { this.cancelGesture(); this.assembly.pause(); this.generation++; this.assembly.cels.fileChanged(); this.message('File selection cancelled; project retained.'); }, { signal });
     input.addEventListener('change', () => {
-      this.cancelGesture(); this.assembly.pause(); const file = input.files?.[0]; input.value = ''; const generation = ++this.generation, epoch = this.draft.epoch;
+      this.cancelGesture(); this.assembly.pause(); const file = input.files?.[0]; input.value = ''; const generation = ++this.generation, epoch = this.draft.epoch; this.assembly.cels.fileChanged();
       if (!file) return;
       if (replaces && this.draft.dirty && approvedEpoch !== epoch && !this.mayReplace()) return;
       void read(file).then(result => { if (this.disposed || generation !== this.generation || epoch !== this.draft.epoch) return; install(result); }).catch(error => { if (!this.disposed && generation === this.generation) this.message(error instanceof Error ? error.message : String(error)); });
