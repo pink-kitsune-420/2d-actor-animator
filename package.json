@@ -1,0 +1,29 @@
+{
+  "name": "actor-animator",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --port 4500 --strictPort",
+    "preview": "vite preview --host 127.0.0.1",
+    "typecheck": "tsc --noEmit",
+    "build": "npm run typecheck && vite build",
+    "test": "vitest run",
+    "test:browser": "playwright test",
+    "check:isolation": "node scripts/check-isolation.mjs",
+    "check:toolchain": "node scripts/check-toolchain.mjs",
+    "check:licenses": "node scripts/check-licenses.mjs",
+    "check": "npm run check:isolation && npm run check:toolchain && npm run typecheck && npm test && vite build && npm run check:licenses"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "@types/node": "22.20.5",
+    "typescript": "7.0.2",
+    "vite": "8.3.4",
+    "vitest": "5.0.5"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "format": "spacelab-actor-project/1",
+  "version": "0.1.0",
+  "id": "example:empty",
+  "name": "Empty actor project",
+  "author": "Space Lab",
+  "license": "MIT",
+  "provenance": "First-party schematic planning fixture; not accepted production art.",
+  "units": {
+    "metresPerUnit": 1,
+    "coordinates": "x-right-y-up",
+    "angle": "radians-ccw",
+    "time": "seconds",
+    "origin": [
+      0,
+      0
+    ]
+  },
+  "requiredCapabilities": [
+    "spacelab:indexed-raster/1",
+    "spacelab:transform-clips/1"
+  ],
+  "parts": [],
+  "rigs": [],
+  "attachments": [],
+  "clips": [],
+  "actions": [],
+  "extensions": {}
+}

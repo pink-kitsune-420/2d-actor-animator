@@ -1,0 +1,321 @@
+{
+  "project": "Space Lab",
+  "commit": "2caf67c8e4949b4d898a12a4b2aa6dfbf4cfea37",
+  "tree": "157f7df411ccae2b51044d99fc46f6205af1685b",
+  "license": "MIT",
+  "extraction": "Editor, pure evaluator/rigging/source types and their first-party examples/tests only. Protocol identifiers remain compatible; game runtime is not included.",
+  "files": [
+    {
+      "upstreamPath": "apps/web/actor-tools.html",
+      "path": "apps/web/actor-tools.html",
+      "upstreamSha256": "f09b8b84dabe8168a8e280ae18269535e97a85c6dd0c359de8b3c0dcf44e87e8",
+      "extractedSha256": "21db3798ac39768ec8df9da6263c2fa5464f992187ef9711942d443ec041eefd"
+    },
+    {
+      "upstreamPath": "apps/web/src/actor-tools/animation-panel.ts",
+      "path": "apps/web/src/actor-tools/animation-panel.ts",
+      "upstreamSha256": "3e50b0f789e55874fcb76f8c2946c1ceef103e253eaa948424ce9b958a0b3af7",
+      "extractedSha256": "17c87df8d29692b12c90c1a8604cd6080b4903711a144d84108d0d59db6b598a"
+    },
+    {
+      "upstreamPath": "apps/web/src/actor-tools/assembly-panel.ts",
+      "path": "apps/web/src/actor-tools/assembly-panel.ts",
+      "upstreamSha256": "12d90494de6a522fb9858633d5b0c6bff20a6b2e25b6f3c1cced71493418ee85",
+      "extractedSha256": "c37ed667afd6e8a81a36ef273f2b37fd97613e26f4f08729f7bacd9fc9412bf7"
+    },
+    {
+      "upstreamPath": "apps/web/src/actor-tools/assembly.ts",
+      "path": "apps/web/src/actor-tools/assembly.ts",
+      "upstreamSha256": "eabe8ebfbf3f92da0f54fffe85137876abb670d3da20302f9860045278ee7d07",
+      "extractedSha256": "a9d04488fddcd100fe18982633fd5b8ab2d2aee1dee27f89ea288cc2e7ec49cf"
+    },
+    {
+      "upstreamPath": "apps/web/src/actor-tools/astronaut.project.json",
+      "path": "apps/web/src/actor-tools/astronaut.project.json",
+      "upstreamSha256": "cbcccbd603041de4c37f87b1750fadab135480525fc0f165299b0b4cf5588fc7",
+      "extractedSha256": "cbcccbd603041de4c37f87b1750fadab135480525fc0f165299b0b4cf5588fc7"
+    },
+    {
+      "upstreamPath": "apps/web/src/actor-tools/cel-panel.ts",
+      "path": "apps/web/src/actor-tools/cel-panel.ts",
+      "upstreamSha256": "0703f8e9c3849f204c8df57927a74a7dda8375fd73501a5943b062486ae72a5a",
+      "extractedSha256": "3060e64e240f584a0a0d21626a85d9694fd836829c077209eb596be0a6a1bb13"
+    },
+    {
+      "upstreamPath": "apps/web/src/actor-tools/classic-astronaut.project.json",
+      "path": "apps/web/src/actor-tools/classic-astronaut.project.json",
+      "upstreamSha256": "3d7096c1843c64db4f53f1ca06eaf5be49c4115569242140de7bde699da44e8c",
+      "extractedSha256": "3d7096c1843c64db4f53f1ca06eaf5be49c4115569242140de7bde699da44e8c"
+    },
+    {
+      "upstreamPath": "apps/web/src/actor-tools/editing.ts",
+      "path": "apps/web/src/actor-tools/editing.ts",
+      "upstreamSha256": "252f2e7f110f2c786e2c864edb0626078486ea7f168199e1f636c63f30be41a9",
+      "extractedSha256": "42e7b3239849f272cf45021cd7bc7b916360dddb55077d0d9ed2253aaf19832c"
+    },
+    {
+      "upstreamPath": "apps/web/src/actor-tools/emote-panel.ts",
+      "path": "apps/web/src/actor-tools/emote-panel.ts",
+      "upstreamSha256": "68ecb41ed376b97948d67e375047ceef13457d8ae8bde5907b79ba8c5db0da61",
+      "extractedSha256": "2d5c9557f4efca9e569d1670fc89fe1552d91167eba49b83d70b47331b60c5b3"
+    },
+    {
+      "upstreamPath": "apps/web/src/actor-tools/emote-preview.ts",
+      "path": "apps/web/src/actor-tools/emote-preview.ts",
+      "upstreamSha256": "599169580707c4cd13ecbef8825f043b3474a957370cdb3607a8f05e4c35df21",
+      "extractedSha256": "68a4ed9d1698f7444eb8bfea6c42a33c476c3f9adecdc5b23d164152215b67a4"
+    },
+    {
+      "upstreamPath": "apps/web/src/actor-tools/main.ts",
+      "path": "apps/web/src/actor-tools/main.ts",
+      "upstreamSha256": "8ca9e61ab55ad75f19d7f1339aa6304ec733cf41ef0f3b984a6657849d277caa",
+      "extractedSha256": "baf0c01b9566450da66ae7c224d17d9c3fc86c53fa30977fa0718cbfb3b40cb7"
+    },
+    {
+      "upstreamPath": "apps/web/src/actor-tools/png.ts",
+      "path": "apps/web/src/actor-tools/png.ts",
+      "upstreamSha256": "795f26c31cfe6f43d6f53bef3f07bcd714576b2555ef3686081decb05ddae4f8",
+      "extractedSha256": "e0b178a0da7c1868ce7cf4efc04764ee3ad96b27fa8adcfa4274ddbd35c64f2a"
+    },
+    {
+      "upstreamPath": "apps/web/src/actor-tools/preview.ts",
+      "path": "apps/web/src/actor-tools/preview.ts",
+      "upstreamSha256": "fff9473454ce38c6d69c7f143b268071d09e0a541c05edec609af573a5a1a180",
+      "extractedSha256": "1204a538714672fa32f070e260a6f05e1e9ca021f69ec756283842ec60d9e227"
+    },
+    {
+      "upstreamPath": "apps/web/src/actor-tools/skeleton-panel.ts",
+      "path": "apps/web/src/actor-tools/skeleton-panel.ts",
+      "upstreamSha256": "cf01cc64dea5124696eee20f096a883e682236df4e5e963cbf05f0261c91d68b",
+      "extractedSha256": "ee9ea9c148249648ee98ab2308ec379565b813387fc29408739dc225a528b774"
+    },
+    {
+      "upstreamPath": "apps/web/src/actor-tools/style.css",
+      "path": "apps/web/src/actor-tools/style.css",
+      "upstreamSha256": "14550af46ce28f22c7b68d20d0c048eb8acffd155eb0f5da92a190c325c71d05",
+      "extractedSha256": "14550af46ce28f22c7b68d20d0c048eb8acffd155eb0f5da92a190c325c71d05"
+    },
+    {
+      "upstreamPath": "apps/web/src/actor-tools/workspace.ts",
+      "path": "apps/web/src/actor-tools/workspace.ts",
+      "upstreamSha256": "cbf160d9f669e87c8e845ca70ba78be345c602c37605d61220ab033af3b8e0d2",
+      "extractedSha256": "cbf160d9f669e87c8e845ca70ba78be345c602c37605d61220ab033af3b8e0d2"
+    },
+    {
+      "upstreamPath": "examples/modules/actor-project/src/source.ts",
+      "path": "examples/modules/actor-project/src/source.ts",
+      "upstreamSha256": "f5aa49e900dc701a54a4a3a3d2fea420a278ca258d2ad2009a0ce14e5eb0713a",
+      "extractedSha256": "c1c4667cb88831ff72ad4a4bf3f24bebadacb32a3878830a5b800641c1060962"
+    },
+    {
+      "upstreamPath": "packages/actor-tools/src/animation-edit.ts",
+      "path": "packages/actor-tools/src/animation-edit.ts",
+      "upstreamSha256": "e1e47f64f88bb2e38520c6494a6b90b7fd2b1f5046bf8125890f400f2bb87512",
+      "extractedSha256": "cc804c3f5b19113840e0f3dcc642577915253a8070a38f780eb811661f971c18"
+    },
+    {
+      "upstreamPath": "packages/actor-tools/src/animation.ts",
+      "path": "packages/actor-tools/src/animation.ts",
+      "upstreamSha256": "b76099325b1d8d48bbc5246697da9d005c3d0061be48663a00f2d26c3c8f24cf",
+      "extractedSha256": "b76099325b1d8d48bbc5246697da9d005c3d0061be48663a00f2d26c3c8f24cf"
+    },
+    {
+      "upstreamPath": "packages/actor-tools/src/cels.ts",
+      "path": "packages/actor-tools/src/cels.ts",
+      "upstreamSha256": "3b2635df5ac475a703b1b5f0c0ecca3aaaf308e68d0237a36388c25570b0430a",
+      "extractedSha256": "8c7b313a3c86681eae4fb1e20faeec1698924d2b0390db8befae7f7af7ec9a15"
+    },
+    {
+      "upstreamPath": "packages/actor-tools/src/constraints.ts",
+      "path": "packages/actor-tools/src/constraints.ts",
+      "upstreamSha256": "b1dafadb65d87850a32130be746fd605c34e2e2233ac76ca0d0f4390b328bb14",
+      "extractedSha256": "0a893e4d7b0e2dcb372cde05b70889e52fc079ee527204ec44d1b08d0e530488"
+    },
+    {
+      "upstreamPath": "packages/actor-tools/src/emotes.ts",
+      "path": "packages/actor-tools/src/emotes.ts",
+      "upstreamSha256": "41ad6a3a7dc71f20d39bcaa762090e68eff669c7b2cfb35a1fd51bc9931e6774",
+      "extractedSha256": "562c93e569489fe29f1608815eea77bd675ecc845a6dab634b00e78b8a1a1bac"
+    },
+    {
+      "upstreamPath": "packages/actor-tools/src/evaluator.ts",
+      "path": "packages/actor-tools/src/evaluator.ts",
+      "upstreamSha256": "e49bebec50b7ce5faf6cce48c896dc1beecc00724297e31e99b8c6c50d952171",
+      "extractedSha256": "5b368887fa54718b2aefd3074bc80e7f594c63278c88c62ae36522f4b7c6d017"
+    },
+    {
+      "upstreamPath": "packages/actor-tools/src/index.ts",
+      "path": "packages/actor-tools/src/index.ts",
+      "upstreamSha256": "ec37c4ec78f6a5382ad3e311b78e126715bcb1e8d05ee492e1c89f86f0301aeb",
+      "extractedSha256": "521e788ac227aa143347ec4131cbd51d757c0c4dc2a4fc33345db790dfcd97a0"
+    },
+    {
+      "upstreamPath": "packages/actor-tools/src/project.ts",
+      "path": "packages/actor-tools/src/project.ts",
+      "upstreamSha256": "3a6fd12a87ed570292efff68efff5404d94c93914c790f1523cca558ecfd0759",
+      "extractedSha256": "da4e607bbf9f8dbacac823e429180449229a3ac694847676b303d3957a71cc82"
+    },
+    {
+      "upstreamPath": "packages/actor-tools/src/rig.ts",
+      "path": "packages/actor-tools/src/rig.ts",
+      "upstreamSha256": "83f9ab131546baa188982a1325eb703d0fffd49598dfbb8c4e92e88043ffd153",
+      "extractedSha256": "65360cf4d92976026b0f4081c177ff3472e0eaa9f46c6ac151eff705d77b3727"
+    },
+    {
+      "upstreamPath": "packages/game-api/src/actor-project.ts",
+      "path": "packages/project-types/src/index.ts",
+      "upstreamSha256": "c61a47ab11f9813a74d434542ee4bc23553ac7264403cfdaa5e2bfbd86640bee",
+      "extractedSha256": "c61a47ab11f9813a74d434542ee4bc23553ac7264403cfdaa5e2bfbd86640bee"
+    },
+    {
+      "upstreamPath": "tests/browser/actor-animator-authoring.ts",
+      "path": "tests/browser/actor-animator-authoring.ts",
+      "upstreamSha256": "97dacef4f418eb891569b829f76fa4827f2fa9f3191efa568862396118182986",
+      "extractedSha256": "0dd795d24c7a8407906202285e8b25ff317dbc714dfa8c1c297467fcece62c9c"
+    },
+    {
+      "upstreamPath": "tests/browser/actor-animator.spec.ts",
+      "path": "tests/browser/actor-animator.spec.ts",
+      "upstreamSha256": "362c33110aeddb1f298bf26c7fc6efe62d66d46ae19de4ab5baebd8a2c67e448",
+      "extractedSha256": "810b4af7cb829aa5d6dac3294ab646a7a293487ec297f48d1056bd4caf3bf3ec"
+    },
+    {
+      "upstreamPath": "tests/browser/actor-emote-authoring-steps.ts",
+      "path": "tests/browser/actor-emote-authoring-steps.ts",
+      "upstreamSha256": "0d33b374df92f5e19131248472c45c6b136c36ebaa623837a50e1a27b7cfee70",
+      "extractedSha256": "0d33b374df92f5e19131248472c45c6b136c36ebaa623837a50e1a27b7cfee70"
+    },
+    {
+      "upstreamPath": "tests/browser/actor-emote-authoring.spec.ts",
+      "path": "tests/browser/actor-emote-authoring.spec.ts",
+      "upstreamSha256": "db604d90bcb484e466e0810e41ed3333378625cc6b03b6813662ff2c4be5cff3",
+      "extractedSha256": "23baffb840ba5c7dbc3d1a9c86b354fbcf8e191b89a77655eff74d1034762163"
+    },
+    {
+      "upstreamPath": "tests/browser/actor-foundation.spec.ts",
+      "path": "tests/browser/actor-foundation.spec.ts",
+      "upstreamSha256": "860b1e74486608f53ae6c62261c129c8af4792fe96d974e311015a0c20665c2c",
+      "extractedSha256": "aca5bc132ecf972bc40f7b2fce0cef2a94f5135c29a4caa0ae9636fbb22111de"
+    },
+    {
+      "upstreamPath": "tests/browser/actor-hybrid-animation.spec.ts",
+      "path": "tests/browser/actor-hybrid-animation.spec.ts",
+      "upstreamSha256": "bf598e63820c62cc71bdb123471029ed76f8793170aae5fcea13737cf08fa93f",
+      "extractedSha256": "38a80552aee31a43d7d26ad004ebd2e10ea7ad4348d9f87c51972eec533244e4"
+    },
+    {
+      "upstreamPath": "tests/browser/actor-hybrid-authoring.ts",
+      "path": "tests/browser/actor-hybrid-authoring.ts",
+      "upstreamSha256": "d6ea31901393ba7cee65e4929fafc249acfc5ff0bc94342784fe62fd67fd733a",
+      "extractedSha256": "3105fe197262b49a7f06a54ef4d99c7ae553c652c6dc9478edfe1aa6ab318240"
+    },
+    {
+      "upstreamPath": "tests/browser/actor-part-editor.spec.ts",
+      "path": "tests/browser/actor-part-editor.spec.ts",
+      "upstreamSha256": "068b46025c80b3637fbd5604aec585c5c025f870b496e003251d637c830bdbdc",
+      "extractedSha256": "70e3110d0d818b67161211f5a192da53ba3fb80825056989d20e52abe898a56c"
+    },
+    {
+      "upstreamPath": "tests/browser/actor-skeleton-editor.spec.ts",
+      "path": "tests/browser/actor-skeleton-editor.spec.ts",
+      "upstreamSha256": "6e819ec3a72c6a6749dce6333210b4d1e653e395c5e860b5a3d1aea7f54f7ca8",
+      "extractedSha256": "aa6dd9dc9154300d934af2aca5af1e6cf858d8cc9e44f5ecea6e56ca93666453"
+    },
+    {
+      "upstreamPath": "tests/browser/actor-usability.spec.ts",
+      "path": "tests/browser/actor-usability.spec.ts",
+      "upstreamSha256": "43d94e87782f0b32757261336ceed7a33a01e720cea435b98e5a6aed22540921",
+      "extractedSha256": "c2570ce3f303852927e0484d091c168d2e89b164eb91e66011a4703fba0b3b17"
+    },
+    {
+      "upstreamPath": "tests/fixtures/actor-projects/astronaut.project.json",
+      "path": "tests/fixtures/actor-projects/astronaut.project.json",
+      "upstreamSha256": "070dfe6af3d470c629350601b3ef8f5c73683c75bcf83d44a3d35b8da8bb4a93",
+      "extractedSha256": "070dfe6af3d470c629350601b3ef8f5c73683c75bcf83d44a3d35b8da8bb4a93"
+    },
+    {
+      "upstreamPath": "tests/fixtures/actor-projects/classic-astronaut-b2.project.json",
+      "path": "tests/fixtures/actor-projects/classic-astronaut-b2.project.json",
+      "upstreamSha256": "b85bf92168ef1eb3b1c41a764d52dd091eda1fc1896d12ebefbb2ce939995dac",
+      "extractedSha256": "b85bf92168ef1eb3b1c41a764d52dd091eda1fc1896d12ebefbb2ce939995dac"
+    },
+    {
+      "upstreamPath": "tests/fixtures/actor-projects/classic-astronaut-b3.project.json",
+      "path": "tests/fixtures/actor-projects/classic-astronaut-b3.project.json",
+      "upstreamSha256": "effe36473606b53855418916d71ee12f1cc4a6444fe05482621f19f1a3e6e132",
+      "extractedSha256": "effe36473606b53855418916d71ee12f1cc4a6444fe05482621f19f1a3e6e132"
+    },
+    {
+      "upstreamPath": "tests/fixtures/actor-projects/empty.project.json",
+      "path": "tests/fixtures/actor-projects/empty.project.json",
+      "upstreamSha256": "9a0570744bcd7a53e11d6c370e791651bb3b02361146cee3e1b7f41dea539c7e",
+      "extractedSha256": "9a0570744bcd7a53e11d6c370e791651bb3b02361146cee3e1b7f41dea539c7e"
+    },
+    {
+      "upstreamPath": "tests/fixtures/actor-projects/nonhuman.project.json",
+      "path": "tests/fixtures/actor-projects/nonhuman.project.json",
+      "upstreamSha256": "abbe77fb08e879ffae26a7f3b7963ad398dba3d961711a85909cd408876e5ef2",
+      "extractedSha256": "abbe77fb08e879ffae26a7f3b7963ad398dba3d961711a85909cd408876e5ef2"
+    },
+    {
+      "upstreamPath": "tests/fixtures/actor-projects/zero-bone.project.json",
+      "path": "tests/fixtures/actor-projects/zero-bone.project.json",
+      "upstreamSha256": "d3e79f842624cb8e9371f539a7bec78a5f0a28ad21ec0152f02d1f3f7732a911",
+      "extractedSha256": "d3e79f842624cb8e9371f539a7bec78a5f0a28ad21ec0152f02d1f3f7732a911"
+    },
+    {
+      "upstreamPath": "tests/helpers/actor-project.ts",
+      "path": "tests/helpers/actor-project.ts",
+      "upstreamSha256": "6512a0d3b32b71e47625acbdff4d77070f79003338fd63026420313fc3af9342",
+      "extractedSha256": "327bca6f15bb563e5f82d565bd851e7d18d51714daebd91b76e69df5dadbe5c4"
+    },
+    {
+      "upstreamPath": "tests/unit/actor-animation.test.ts",
+      "path": "tests/unit/actor-animation.test.ts",
+      "upstreamSha256": "d0e3694f131255ad19cdd16d31a2b3aa14df0698f5e479061e459f1b4ed98b7f",
+      "extractedSha256": "e88a029f4f13d0e438f90a218930b3732ef5efa913a49a165d116c291e2dda14"
+    },
+    {
+      "upstreamPath": "tests/unit/actor-assembly.test.ts",
+      "path": "tests/unit/actor-assembly.test.ts",
+      "upstreamSha256": "535bb4907f69c79702d6d3f57440d66f0048b73e163a079aaca3e517d95b3527",
+      "extractedSha256": "535bb4907f69c79702d6d3f57440d66f0048b73e163a079aaca3e517d95b3527"
+    },
+    {
+      "upstreamPath": "tests/unit/actor-cels.test.ts",
+      "path": "tests/unit/actor-cels.test.ts",
+      "upstreamSha256": "ee80e96967c8e07a778dc868b045af4fdf6f80525ddcc67c06668ecf453c6609",
+      "extractedSha256": "ee80e96967c8e07a778dc868b045af4fdf6f80525ddcc67c06668ecf453c6609"
+    },
+    {
+      "upstreamPath": "tests/unit/actor-emotes.test.ts",
+      "path": "tests/unit/actor-emotes.test.ts",
+      "upstreamSha256": "592fa85a7fe0ab7905646ee7870d717b6cc9c82ebea3d1f8f257f3da545e7232",
+      "extractedSha256": "f8770a819fb9586e8a6abc8f909c17574c77d76e894819a7f9a718798034095d"
+    },
+    {
+      "upstreamPath": "tests/unit/actor-evaluator.test.ts",
+      "path": "tests/unit/actor-evaluator.test.ts",
+      "upstreamSha256": "ba47e7f69b59b85e8406adfc11e4a602e1260589cb39a516a02d310d9fcd2c75",
+      "extractedSha256": "ba47e7f69b59b85e8406adfc11e4a602e1260589cb39a516a02d310d9fcd2c75"
+    },
+    {
+      "upstreamPath": "tests/unit/actor-part-editing.test.ts",
+      "path": "tests/unit/actor-part-editing.test.ts",
+      "upstreamSha256": "70c9f8ae2b527a2e91824d270c27c238dd70ba6d0556930a09061bc46e5c9ee2",
+      "extractedSha256": "70c9f8ae2b527a2e91824d270c27c238dd70ba6d0556930a09061bc46e5c9ee2"
+    },
+    {
+      "upstreamPath": "tests/unit/actor-project.test.ts",
+      "path": "tests/unit/actor-project.test.ts",
+      "upstreamSha256": "45e8d1f4d3237bff7273f59ff373527037a2bf5664cfc55d5963d9a3f5e73cc7",
+      "extractedSha256": "328455b6485a71697f3d302a51aa53fce471e0e7e1d4cb6bce49e6c725b5e68d"
+    },
+    {
+      "upstreamPath": "tests/unit/actor-rig.test.ts",
+      "path": "tests/unit/actor-rig.test.ts",
+      "upstreamSha256": "4ba436dbce0341351e1ef3b17ae433f674305c816044286186797ecf15c2f8fc",
+      "extractedSha256": "e2e8356df31a684965c7a720b7c496c9f294462f33b4e0e9083808d496fa81a3"
+    }
+  ]
+}

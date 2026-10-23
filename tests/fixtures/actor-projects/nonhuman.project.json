@@ -1,0 +1,454 @@
+{
+  "format": "spacelab-actor-project/1",
+  "version": "0.1.0",
+  "id": "example:six-limbed",
+  "name": "Six limbs and segmented tail",
+  "author": "Space Lab",
+  "license": "MIT",
+  "provenance": "First-party schematic planning fixture; not accepted production art.",
+  "units": {
+    "metresPerUnit": 1,
+    "coordinates": "x-right-y-up",
+    "angle": "radians-ccw",
+    "time": "seconds",
+    "origin": [
+      0,
+      0
+    ]
+  },
+  "requiredCapabilities": [
+    "spacelab:indexed-raster/1",
+    "spacelab:transform-clips/1"
+  ],
+  "parts": [
+    {
+      "id": "example:segment",
+      "name": "Limb / tail segment",
+      "revision": 1,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "unitsPerPixel": 0.125,
+      "artwork": {
+        "kind": "indexed-raster",
+        "width": 8,
+        "height": 8,
+        "palette": [
+          "#00000000",
+          "#8fb0c0ff"
+        ],
+        "layers": [
+          {
+            "id": "example:segment-ink",
+            "name": "Ink",
+            "opacity": 1,
+            "pixels": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "rigs": [
+    {
+      "id": "example:creature-rig",
+      "name": "Freely named creature",
+      "nodes": [
+        {
+          "id": "example:crown",
+          "name": "Crown",
+          "parentId": null,
+          "rest": {
+            "x": 2,
+            "y": 3,
+            "rotation": 0,
+            "scaleX": 1,
+            "scaleY": 1
+          }
+        },
+        {
+          "id": "example:limb-0",
+          "name": "Feeler 0",
+          "parentId": "example:crown",
+          "rest": {
+            "x": 0.5,
+            "y": 0.0,
+            "rotation": 0,
+            "scaleX": 1,
+            "scaleY": 1
+          }
+        },
+        {
+          "id": "example:limb-1",
+          "name": "Feeler 1",
+          "parentId": "example:crown",
+          "rest": {
+            "x": -0.5,
+            "y": 0.0,
+            "rotation": 0,
+            "scaleX": 1,
+            "scaleY": 1
+          }
+        },
+        {
+          "id": "example:limb-2",
+          "name": "Feeler 2",
+          "parentId": "example:crown",
+          "rest": {
+            "x": 0.5,
+            "y": 0.4,
+            "rotation": 0,
+            "scaleX": 1,
+            "scaleY": 1
+          }
+        },
+        {
+          "id": "example:limb-3",
+          "name": "Feeler 3",
+          "parentId": "example:crown",
+          "rest": {
+            "x": -0.5,
+            "y": 0.4,
+            "rotation": 0,
+            "scaleX": 1,
+            "scaleY": 1
+          }
+        },
+        {
+          "id": "example:limb-4",
+          "name": "Feeler 4",
+          "parentId": "example:crown",
+          "rest": {
+            "x": 0.5,
+            "y": 0.8,
+            "rotation": 0,
+            "scaleX": 1,
+            "scaleY": 1
+          }
+        },
+        {
+          "id": "example:limb-5",
+          "name": "Feeler 5",
+          "parentId": "example:crown",
+          "rest": {
+            "x": -0.5,
+            "y": 0.8,
+            "rotation": 0,
+            "scaleX": 1,
+            "scaleY": 1
+          }
+        },
+        {
+          "id": "example:tail-1",
+          "name": "Tail hinge",
+          "parentId": "example:crown",
+          "rest": {
+            "x": 1,
+            "y": 0,
+            "rotation": 0,
+            "scaleX": 1,
+            "scaleY": 1
+          }
+        },
+        {
+          "id": "example:tail-2",
+          "name": "Tail tip",
+          "parentId": "example:tail-1",
+          "rest": {
+            "x": 1,
+            "y": 0,
+            "rotation": 0,
+            "scaleX": 1,
+            "scaleY": 1
+          }
+        },
+        {
+          "id": "example:detached",
+          "name": "Separate effect root",
+          "parentId": null,
+          "rest": {
+            "x": -1,
+            "y": 1,
+            "rotation": 0,
+            "scaleX": 1,
+            "scaleY": 1
+          }
+        }
+      ],
+      "sockets": [
+        {
+          "id": "example:tool-socket",
+          "name": "Cosmetic tool marker",
+          "nodeId": "example:limb-0",
+          "transform": {
+            "x": 0.5,
+            "y": 0,
+            "rotation": 0,
+            "scaleX": 1,
+            "scaleY": 1
+          }
+        }
+      ]
+    }
+  ],
+  "attachments": [
+    {
+      "id": "example:art-crown",
+      "name": "art-crown",
+      "partId": "example:segment",
+      "drawOrder": 0,
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      },
+      "rigId": "example:creature-rig",
+      "nodeId": "example:crown"
+    },
+    {
+      "id": "example:art-limb-0",
+      "name": "art-limb-0",
+      "partId": "example:segment",
+      "drawOrder": 1,
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      },
+      "rigId": "example:creature-rig",
+      "nodeId": "example:limb-0"
+    },
+    {
+      "id": "example:art-limb-1",
+      "name": "art-limb-1",
+      "partId": "example:segment",
+      "drawOrder": 2,
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      },
+      "rigId": "example:creature-rig",
+      "nodeId": "example:limb-1"
+    },
+    {
+      "id": "example:art-limb-2",
+      "name": "art-limb-2",
+      "partId": "example:segment",
+      "drawOrder": 3,
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      },
+      "rigId": "example:creature-rig",
+      "nodeId": "example:limb-2"
+    },
+    {
+      "id": "example:art-limb-3",
+      "name": "art-limb-3",
+      "partId": "example:segment",
+      "drawOrder": 4,
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      },
+      "rigId": "example:creature-rig",
+      "nodeId": "example:limb-3"
+    },
+    {
+      "id": "example:art-limb-4",
+      "name": "art-limb-4",
+      "partId": "example:segment",
+      "drawOrder": 5,
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      },
+      "rigId": "example:creature-rig",
+      "nodeId": "example:limb-4"
+    },
+    {
+      "id": "example:art-limb-5",
+      "name": "art-limb-5",
+      "partId": "example:segment",
+      "drawOrder": 6,
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      },
+      "rigId": "example:creature-rig",
+      "nodeId": "example:limb-5"
+    },
+    {
+      "id": "example:art-tail-1",
+      "name": "art-tail-1",
+      "partId": "example:segment",
+      "drawOrder": 7,
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      },
+      "rigId": "example:creature-rig",
+      "nodeId": "example:tail-1"
+    },
+    {
+      "id": "example:art-tail-2",
+      "name": "art-tail-2",
+      "partId": "example:segment",
+      "drawOrder": 8,
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      },
+      "rigId": "example:creature-rig",
+      "nodeId": "example:tail-2"
+    },
+    {
+      "id": "example:art-detached",
+      "name": "art-detached",
+      "partId": "example:segment",
+      "drawOrder": 9,
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      },
+      "rigId": "example:creature-rig",
+      "nodeId": "example:detached"
+    }
+  ],
+  "clips": [
+    {
+      "id": "example:turn",
+      "name": "Turn visual rig in place",
+      "duration": 2,
+      "playback": "once",
+      "tracks": [
+        {
+          "id": "example:turn-crown",
+          "target": {
+            "kind": "node",
+            "rigId": "example:creature-rig",
+            "nodeId": "example:crown"
+          },
+          "interpolation": "linear",
+          "keys": [
+            {
+              "time": 0,
+              "value": {
+                "x": 2,
+                "y": 3,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "time": 2,
+              "value": {
+                "x": 2,
+                "y": 3,
+                "rotation": 3.141592653589793,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "actions": [],
+  "extensions": {}
+}

@@ -1,0 +1,179 @@
+{
+  "format": "spacelab-actor-project/1",
+  "version": "0.1.0",
+  "id": "example:zero-bone",
+  "name": "Zero-bone animated marker",
+  "author": "Space Lab",
+  "license": "MIT",
+  "provenance": "First-party schematic planning fixture; not accepted production art.",
+  "units": {
+    "metresPerUnit": 1,
+    "coordinates": "x-right-y-up",
+    "angle": "radians-ccw",
+    "time": "seconds",
+    "origin": [
+      0,
+      0
+    ]
+  },
+  "requiredCapabilities": [
+    "spacelab:indexed-raster/1",
+    "spacelab:transform-clips/1"
+  ],
+  "parts": [
+    {
+      "id": "example:segment",
+      "name": "Limb / tail segment",
+      "revision": 1,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "unitsPerPixel": 0.125,
+      "artwork": {
+        "kind": "indexed-raster",
+        "width": 8,
+        "height": 8,
+        "palette": [
+          "#00000000",
+          "#8fb0c0ff"
+        ],
+        "layers": [
+          {
+            "id": "example:segment-ink",
+            "name": "Ink",
+            "opacity": 1,
+            "pixels": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "rigs": [],
+  "attachments": [
+    {
+      "id": "example:marker",
+      "name": "marker",
+      "partId": "example:segment",
+      "drawOrder": 0,
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    }
+  ],
+  "clips": [
+    {
+      "id": "example:pulse",
+      "name": "Two-pose marker",
+      "duration": 2,
+      "playback": "loop",
+      "tracks": [
+        {
+          "id": "example:marker-motion",
+          "target": {
+            "kind": "attachment",
+            "attachmentId": "example:marker"
+          },
+          "interpolation": "linear",
+          "keys": [
+            {
+              "time": 0,
+              "value": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "time": 2,
+              "value": {
+                "x": 0,
+                "y": 1,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "actions": [],
+  "extensions": {
+    "example:future-cel-track": {
+      "note": "B3 adds real flipbook/cel tracks; this A1 fixture proves no rig is required without pretending cels already evaluate."
+    }
+  }
+}

@@ -1,0 +1,473 @@
+{
+  "format": "spacelab-actor-project/1",
+  "version": "0.1.0",
+  "id": "example:astronaut",
+  "name": "Simple astronaut starter \u2014 schematic",
+  "author": "Space Lab",
+  "license": "MIT",
+  "provenance": "First-party schematic starter; not approved production artwork.",
+  "units": {
+    "metresPerUnit": 1,
+    "coordinates": "x-right-y-up",
+    "angle": "radians-ccw",
+    "time": "seconds",
+    "origin": [
+      0,
+      0
+    ]
+  },
+  "requiredCapabilities": [
+    "spacelab:indexed-raster/1",
+    "spacelab:transform-clips/1"
+  ],
+  "parts": [
+    {
+      "id": "example:helmet",
+      "name": "Rounded helmet and visor",
+      "revision": 1,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "unitsPerPixel": 0.125,
+      "artwork": {
+        "kind": "indexed-raster",
+        "width": 8,
+        "height": 8,
+        "palette": [
+          "#00000000",
+          "#dfebefff",
+          "#243b55ff"
+        ],
+        "layers": [
+          {
+            "id": "example:helmet-ink",
+            "name": "Ink",
+            "opacity": 1,
+            "pixels": [
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              0,
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              1,
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              1,
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              1,
+              1,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              0,
+              0
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "example:suit",
+      "name": "Suit / limb sample",
+      "revision": 1,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "unitsPerPixel": 0.125,
+      "artwork": {
+        "kind": "indexed-raster",
+        "width": 8,
+        "height": 8,
+        "palette": [
+          "#00000000",
+          "#c7d4dcff"
+        ],
+        "layers": [
+          {
+            "id": "example:suit-ink",
+            "name": "Ink",
+            "opacity": 1,
+            "pixels": [
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              1,
+              0,
+              0
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "rigs": [
+    {
+      "id": "example:astronaut-rig",
+      "name": "Astronaut",
+      "nodes": [
+        {
+          "id": "example:torso",
+          "name": "Suit",
+          "parentId": null,
+          "rest": {
+            "x": 0,
+            "y": 0,
+            "rotation": 0,
+            "scaleX": 1,
+            "scaleY": 1
+          }
+        },
+        {
+          "id": "example:head",
+          "name": "Helmet",
+          "parentId": "example:torso",
+          "rest": {
+            "x": 0,
+            "y": 0.8,
+            "rotation": 0,
+            "scaleX": 1,
+            "scaleY": 1
+          }
+        },
+        {
+          "id": "example:left-arm",
+          "name": "Wave arm",
+          "parentId": "example:torso",
+          "rest": {
+            "x": -0.45,
+            "y": 0.3,
+            "rotation": 0,
+            "scaleX": 1,
+            "scaleY": 1
+          }
+        },
+        {
+          "id": "example:right-arm",
+          "name": "Other arm",
+          "parentId": "example:torso",
+          "rest": {
+            "x": 0.45,
+            "y": 0.3,
+            "rotation": 0,
+            "scaleX": 1,
+            "scaleY": 1
+          }
+        },
+        {
+          "id": "example:left-leg",
+          "name": "Left boot",
+          "parentId": "example:torso",
+          "rest": {
+            "x": -0.2,
+            "y": -0.65,
+            "rotation": 0,
+            "scaleX": 1,
+            "scaleY": 1
+          }
+        },
+        {
+          "id": "example:right-leg",
+          "name": "Right boot",
+          "parentId": "example:torso",
+          "rest": {
+            "x": 0.2,
+            "y": -0.65,
+            "rotation": 0,
+            "scaleX": 1,
+            "scaleY": 1
+          }
+        }
+      ],
+      "sockets": [
+        {
+          "id": "example:hand-socket",
+          "name": "Visual hand marker",
+          "nodeId": "example:left-arm",
+          "transform": {
+            "x": 0,
+            "y": -0.5,
+            "rotation": 0,
+            "scaleX": 1,
+            "scaleY": 1
+          }
+        }
+      ]
+    }
+  ],
+  "attachments": [
+    {
+      "id": "example:helmet-drawing",
+      "name": "helmet-drawing",
+      "partId": "example:helmet",
+      "drawOrder": 6,
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      },
+      "rigId": "example:astronaut-rig",
+      "nodeId": "example:head"
+    },
+    {
+      "id": "example:drawing-torso",
+      "name": "drawing-torso",
+      "partId": "example:suit",
+      "drawOrder": 0,
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      },
+      "rigId": "example:astronaut-rig",
+      "nodeId": "example:torso"
+    },
+    {
+      "id": "example:drawing-left-arm",
+      "name": "drawing-left-arm",
+      "partId": "example:suit",
+      "drawOrder": 1,
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      },
+      "rigId": "example:astronaut-rig",
+      "nodeId": "example:left-arm"
+    },
+    {
+      "id": "example:drawing-right-arm",
+      "name": "drawing-right-arm",
+      "partId": "example:suit",
+      "drawOrder": 2,
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      },
+      "rigId": "example:astronaut-rig",
+      "nodeId": "example:right-arm"
+    },
+    {
+      "id": "example:drawing-left-leg",
+      "name": "drawing-left-leg",
+      "partId": "example:suit",
+      "drawOrder": 3,
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      },
+      "rigId": "example:astronaut-rig",
+      "nodeId": "example:left-leg"
+    },
+    {
+      "id": "example:drawing-right-leg",
+      "name": "drawing-right-leg",
+      "partId": "example:suit",
+      "drawOrder": 4,
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      },
+      "rigId": "example:astronaut-rig",
+      "nodeId": "example:right-leg"
+    }
+  ],
+  "clips": [
+    {
+      "id": "example:wave",
+      "name": "Wave",
+      "duration": 2,
+      "playback": "once",
+      "tracks": [
+        {
+          "id": "example:wave-arm",
+          "target": {
+            "kind": "node",
+            "rigId": "example:astronaut-rig",
+            "nodeId": "example:left-arm"
+          },
+          "interpolation": "linear",
+          "keys": [
+            {
+              "time": 0,
+              "value": {
+                "x": -0.45,
+                "y": 0.3,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "time": 2,
+              "value": {
+                "x": -0.45,
+                "y": 0.3,
+                "rotation": 1.2,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "id": "example:emote-wave",
+      "label": "Wave",
+      "clipId": "example:wave",
+      "category": "emote"
+    }
+  ],
+  "extensions": {
+    "spacelab:buddy-emotes": {
+      "definitions": [
+        {
+          "id": "example:high-five",
+          "revision": 1,
+          "label": "High-five",
+          "roles": [
+            {
+              "id": "example:initiator",
+              "clipId": "example:wave",
+              "rigId": "example:astronaut-rig",
+              "visualSocketId": "example:hand-socket"
+            },
+            {
+              "id": "example:recipient",
+              "clipId": "example:wave",
+              "rigId": "example:astronaut-rig",
+              "visualSocketId": "example:hand-socket"
+            }
+          ],
+          "consent": "explicit-both",
+          "alignment": "no-world-motion",
+          "note": "Inert schematic role mapping. This local preview grants no consent, scheduling, gameplay contact or world-motion authority."
+        }
+      ]
+    }
+  }
+}
