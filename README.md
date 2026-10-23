@@ -48,7 +48,7 @@ See [the selected API and lifecycle](docs/runtime.md) and [editable project cont
 
 The existing `.actorproject` format and its `spacelab:*` capability identifiers are intentionally retained. Actor artwork, RGBA palettes/layers, scale/pivots, rigs, clips, cels and optional emote definitions continue to round-trip against the frozen examples.
 
-Space Lab is a planned optional API/export target. Integrations must use versioned public actor/art/package contracts and state supported capabilities explicitly. The baseline has no live-game provider, module packaging, gameplay/physics ownership or multiplayer-consent implementation. Ship/tile artwork uses different formats and is outside this actor-focused project.
+The optional [`@actor-animator/runtime/spacelab` historical source profile](docs/spacelab.md) checks the retained data contract and exports accepted original text exactly. After `npm run check`, open `/spacelab-example/` in the production preview for separate source and rendered-art evidence. Current live game support is unverified; no game provider or module installer is implemented. Ship/tile artwork uses different formats and is outside this actor-focused project.
 
 ## Layout and verification
 
@@ -56,6 +56,7 @@ Space Lab is a planned optional API/export target. Integrations must use version
 - `packages/actor-tools/src/`: pure project validation, rigging and animation implementation.
 - `packages/project-types/src/`: local actor-project data contracts.
 - `packages/runtime/`: selected public runtime entry and local package manifest.
+- `packages/adapters/spacelab/`: optional historical data profile outside the generic core.
 - `examples/runtime/`: original Node and native browser built-package consumers.
 - `examples/modules/actor-project/src/source.ts`: retained first-party analytic data examples; no game module service or manifest.
 - `tests/`: independent mathematical, pixel, source, history and browser journeys.

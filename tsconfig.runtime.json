@@ -10,5 +10,5 @@
     "emitDeclarationOnly": true,
     "skipLibCheck": false
   },
-  "include": ["packages/runtime/src/index.ts"]
+  "include": ["packages/runtime/src/index.ts", "packages/adapters/spacelab/src/index.ts"]
 }

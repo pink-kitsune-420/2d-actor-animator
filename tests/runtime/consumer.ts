@@ -8,6 +8,14 @@ import {
 import { orderedActorNodes } from '@actor-animator/runtime';
 // @ts-expect-error internal subpaths are blocked by exports
 import { sampleClip } from '@actor-animator/runtime/types/actor-tools/src/evaluator.js';
+import { SPACELAB_ACTOR_SOURCE_PROFILE, inspectSpaceLabActorSource, exportSpaceLabActorSource, type SpaceLabActorSourceReport } from '@actor-animator/runtime/spacelab';
+export function inspectProfile(text: string): SpaceLabActorSourceReport | string {
+  const options = { profile: SPACELAB_ACTOR_SOURCE_PROFILE.id };
+  const exported = exportSpaceLabActorSource(text, options);
+  if (!exported.ok) return exported.diagnostics[0]?.code ?? 'invalid';
+  const inspected = inspectSpaceLabActorSource(exported.text, options);
+  return inspected.ok ? inspected.report : 'invalid';
+}
 export function consume(text: string): ActorPose | ActorJsonValue {
   const result = openActorProject(text);
   if (!result.ok) return result.diagnostics[0]?.code ?? null;

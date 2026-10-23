@@ -15,6 +15,7 @@ for (const path of [...files('apps'), ...files('packages'), ...files('examples')
   const dynamicLiterals = /\bimport\s*\(\s*['"]([^'"]+)['"]/g;
   const specifiers = [declarations, sideEffects, dynamicLiterals].flatMap(pattern => [...source.matchAll(pattern)].map(m => m[1]));
   for (const specifier of specifiers) {
+    if (!path.startsWith('packages/adapters/') && /(?:^|\/)adapters\//.test(specifier)) problems.push(`${path}: generic core/editor imports optional adapter ${specifier}`);
     if (specifier.startsWith('@space-sim/') || /(?:sim-core|game-runtime|render-2d)/.test(specifier)) problems.push(`${path}: game import ${specifier}`);
     if (specifier.startsWith('.') && !resolve(root, dirname(path), specifier).startsWith(root)) problems.push(`${path}: import escapes repository`);
     if (isAbsolute(specifier)) problems.push(`${path}: absolute host import`);

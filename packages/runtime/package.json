@@ -8,8 +8,9 @@
   "engines": { "node": ">=22.12.0" },
   "sideEffects": false,
   "exports": {
-    ".": { "types": "./types/runtime/src/index.d.ts", "import": "./runtime.js" }
+    ".": { "types": "./types/runtime/src/index.d.ts", "import": "./runtime.js" },
+    "./spacelab": { "types": "./types/adapters/spacelab/src/index.d.ts", "import": "./spacelab.js" }
   },
   "types": "./types/runtime/src/index.d.ts",
-  "files": ["runtime.js", "types/", "README.md", "ACTOR-PROJECT.md", "LICENSE", "CREDITS.md", "UPSTREAM.json"]
+  "files": ["runtime.js", "spacelab.js", "types/", "README.md", "ACTOR-PROJECT.md", "SPACELAB.md", "LICENSE", "CREDITS.md", "UPSTREAM.json"]
 }

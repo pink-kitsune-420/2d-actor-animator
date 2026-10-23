@@ -1,0 +1,255 @@
+{
+  "format": "spacelab-actor-project/1",
+  "version": "1.0.0",
+  "id": "profile:beacon",
+  "name": "Layered zero-bone beacon",
+  "author": "Actor Animator contributors",
+  "license": "MIT",
+  "provenance": "Original analytic MIT fixture; no third-party artwork.",
+  "units": {
+    "metresPerUnit": 0.01,
+    "coordinates": "x-right-y-up",
+    "angle": "radians-ccw",
+    "time": "seconds",
+    "origin": [
+      0,
+      0
+    ]
+  },
+  "requiredCapabilities": [
+    "spacelab:indexed-raster/1",
+    "spacelab:transform-clips/1",
+    "spacelab:animation-composition/1",
+    "spacelab:cel-tracks/1"
+  ],
+  "parts": [
+    {
+      "id": "profile:ink",
+      "name": "Asymmetric RGBA",
+      "revision": 7,
+      "pivot": [
+        0.25,
+        0.75
+      ],
+      "unitsPerPixel": 0.5,
+      "artwork": {
+        "kind": "indexed-raster",
+        "width": 2,
+        "height": 2,
+        "palette": [
+          "#12345600",
+          "#ff0000ff",
+          "#00ff0080"
+        ],
+        "layers": [
+          {
+            "id": "profile:base",
+            "name": "Base",
+            "opacity": 1,
+            "pixels": [
+              1,
+              0,
+              2,
+              1
+            ]
+          },
+          {
+            "id": "profile:overlay",
+            "name": "Overlay",
+            "opacity": 0.5,
+            "pixels": [
+              2,
+              0,
+              0,
+              0
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "profile:alternate",
+      "name": "Asymmetric RGBA",
+      "revision": 9,
+      "pivot": [
+        0.25,
+        0.75
+      ],
+      "unitsPerPixel": 0.5,
+      "artwork": {
+        "kind": "indexed-raster",
+        "width": 2,
+        "height": 2,
+        "palette": [
+          "#12345600",
+          "#0000ffff",
+          "#00ff0080"
+        ],
+        "layers": [
+          {
+            "id": "profile:base",
+            "name": "Base",
+            "opacity": 1,
+            "pixels": [
+              1,
+              0,
+              2,
+              1
+            ]
+          },
+          {
+            "id": "profile:overlay",
+            "name": "Overlay",
+            "opacity": 0.5,
+            "pixels": [
+              2,
+              0,
+              0,
+              0
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "rigs": [],
+  "attachments": [
+    {
+      "id": "profile:art",
+      "name": "Beacon",
+      "partId": "profile:ink",
+      "drawOrder": 4,
+      "transform": {
+        "x": 1.25,
+        "y": 0.75,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    }
+  ],
+  "clips": [
+    {
+      "id": "profile:pulse",
+      "name": "Fractional holds",
+      "duration": 1,
+      "playback": "ping-pong",
+      "tracks": [
+        {
+          "id": "profile:move",
+          "target": {
+            "kind": "attachment",
+            "attachmentId": "profile:art"
+          },
+          "interpolation": "step",
+          "keys": [
+            {
+              "time": 0,
+              "value": {
+                "x": 1.25,
+                "y": 0.75,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "time": 0.5,
+              "value": {
+                "x": 3.25,
+                "y": 0.75,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            }
+          ]
+        }
+      ],
+      "visibilityTracks": [
+        {
+          "id": "profile:visible",
+          "target": {
+            "kind": "attachment",
+            "attachmentId": "profile:art"
+          },
+          "keys": [
+            {
+              "time": 0,
+              "visible": true
+            },
+            {
+              "time": 0.875,
+              "visible": false
+            }
+          ]
+        }
+      ],
+      "drawOrderTracks": [
+        {
+          "id": "profile:order",
+          "target": {
+            "kind": "attachment",
+            "attachmentId": "profile:art"
+          },
+          "keys": [
+            {
+              "time": 0.25,
+              "drawOrder": -3
+            }
+          ]
+        }
+      ],
+      "celTracks": [
+        {
+          "id": "profile:cel",
+          "target": {
+            "kind": "attachment",
+            "attachmentId": "profile:art"
+          },
+          "keys": [
+            {
+              "time": 0,
+              "celId": "profile:first"
+            },
+            {
+              "time": 0.75,
+              "celId": "profile:second"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "cels": [
+    {
+      "id": "profile:first",
+      "name": "Layered",
+      "partId": "profile:ink"
+    },
+    {
+      "id": "profile:second",
+      "name": "Alternate",
+      "partId": "profile:alternate"
+    }
+  ],
+  "actions": [
+    {
+      "id": "profile:signal",
+      "label": "Signal",
+      "clipId": "profile:pulse",
+      "category": "authored"
+    }
+  ],
+  "extensions": {
+    "profile:inert": {
+      "url": "https://invalid.example/never-fetch",
+      "kept": [
+        null,
+        false,
+        0,
+        "arbitrary anatomy"
+      ]
+    }
+  }
+}

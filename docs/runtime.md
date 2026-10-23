@@ -26,7 +26,7 @@ Use Node >=22.12 or a modern browser supporting ES2022 modules and `structuredCl
 
 ## Selected public API
 
-Only the root export is supported. Internal evaluator modules, scratch buffers and editor operations are excluded. The declarations provide signatures and detailed field semantics.
+The root export is the generic runtime API. The optional [`/spacelab` subpath](spacelab.md) supplies historical source checks and original-text export. Internal evaluator modules, scratch buffers and editor operations are excluded. The declarations provide signatures and detailed field semantics.
 
 | Area | Runtime exports |
 | --- | --- |
@@ -38,7 +38,7 @@ Only the root export is supported. Internal evaluator modules, scratch buffers a
 
 Public types: all explicitly enumerated `ActorProject` data records (units, transforms, raster parts/layers, rigs, nodes, sockets, constraints, attachments, clips/keys/curves, discrete tracks, cels, animators/layers/states/transitions/masks/references, actions, emotes/roles, JSON values); `ActorProjectDiagnostic`, `ActorProjectLimits`, `ActorProjectResult`; `ActorReadonly`, `CompiledActorProject`, `ActorPose`, `ActorPoseSlot`, `ActorAnimatorDescriptor`, `ActorConstraintStatus`, `ActorCompileOptions`, `ActorConstraintSolver`, `ActorConstraintRig`, `ActorPreparedConstraint`, `ActorPoseUpdater`; `ActorAnimationPlayer`, `ActorAnimationPlayerOptions`, `ActorAnimationStatus`, `ActorRequestOutcome`, `ActorEmoteCompatibility`.
 
-The bundled declaration closure contains implementation declarations required by TypeScript. Their presence is not a supported deep import. The package exports map blocks internal subpaths. There is no engine renderer, image loader, history editor or sheet codec API in this runtime surface.
+The bundled declaration closure contains implementation declarations required by TypeScript. Their presence is not a supported deep import. The package exports map blocks internal subpaths. There is no engine renderer, image loader, history editor or sheet codec API in this runtime surface. The historical profile is separate from the root API.
 
 ## Lifetime and sampling
 

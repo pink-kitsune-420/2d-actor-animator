@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Historical actor-source consumer</title>
+<style>body{font:16px system-ui;background:#f4f6f7;color:#173343;max-width:1100px;margin:30px auto;padding:0 20px}h1{font-size:28px}button,input,select,textarea{font:inherit;margin:6px;padding:7px}textarea{display:block;width:96%;height:170px;font:13px monospace}canvas{background:white;border:1px solid #a9bbc4;max-width:100%;image-rendering:pixelated}pre{white-space:pre-wrap;background:#e4ecef;padding:14px}label{display:inline-block}button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #317b94}</style>
+<h1>Historical actor-source consumer</h1>
+<p>Local profile /1 · editable source preserved · live game support unverified · game provider not implemented</p>
+<label>Example <select id="example"><option value="beacon.actorproject">Zero-bone layered beacon</option><option value="nonhuman.actorproject">Multiple-rig creature</option><option value="character.actorproject">Character</option></select></label>
+<label>Open UTF-8 actor source <input id="file" type="file" accept=".actorproject,.json"></label>
+<label for="source">Original editable source</label><textarea id="source" spellcheck="false"></textarea>
+<button id="inspect">Inspect and accept standalone sample</button><button id="download" disabled>Download original source</button>
+<p id="result" role="status">Loading example…</p>
+<label>Clip <select id="clip"></select></label><label>Sample seconds <input id="time" type="number" step="0.125" value="0"></label>
+<p>Static standalone raster sample. X right, Y up; radians CCW; explicit clip seconds. No game renderer or playback timer.</p>
+<label>View pixels per unit <input id="zoom" type="number" min="1" max="512" value="40"></label>
+<label>Screen origin X <input id="origin-x" type="number" value="80"></label><label>Screen origin Y <input id="origin-y" type="number" value="160"></label>
+<canvas width="480" height="320" aria-label="Standalone artwork sample"></canvas>
+<pre id="report" style="max-height:360px;overflow:auto" tabindex="0" aria-label="Source and sample report"></pre><script type="module" src="./browser.mjs"></script></html>
