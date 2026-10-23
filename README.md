@@ -36,7 +36,7 @@ Open http://127.0.0.1:4502/.
 - Rest/pose distinction, retained previews, shared Undo/Redo, local recovery and exact editable-source download/reopen.
 - PNG and sampled sprite-sheet exports with timing/pivot metadata. Flattened output does not retain the full rig or editable layers.
 
-The rig interface offers both viewport and numeric controls. See [viewport editing](docs/viewport.md). See [visual timeline editing](docs/timeline.md). A graphical curve editor, broader artwork input and engine adapters are future development. Mesh deformation and general illustration/world/ship/tile editing are outside the current tool.
+The rig interface offers both viewport and numeric controls. See [viewport editing](docs/viewport.md). See [visual timeline editing](docs/timeline.md). See [outgoing easing curves](docs/curves.md) for graph, handle and exact numeric editing. Broader artwork input and engine adapters are future development. Mesh deformation and general illustration/world/ship/tile editing are outside the current tool.
 
 ## Use the runtime
 

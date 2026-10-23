@@ -5,7 +5,7 @@ import { CHANNELS, channelNames, copyKeys, dragOffset, deleteKeys, pasteKeys, ra
   type Channel, type KeyClipboard, type KeyRef, type SheetGeometry, type TimelineRow } from './timeline-model';
 
 interface Host { draft: ActorDraft; controller: AbortController; perform(f: () => void): void; changed(): void; cancelGesture(): void; message(s: string): void }
-interface Binding { clip(): string; target(): ActorTrackTarget; select(row: TimelineRow, time?: number): void }
+interface Binding { clip(): string; target(): ActorTrackTarget; select(row: TimelineRow, time?: number): void; selection?(refs: readonly KeyRef[]): void }
 const LABEL = 184, ROW = 32, RULER = 32;
 type Pointer = { id: number; kind: 'move' | 'range' | 'scrub'; start: { time: number; row: number }; g: SheetGeometry; epoch: number; context: string; delta: number; anchor: number; clicked?: KeyRef; move?: TimelineMove; add: KeyRef[]; rect: DOMRect };
 /** DOM rows are retained during playback and staged drags; only the playhead
@@ -114,7 +114,7 @@ export class ActorTimeline {
     const r = this.rows.find(r => r.channel === channel && JSON.stringify(r.target) === JSON.stringify(target));
     this.setSelection(time === undefined || !r?.track?.keys.some(k => k.time === time) ? [] : [{ channel, trackId: r.track.id, time }]);
   }
-  private setSelection(refs: KeyRef[]) { this.selection = [...new Map(refs.map(r => [refId(r), r])).values()]; this.paintSelection(); }
+  private setSelection(refs: KeyRef[]) { this.selection = [...new Map(refs.map(r => [refId(r), r])).values()]; this.paintSelection(); this.binding.selection?.(this.selection); }
   private paintSelection() {
     const selected = new Set(this.selection.map(refId));
     for (const el of this.sheet.querySelectorAll<HTMLElement>('[data-key]')) { const on = selected.has(el.dataset.key!); el.setAttribute('aria-pressed', String(on)); el.style.setProperty('--key-delta', '0px'); }

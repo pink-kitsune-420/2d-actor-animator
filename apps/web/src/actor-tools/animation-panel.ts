@@ -4,6 +4,8 @@ import type { ActorDraft } from './editing';
 import type { ActorPreview } from './preview';
 import { restForTarget, sameTarget } from './assembly';
 import { ActorTimeline } from './timeline';
+import { CurveEditor } from './curve-editor';
+import type { KeyRef } from './timeline-model';
 import type { Channel, TimelineRow } from './timeline-model';
 
 interface Host { draft: ActorDraft; controller: AbortController; perform(f: () => void): void; changed(): void; cancelGesture(): void; message(s: string): void }
@@ -15,6 +17,7 @@ const select = (id: string, label: string, values: string[]) => `<label>${label}
  * whole-project draft; preview requests are local tool state, never events. */
 export class AnimationPanel {
   readonly timeline: ActorTimeline;
+  readonly curves: CurveEditor;
   private animatorId = ''; private layerId = ''; private stateId = ''; private transitionId = '';
   private keyTime: number | undefined;
   private keyContext = '';
@@ -31,7 +34,7 @@ export class AnimationPanel {
       <label>Cubic Bézier x1,y1,x2,y2<input id="key-bezier" value="0.42,0,0.58,1"></label>${input('key-turns', 'Extra full turns (shortest mode only)')}
       <label><input id="key-visible" type="checkbox" checked>Visible</label>${input('key-order', 'Painter order')}
       <nav><button id="write-key">Insert / revise key</button><button id="delete-key">Delete key</button><button id="previous-key">Previous key</button><button id="next-key">Next key</button><button id="step-back">−1/60 s</button><button id="step-forward">+1/60 s</button></nav>
-      <pre id="timeline-summary"></pre>
+      <pre id="timeline-summary"></pre><section id="curve-editor"></section>
       <details><summary>Composition: layers, states &amp; transitions</summary><h2>Composition</h2><p>Layers run bottom to top. Fades use shortest rotation arcs; additive layers use an explicit reference pose and ignore discrete channels. Incoming discrete values win at weight ≥ 0.5. Automatic next states require once clips and acyclic chains.</p>
       <div class="assembly-columns"><section><label>Animator<select id="animators"></select></label><label>Animator name<input id="animator-name" value="Locomotion"></label><button id="add-animator">Create animator</button><button id="rename-animator">Rename animator</button><button id="delete-animator">Delete animator</button>
       <label>Animation layer<select id="animator-layers"></select></label><label>Animation layer name<input id="layer-name-animation" value="Base"></label>
@@ -46,20 +49,21 @@ export class AnimationPanel {
       <h3>Scripted transition preview</h3><p>Append requests using the selected layer and state. Time is absolute seconds from preview origin. Equal times keep entry order. Scrubbing emits no requests.</p>
       ${input('request-time', 'Request time (s)')}<button id="append-request">Append selected state request</button><button id="clear-requests">Clear requests</button><pre id="request-script"></pre>
       <nav><button id="preview-animator">Show animator</button><button id="play-animator">Play animator</button><button id="seek-animator">Seek animator</button>${input('animator-time', 'Animator seek time (s)')}</nav>
-      <label>Scrub animator (0–10 s)<input id="animator-scrub" type="range" min="0" max="10" step="0.001" value="0"></label><output id="composition-status"></output></details><details><summary>Preview aids: speed, grid &amp; onion skins</summary><h3>Preview aids</h3><nav>${input('preview-speed', 'Preview speed', 1)}${input('preview-grid', 'Grid spacing (project units; 0 disables)')}${input('preview-origin-y', 'View centre Y (project units)')}
+      <label>Scrub animator (0–10 s)<input id="animator-scrub" type="range" min="0" max="10" step="0.001" value="0"></label><button id="refresh-composition">Refresh diagnostics at current clock</button><p>Diagnostics are a snapshot: state rates, layer entries, fade weights and request results. Fade duration 0 is a cut; priorities govern interruption. No transition easing field exists.</p><output id="composition-status"></output></details><details><summary>Preview aids: speed, grid &amp; onion skins</summary><h3>Preview aids</h3><nav>${input('preview-speed', 'Preview speed', 1)}${input('preview-grid', 'Grid spacing (project units; 0 disables)')}${input('preview-origin-y', 'View centre Y (project units)')}
       <label><input id="onion" type="checkbox">Onion skins ±1/12 s</label><label><input id="preview-markers" type="checkbox" checked>Show joints</label><button id="apply-preview-aids">Apply preview aids</button></nav></details>`;
-    this.timeline = new ActorTimeline(this.el('visual-timeline'), host, preview, { clip: selectedClip, target: selectedTarget, select: (row, time) => this.selectRow(row, time) });
+    this.timeline = new ActorTimeline(this.el('visual-timeline'), host, preview, { clip: selectedClip, target: selectedTarget, select: (row, time) => this.selectRow(row, time), selection: refs => this.selectionChanged(refs) });
+    this.curves = new CurveEditor(this.el('curve-editor'), host, preview, () => this.activeSegment());
     const signal = host.controller.signal;
     const click = (id: string, fn: () => void) => this.el(id).addEventListener('click', () => host.perform(() => { host.cancelGesture(); preview.pause(); fn(); }), { signal });
     const edit = (fn: (s: ActorProject) => void) => { host.draft.edit(s => { fn(s); syncAnimationCapability(s); syncCelCapability(s); }); host.changed(); };
     for (const id of ['animators', 'animator-layers', 'animation-states', 'animation-transitions', 'key-channel']) this.el(id).addEventListener('change', () => host.perform(() => {
-      preview.pause(); if (id === 'animators') { this.animatorId = this.value(id); this.script = []; }
+      host.cancelGesture(); preview.pause(); if (id === 'animators') { this.animatorId = this.value(id); this.script = []; }
       if (id === 'animator-layers') this.layerId = this.value(id);
       if (id === 'animation-states') this.stateId = this.value(id);
       if (id === 'animation-transitions') this.transitionId = this.value(id);
       this.keyTime = undefined; this.render(); this.syncPrecise();
     }), { signal });
-    this.el('timeline-keys').addEventListener('change', () => host.perform(() => { this.keyTime = this.value('timeline-keys') === '' ? undefined : this.num('timeline-keys'); this.showKey(); this.syncPrecise(); }), { signal });
+    this.el('timeline-keys').addEventListener('change', () => host.perform(() => { host.cancelGesture(); this.keyTime = this.value('timeline-keys') === '' ? undefined : this.num('timeline-keys'); this.showKey(); this.syncPrecise(); }), { signal });
     click('new-key', () => { this.keyTime = undefined; this.showKey(); this.syncPrecise(); });
     click('write-key', () => {
       const time = this.num('timeline-time'), previous = this.keyTime ?? time, channel = this.value('key-channel'), target = this.selectedTarget();
@@ -136,6 +140,7 @@ export class AnimationPanel {
     click('clear-requests', () => { this.script = []; this.render(); });
     const configure = () => { const a = this.animator(); const valid = this.script.filter(r => a.layers.some(l => l.id === r.layerId && l.states.some(s => s.id === r.stateId))); preview.configureAnimator(a.id, valid); this.el('composition-status').textContent = preview.animationStatus(this.num('animator-time')); };
     this.el('animator-scrub').addEventListener('input', () => host.perform(() => { this.set('animator-time', this.num('animator-scrub')); configure(); preview.seek(this.num('animator-time')); }), { signal });
+    click('refresh-composition', () => { this.el('composition-status').textContent = preview.animationStatus(preview.currentTime) || 'Show an animator first. Single clips have no layer weights.'; });
     click('preview-animator', () => { configure(); preview.seek(0); });
     click('seek-animator', () => { configure(); preview.seek(this.num('animator-time')); });
     click('play-animator', () => { configure(); preview.playAnimation(); });
@@ -152,13 +157,25 @@ export class AnimationPanel {
   private layer(s = this.host.draft.source): ActorAnimatorLayer { const l = this.animator(s).layers.find(l => l.id === this.layerId); if (!l) throw new Error('Create or select a layer.'); return l; }
   private selectRow(row: TimelineRow, time?: number) {
     this.selectTarget(row.target);
-    if (row.channel === 'celTracks') { if (row.target.kind === 'attachment') this.selectCel(row.target.attachmentId, time); }
+    if (row.channel === 'celTracks') { this.keyTime = undefined; this.curves?.render(); if (row.target.kind === 'attachment') this.selectCel(row.target.attachmentId, time); }
     else {
       this.set('key-channel', row.channel === 'tracks' ? 'transform' : row.channel === 'visibilityTracks' ? 'visibility' : 'draw-order');
       this.render(); this.keyTime = time; this.showKey();
       this.set('timeline-keys', time === undefined ? '' : time);
     }
   }
+  private activeSegment() {
+    if (this.value('key-channel') !== 'transform' || this.keyTime === undefined) return null;
+    const track = this.track(); if (!track || !('interpolation' in track)) return null;
+    const i = track.keys.findIndex(k => k.time === this.keyTime), next = track.keys[i + 1];
+    return i >= 0 && next ? { clipId: this.selectedClip(), trackId: track.id, time: this.keyTime, next: next.time } : null;
+  }
+  private selectionChanged(refs: readonly KeyRef[]) {
+    const track = this.track(), channel = this.value('key-channel') === 'transform' ? 'tracks' : this.value('key-channel') === 'visibility' ? 'visibilityTracks' : 'drawOrderTracks';
+    if (!refs.some(r => r.channel === channel && r.trackId === track?.id && r.time === this.keyTime)) this.keyTime = undefined;
+    this.curves?.render();
+  }
+  clearCurveSelection() { this.keyTime = undefined; this.curves.render(); }
   private syncPrecise() { let target: ActorTrackTarget; try { target = this.selectedTarget(); } catch { return; }
     const channel: Channel = this.value('key-channel') === 'transform' ? 'tracks' : this.value('key-channel') === 'visibility' ? 'visibilityTracks' : 'drawOrderTracks';
     this.timeline.selectPrecise(channel, target, this.keyTime);
@@ -174,6 +191,7 @@ export class AnimationPanel {
     this.set('key-bezier', k && 'bezier' in k ? k.bezier?.join(',') ?? '0.42,0,0.58,1' : '0.42,0,0.58,1');
     const t = this.track(); this.set('key-angle', t && 'angle' in t ? t.angle ?? 'legacy-unwrapped' : 'legacy-unwrapped');
     this.el<HTMLInputElement>('key-visible').checked = k && 'visible' in k ? k.visible : true; this.set('key-order', k && 'drawOrder' in k ? k.drawOrder : 0);
+    this.curves?.render();
   }
   render() {
     let targetKey = ''; try { targetKey = JSON.stringify(this.selectedTarget()); } catch { /* empty */ }

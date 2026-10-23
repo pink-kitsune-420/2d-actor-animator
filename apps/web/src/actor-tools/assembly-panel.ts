@@ -55,12 +55,13 @@ export class AssemblyPanel {
       this.el('seek-time').setAttribute('placeholder', time.toFixed(3));
       this.skeleton?.status();
       this.animation?.timeline.time();
+      this.animation?.curves.time();
     }, message => host.message(message));
     this.skeleton = new SkeletonControls(this.el('skeleton'), host, this.preview,
       () => ({ rigId: this.rigId, kind: this.value('item-kind') as 'node' | 'socket' | 'attachment', itemId: this.itemId }),
       (kind, id) => { this.el<HTMLSelectElement>('item-kind').value = kind; this.itemId = id; this.render(); });
     this.animation = new AnimationPanel(this.el('animation-panel'), host, this.preview, () => this.clipId, () => this.target(), () => this.render(), target => this.selectTarget(target), (id, time) => this.cels.selectKey(id, time));
-    this.cels = new CelPanel(this.el('cel-panel'), host, this.preview, () => this.clipId, (id, time) => { const target = { kind: 'attachment' as const, attachmentId: id }; this.selectTarget(target); this.animation.timeline.selectPrecise('celTracks', target, time); });
+    this.cels = new CelPanel(this.el('cel-panel'), host, this.preview, () => this.clipId, (id, time) => { const target = { kind: 'attachment' as const, attachmentId: id }; this.selectTarget(target); this.animation.timeline.selectPrecise('celTracks', target, time); this.animation.clearCurveSelection(); });
     this.emotes = new EmotePanel(this.el('emote-panel'), host, this.preview, () => this.clipId);
     this.viewport = new RigViewport(this.preview, host, {
       selection: () => ({ kind: this.value('item-kind') as 'node' | 'socket' | 'attachment', id: this.itemId, rigId: this.rigId }),
@@ -245,5 +246,5 @@ export class AssemblyPanel {
     this.skeleton.render(); this.animation.render(); this.cels.render(); this.emotes.render(); this.viewport.refresh();
   }
   pause() { this.preview.pause(); this.emotes.pause(); }
-  dispose() { this.animation.timeline.dispose(); this.viewport.dispose(); this.emotes.dispose(); this.cels.dispose(); this.preview.dispose(); }
+  dispose() { this.animation.curves.dispose(); this.animation.timeline.dispose(); this.viewport.dispose(); this.emotes.dispose(); this.cels.dispose(); this.preview.dispose(); }
 }

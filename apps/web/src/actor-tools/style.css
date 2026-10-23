@@ -123,3 +123,19 @@ button, summary, input, select { scroll-margin: 8px; }
 #sheet-ruler > span { top:0; }
 #dope-sheet { scroll-padding:36px 12px 8px 196px; }
 .sheet-key { scroll-margin:4px; }
+
+#curve-editor { margin-block: 1rem; }
+.curve-surface { position: relative; width: 100%; max-width: 560px; }
+#curve-graph { display: block; width: 100%; height: 280px; background: #101c2a; overflow: visible; }
+#curve-graph text { fill: #d4e4ed; font-size: 11px; }
+#curve-grid { stroke: #61717d; fill: none; stroke-width: 1; }
+#curve-path { stroke: #ffcd78; fill: none; stroke-width: 2; }
+#curve-tangents { stroke: #7bbbd3; fill: none; stroke-dasharray: 4 3; }
+#curve-cursor { stroke: #f2f7fb; stroke-width: 1; }
+#curve-handles { position: absolute; inset: 0; pointer-events: none; }
+#curve-handles button { position: absolute; transform: translate(-50%, -50%); width: 28px; height: 28px; padding: 0; border-radius: 50%; background: #174c61; color: white; border: 2px solid #9cdef5; pointer-events: auto; touch-action: none; }
+#curve-handles button:focus-visible { outline: 3px solid #ffcd78; outline-offset: 2px; }
+.curve-numbers { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .4rem; }
+.curve-numbers input { width: 100%; box-sizing: border-box; }
+#curve-segment, #curve-clock, #curve-status { display: block; margin-block: .4rem; }
+#curve-endpoints { white-space: pre-wrap; overflow-wrap: anywhere; }
