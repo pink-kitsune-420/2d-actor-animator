@@ -1,0 +1,13 @@
+node_modules/
+dist/
+coverage/
+test-results/
+playwright-report/
+.worktrees/
+private-docs/
+AGENTS.md
+KICKOFF.txt
+.tickets/
+.DS_Store
+__pycache__/
+*.pyc
