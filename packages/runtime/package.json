@@ -1,6 +1,6 @@
 {
   "name": "@actor-animator/runtime",
-  "version": "0.1.0",
+  "version": "0.1.0-alpha.0",
   "description": "DOM-independent actor project validation and retained Float64 animation",
   "type": "module",
   "license": "MIT",

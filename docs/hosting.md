@@ -1,6 +1,6 @@
 # Static hosting and downloads
 
-The proposed destination is `pink-kitsune-420/2d-actor-animator`. The intended editor URL is [Open 2D Actor Animator](https://pink-kitsune-420.github.io/2d-actor-animator/). It is **pending deployment and live verification**. The local candidate has not been uploaded. Release download URLs and a private security reporting channel are also pending.
+The repository is `pink-kitsune-420/2d-actor-animator`. [0.1.0a (Alpha)](https://github.com/pink-kitsune-420/2d-actor-animator/releases/tag/v0.1.0a) provides the self-contained offline HTML, source and optional runtime archives. **This is alpha software and may not work properly.** Keep editable-source backups. The intended hosted editor URL is https://pink-kitsune-420.github.io/2d-actor-animator/; deployment and live editor verification remain pending. A private security reporting channel is also pending.
 
 ```sh
 npm ci --ignore-scripts --no-audit --no-fund

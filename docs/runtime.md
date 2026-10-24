@@ -1,5 +1,7 @@
 # 2D Actor Animator runtime 0.1.0
 
+**0.1.0a alpha software: it may not work properly.** This release uses package version `0.1.0-alpha.0`. APIs and behavior may change; retain original editable-source backups.
+
 An engine-free ESM package for validating editable actor projects and sampling retained Float64 poses. It has zero runtime dependencies. The editor and runtime build use the same project validator, evaluator and animation implementation. This local package is private and has not been published to a registry.
 
 The [Runtime Contract Draft 1](runtime-contract.md) defines language-independent semantics; this page selects its JavaScript reference binding. [Conformance fixtures, commands and tested profiles](runtime-conformance.md) distinguish semantic, source and native-pixel evidence.

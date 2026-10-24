@@ -1,6 +1,11 @@
 # Changelog
 
-## 0.1.0 — local release candidate, unpublished
+## 0.1.0a — Alpha
+
+**Alpha software: it may not work properly.** Expect bugs, incomplete features and changes. Keep downloaded editable-source backups. GitHub marks this as a prerelease; package archives use the equivalent SemVer `0.1.0-alpha.0`.
+
+- Simplified the Parts/Rig/Animate workspace with focused controls and beginner guidance.
+- Added visible paint swatches, direct color picking and explicit palette recoloring.
 
 - Retired the credited schematic runtime and sheet demo pages; retained independent test fixtures and the editor’s Projects examples.
 

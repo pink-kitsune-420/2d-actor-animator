@@ -26,7 +26,7 @@ export class ActorEditor {
   readonly assembly: AssemblyPanel;
   readonly workspace: ActorWorkspace;
   constructor(readonly root: HTMLElement) {
-    root.innerHTML = `<header><h1>2D Actor Animator</h1><p>Create parts, build a rig, bring it to life.</p><button id="getting-started" type="button">Help &amp; shortcuts</button></header>
+    root.innerHTML = `<header><h1>2D Actor Animator</h1><p id="alpha-notice"><strong>Alpha 0.1.0a</strong> — may not work properly. Keep source backups.</p><button id="getting-started" type="button">Help &amp; shortcuts</button></header>
       <nav aria-label="Project"><details id="project-library"><summary>Projects</summary><div role="group" aria-label="Project choices">
       <section aria-labelledby="new-project-title"><h2 id="new-project-title">New project</h2><button id="new">Empty project</button></section>
       <section aria-labelledby="open-project-title"><h2 id="open-project-title">Open project</h2><label class="file">Open source<input id="open" type="file" accept=".json,.actorproject"></label></section>

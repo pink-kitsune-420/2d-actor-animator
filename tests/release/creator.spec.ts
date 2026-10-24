@@ -22,6 +22,9 @@ for(const delivery of ['hosted','offline'] as const)for(const actor of ['charact
     page.on('request',r=>{if(/^https?:/.test(r.url()))network.push(r.url());});
     if(delivery==='offline') {scratch=mkdtempSync(join(tmpdir(),'actor-release-offline-'));cpSync('_site/downloads/2D Actor Animator.html',join(scratch,'Editor.html'));await page.goto(pathToFileURL(join(scratch,'Editor.html')).href);}
     else await page.goto('./');
+    await expect(page.locator('#alpha-notice')).toBeVisible();
+    await expect(page.locator('#alpha-notice')).toContainText('Alpha 0.1.0a');
+    await expect(page.locator('#alpha-notice')).toContainText('may not work properly');
     try {
       if(actor==='character') {
         await click(page,'classic-astronaut');
