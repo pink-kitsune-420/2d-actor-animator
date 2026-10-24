@@ -38,7 +38,7 @@ test('first-use astronaut: visible playback, keyboard scrub, edit/undo, download
   expect(await page.locator('#actor-preview').boundingBox()).toEqual(previewBox);
   await expect(page.locator('#message')).toContainText('Retention is unverified');
   await page.getByText('Project & recovery', { exact: true }).click(); await task(page, 'I retained this source');
-  await expect(page.locator('#state')).toContainText('unchanged'); await task(page, 'Close editor'); await task(page, 'Reopen editor');
+  await expect(page.locator('#state')).toContainText('unchanged'); await page.reload();
   await open(page, baseline); expect(await save(page)).toBe(baseline);
   await info.attach('editable-source.actorproject', { body: baseline, contentType: 'application/json' });
   await page.screenshot({ path: info.outputPath('approachable-parts-1280.png') }); expect(errors).toEqual([]);

@@ -124,7 +124,7 @@ test('curves native cancellation capture focus file task source and geometry ret
     await page.mouse.up();expect(await save(page),reason).toBe(before);expect(await page.evaluate(()=>localStorage.getItem('actor-animator:draft:1')),reason).toBe(recovery);await expect(page.locator('#undo')).toBeDisabled();await page.setViewportSize({width:1280,height:720});
   }
   await select(page);await begin(page);await open(page,fixture(true));await page.mouse.up();expect((JSON.parse(await save(page)) as ActorProject).rigs).toEqual([]);
-  await select(page);await begin(page);await page.getByText('Project & recovery',{exact:true}).focus();await page.mouse.up();await page.keyboard.press('Enter');await page.locator('#close').click();await expect(page.locator('#curve-editor')).toHaveCount(0);await page.locator('#reopen').click();await expect(page.locator('#state')).not.toContainText('Unsaved');
+  await select(page);await begin(page);await page.getByText('Project & recovery',{exact:true}).focus();await page.mouse.up();await page.keyboard.press('Enter');await page.evaluate(() => window.dispatchEvent(new Event('pagehide')));await expect(page.locator('#curve-editor')).toHaveCount(0);await page.locator('#reopen').click();await expect(page.locator('#state')).not.toContainText('Unsaved');
 });
 
 test('curves raw graph stays distinct from animator fade diagnostics and scrub emits no requests',async({page})=>{

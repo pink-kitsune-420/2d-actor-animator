@@ -1,3 +1,4 @@
+import { disposePage } from './actor-animator-authoring';
 import { test, expect, type Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import type { ActorProject } from '@actor-animator/types';
@@ -85,7 +86,7 @@ test('draw → arbitrary three-node assembly/socket → two poses → intentiona
   expect(edited.parts[0]).toEqual(original); expect(edited.parts).toHaveLength(2); expect(edited.attachments).toEqual(assembled.attachments);
   await page.locator('#item-kind').selectOption('attachment'); await expect(page.locator('#revision')).toContainText(`r${original.revision}`); await click(page, 'accept-part');
   const combined = await save(page); expect(combined.source.attachments[0]!.partId).toBe(edited.parts[1]!.id); expect(combined.source.parts[1]!.revision).toBe(original.revision + 1);
-  await expect(page.locator('#state')).toContainText('Unsaved'); await click(page, 'retained'); await click(page, 'close'); await click(page, 'reopen'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await open(page, combined.text);
+  await expect(page.locator('#state')).toContainText('Unsaved'); await click(page, 'retained'); await disposePage(page); await click(page, 'reopen'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await open(page, combined.text);
   expect((await save(page)).text).toBe(combined.text); await seek(page, 1); closeMatrix(await matrix(page), [0, -4, 4, 0, 344, 128]);
   await page.locator('#assembly').screenshot({ path: info.outputPath('unconventional-assembly.png') });
   expect(errors).toEqual([]); expect(requests.some(u => /universe|world-save|\.wasm/.test(u))).toBe(false); await expect(page.locator('#flight-view')).toHaveCount(0);
@@ -129,8 +130,8 @@ test('independent raster orientation, pivot and full affine shear oracle', async
   closeMatrix(await matrix(page), [a, -b, a, b, 320 - 2 * a, 200 - 2 * b]);
 });
 
-test('opt-in schematic and richer source stay intact; no silent truncation or extension rewriting', async ({ page }, info) => {
-  await page.goto('/actor-tools.html'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await click(page, 'astronaut'); await expect(page.locator('#message')).toContainText('Not approved production artwork');
+test('historical schematic and richer source stay intact; no silent truncation or extension rewriting', async ({ page }, info) => {
+  await page.goto('/actor-tools.html'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await open(page, JSON.parse(readFileSync(new URL('../fixtures/actor-projects/astronaut.project.json', import.meta.url), 'utf8')));
   const schematic = (await save(page)).source; expect(schematic.rigs[0]!.nodes).toHaveLength(6); expect(schematic.provenance).toContain('First-party schematic');
   await page.locator('#preview-zoom').selectOption('128'); await click(page, 'play'); await expect.poll(() => page.evaluate(() => window.actorEvidence.frames)).toBeGreaterThan(2); await click(page, 'pause');
   await page.locator('#actor-preview').screenshot({ path: info.outputPath('schematic-starter.png') });
@@ -146,7 +147,7 @@ test('opt-in schematic and richer source stay intact; no silent truncation or ex
 });
 
 test('clock, raster resources and stale callbacks stop on blur, picker, replacement and close', async ({ page }) => {
-  await page.goto('/actor-tools.html'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await click(page, 'astronaut');
+  await page.goto('/actor-tools.html'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await open(page, JSON.parse(readFileSync(new URL('../fixtures/actor-projects/astronaut.project.json', import.meta.url), 'utf8')));
   // Use the production unsaved decisions throughout this lifecycle test.
   page.on('dialog', dialog => dialog.accept());
   await click(page, 'play'); await expect.poll(() => page.evaluate(() => window.actorEvidence.frames)).toBeGreaterThan(2);
@@ -158,7 +159,7 @@ test('clock, raster resources and stale callbacks stop on blur, picker, replacem
   count = await page.evaluate(() => window.actorEvidence.matrices.length);
   await page.evaluate(() => { for (const callback of window.actorEvidence.callbacks) callback(performance.now() + 5000); }); expect(await page.evaluate(() => window.actorEvidence.matrices.length)).toBe(count);
   await click(page, 'new'); expect(await page.evaluate(() => window.actorEvidence.rasters.every(c => c.width === 0 && c.height === 0))).toBe(true);
-  await click(page, 'astronaut'); await click(page, 'play'); await click(page, 'close'); await expect(page.locator('#actor-preview')).toHaveCount(0);
+  await open(page, JSON.parse(readFileSync(new URL('../fixtures/actor-projects/astronaut.project.json', import.meta.url), 'utf8'))); await click(page, 'play'); await disposePage(page); await expect(page.locator('#actor-preview')).toHaveCount(0);
   count = await page.evaluate(() => window.actorEvidence.matrices.length);
   await page.evaluate(() => { for (const callback of window.actorEvidence.callbacks) callback(performance.now() + 5000); });
   expect(await page.evaluate(() => window.actorEvidence.matrices.length)).toBe(count); expect(await page.evaluate(() => window.actorEvidence.rasters.every(c => c.width === 0 && c.height === 0))).toBe(true);
@@ -166,7 +167,7 @@ test('clock, raster resources and stale callbacks stop on blur, picker, replacem
 });
 
 test('attributable production preview/input measurements, retained rasters and independent source graph', async ({ page }, info) => {
-  await page.goto('/actor-tools.html'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await click(page, 'astronaut');
+  await page.goto('/actor-tools.html'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await open(page, JSON.parse(readFileSync(new URL('../fixtures/actor-projects/astronaut.project.json', import.meta.url), 'utf8')));
   await page.evaluate(() => { window.actorEvidence.frameTimes = []; window.actorEvidence.imageDrawTimes = []; });
   await click(page, 'play'); await expect.poll(() => page.evaluate(() => window.actorEvidence.frameTimes.length)).toBeGreaterThanOrEqual(90); await click(page, 'pause');
   expect(await page.evaluate(() => window.actorEvidence.rasters.length)).toBe(2);

@@ -1,3 +1,4 @@
+import { disposePage } from './actor-animator-authoring';
 import { test, expect, type Page } from '@playwright/test';
 import { readdirSync, readFileSync } from 'node:fs';
 import type { ActorProject, ActorTransform } from '@actor-animator/types';
@@ -162,7 +163,7 @@ test('six-limb creature with segmented tail, tool socket and detached accessory:
 
   // Save, close, reopen: byte-identical source and identical drawn poses (constraint + clip at t=1).
   await field(page, 'seek-time', 1); await click(page, 'seek'); const drawn = await page.evaluate(() => window.skeletonEvidence.matrices.slice(-7));
-  await click(page, 'retained'); await click(page, 'close'); await click(page, 'reopen'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await open(page, deleted.text);
+  await click(page, 'retained'); await disposePage(page); await click(page, 'reopen'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await open(page, deleted.text);
   expect((await save(page)).text).toBe(deleted.text);
   await page.locator('#clips').selectOption({ label: 'Scuttle' }); await field(page, 'seek-time', 1); await click(page, 'seek');
   expect(await page.evaluate(() => window.skeletonEvidence.matrices.slice(-7))).toEqual(drawn);
@@ -271,7 +272,7 @@ test('constraint preview clock, blur and disposal; measured edited/constraint wo
   await page.locator('#constraints').selectOption({ label: 'Reach 3' }); await expect(page.locator('#constraint-status')).toContainText('active');
   const reopened = await save(page); expect(reopened.source).toEqual(source);
   await page.locator('#actor-preview').screenshot({ path: info.outputPath('constraint-workload.png') });
-  await click(page, 'retained'); await click(page, 'close'); await expect(page.locator('#actor-preview')).toHaveCount(0);
+  await click(page, 'retained'); await disposePage(page); await expect(page.locator('#actor-preview')).toHaveCount(0);
   const workload = { chains: 16, segmentsPerChain: 8, nodes: rig.nodes.length, attachments: source.attachments.length, constraints: 16, iterations: 16, viewport: page.viewportSize() };
   await info.attach('constraint-preview-measurements.json', { body: JSON.stringify({ ...stats, workload, boundary: 'requestAnimationFrame callback: clip sample + 16 CCD solves + full Canvas2D draw + DOM status/output + instrumentation; excludes scheduling and automation' }), contentType: 'application/json' });
   console.log(JSON.stringify({ observation: 'B1 constraint preview workload', ...stats, workload }));

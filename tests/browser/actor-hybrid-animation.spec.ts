@@ -1,14 +1,14 @@
 import { test,expect } from '@playwright/test';
 import { readFileSync,writeFileSync } from 'node:fs';
 import type { ActorProject } from '@actor-animator/types';
-import { click,field,open,save,key,addClip } from './actor-animator-authoring';
+import { disposePage, click,field,open,save,key,addClip } from './actor-animator-authoring';
 import { authorAstronautHybrid,cel,celKey,dot,part } from './actor-hybrid-authoring';
 
 test('classic astronaut hybrid cels are authored and revised in the shared tools',async({page},info)=>{
   test.setTimeout(180_000);const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));const text=await authorAstronautHybrid(page);
   const path=new URL('../fixtures/actor-projects/classic-astronaut-b3.project.json',import.meta.url);
   if(process.env.ACTOR_UPDATE_EXAMPLE==='1')writeFileSync(path,text+'\n');else expect(text).toBe(readFileSync(path,'utf8').trimEnd());
-  await click(page,'retained');await click(page,'close');await click(page,'reopen'); await page.getByRole('button', { name: 'All tools', exact: true }).click();await open(page,text);expect(await save(page)).toBe(text);
+  await click(page,'retained');await disposePage(page);await click(page,'reopen'); await page.getByRole('button', { name: 'All tools', exact: true }).click();await open(page,text);expect(await save(page)).toBe(text);
   await page.locator('#preview-zoom').selectOption('128');await field(page,'preview-origin-y',.8);await page.locator('#preview-markers').uncheck();await click(page,'apply-preview-aids');
   for(const[name,time]of [['Idle',1],['Climb',.6],['Swim',.45]]as const){await page.locator('#clips').selectOption({label:name});await field(page,'seek-time',time);await click(page,'seek');await page.locator('#actor-preview').screenshot({path:info.outputPath(`${name}-hybrid.png`)});}
   expect(errors).toEqual([]);await info.attach('classic-astronaut-hybrid.actorproject',{body:text,contentType:'application/json'});
@@ -40,7 +40,7 @@ test('zero-bone flipbook, sheet PNG and timing/pivot metadata round trip without
   expect(colours).toEqual([[213,232,255,255],[255,190,85,255],[255,190,85,255],[255,190,85,255]]);
   await click(page,'retained');await click(page,'new');await page.locator('#sheet-metadata').setInputFiles({name:'sheet.json',mimeType:'application/json',buffer:Buffer.from(metadata)});await expect(page.locator('#sheet-import-status')).toContainText('4 admitted frames');await page.locator('#sheet-png').setInputFiles({name:'sheet.png',mimeType:'image/png',buffer:png});await expect(page.locator('#message')).toContainText('Flattened sheet imported');
   const imported=JSON.parse(await save(page))as ActorProject;expect(imported.rigs).toEqual([]);expect(imported.cels).toHaveLength(4);expect(imported.parts[0]!.artwork.palette).toContain('#d5e8ffff');expect(imported.parts[1]!.artwork.palette).toContain('#ffbe55ff');expect(imported.parts.every(p=>p.pivot[0]===1&&p.pivot[1]===1&&p.unitsPerPixel===.125)).toBe(true);expect(imported.clips[0]!.celTracks![0]!.keys.map(k=>k.time)).toEqual([0,.5,1,1.5]);
-  const reopen=await save(page);await click(page,'retained');await click(page,'close');await click(page,'reopen'); await page.getByRole('button', { name: 'All tools', exact: true }).click();await open(page,reopen);expect(await save(page)).toBe(reopen);await page.locator('#actor-preview').screenshot({path:info.outputPath('zero-bone-sheet-roundtrip.png')});
+  const reopen=await save(page);await click(page,'retained');await disposePage(page);await click(page,'reopen'); await page.getByRole('button', { name: 'All tools', exact: true }).click();await open(page,reopen);expect(await save(page)).toBe(reopen);await page.locator('#actor-preview').screenshot({path:info.outputPath('zero-bone-sheet-roundtrip.png')});
 });
 
 test('invalid sheet metadata is atomic and late PNG encoding cannot download after replacement',async({page})=>{

@@ -4,6 +4,8 @@ import type { ActorProject, ActorTransform } from '@actor-animator/types';
 
 export const field = async (p: Page, id: string, v: string | number) => { await p.locator(`#${id}`).fill(String(v)); };
 export const click = async (p: Page, id: string) => { await p.locator(`#${id}`).click(); };
+/** Keep old-document resource oracles observable while invoking the actual page-close lifecycle. */
+export const disposePage = async (p: Page) => { await p.evaluate(() => window.dispatchEvent(new Event('pagehide'))); };
 export async function save(p: Page) { const download = p.waitForEvent('download'); await click(p, 'save'); return readFileSync((await (await download).path())!, 'utf8'); }
 export async function open(p: Page, text: string) { await p.locator('#open').setInputFiles({ name: 'animation.actorproject', mimeType: 'application/json', buffer: Buffer.from(text) }); await expect(p.locator('#message')).toHaveText('Opened complete editable source.'); }
 export async function transform(p: Page, prefix: string, t: Partial<ActorTransform>) { for (const [k, v] of Object.entries(t)) await field(p, `${prefix}-${k}`, v); }

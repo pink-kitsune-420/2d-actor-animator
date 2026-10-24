@@ -150,7 +150,7 @@ test('timeline native cancel/lost capture/blur/hidden/focus/task/file/resize/sel
     await page.mouse.up(); expect(await save(page),reason).toBe(before);expect(await page.evaluate(()=>localStorage.getItem('actor-animator:draft:1')),reason).toBe(recovery);await expect(page.locator('#undo')).toBeDisabled();await page.setViewportSize({width:1280,height:720});await page.locator('#dope-sheet').evaluate(el=>el.scrollLeft=0);
   }
   await begin();await open(page,fixture(true));await page.mouse.up();expect((JSON.parse(await save(page)) as ActorProject).rigs).toEqual([]);
-  await begin();await page.getByText('Project & recovery',{exact:true}).focus();await page.mouse.up();await page.keyboard.press('Enter');await page.locator('#close').click();await expect(page.locator('#dope-sheet')).toHaveCount(0);await page.locator('#reopen').click();await expect(page.locator('#state')).not.toContainText('Unsaved');
+  await begin();await page.getByText('Project & recovery',{exact:true}).focus();await page.mouse.up();await page.keyboard.press('Enter');await page.evaluate(() => window.dispatchEvent(new Event('pagehide')));await expect(page.locator('#dope-sheet')).toHaveCount(0);await page.locator('#reopen').click();await expect(page.locator('#state')).not.toContainText('Unsaved');
 });
 
 test('timeline zoom/scroll/CSS hit geometry, overlap cycle, rectangle and raw/effective clock', async ({ page }) => {

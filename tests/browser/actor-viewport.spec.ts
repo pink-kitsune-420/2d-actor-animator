@@ -142,7 +142,7 @@ test('native drag cancellation, capture loss, blur, task/selection/file/source r
   }
   await begin(); await open(page, specimen(true)); await page.mouse.up(); expect((JSON.parse(await save(page)) as ActorProject).rigs).toEqual([]);
   await open(page, specimen()); await pick(page, 'node', 'free'); await begin();
-  await page.getByText('Project & recovery', { exact: true }).focus(); await page.mouse.up(); await page.keyboard.press('Enter'); await page.locator('#close').click(); await page.mouse.up();
+  await page.getByText('Project & recovery', { exact: true }).focus(); await page.mouse.up(); await page.keyboard.press('Enter'); await page.evaluate(() => window.dispatchEvent(new Event('pagehide'))); await page.mouse.up();
   await expect(page.locator('#actor-preview')).toHaveCount(0); await page.locator('#reopen').click(); await expect(page.locator('#state')).not.toContainText('Unsaved');
 });
 

@@ -62,7 +62,7 @@ test('local HTML works without recovery storage and preserves zero-bone RGBA and
   // Preview background is opaque #0b131b; green alpha128 composites over it.
   expect(pixels.slice(1)).toEqual([[11,19,27,255],[5,137,13,255],[255,0,0,255]]);
   const nonhuman = readFileSync(resolve('dist/rendering-example/nonhuman.actorproject'), 'utf8');
-  await click(page, 'retained'); await open(page, nonhuman); const reopened = JSON.parse(await save(page));
+  await page.locator('#project-options > summary').click(); await click(page, 'retained'); await open(page, nonhuman); const reopened = JSON.parse(await save(page));
   expect(reopened).toEqual(JSON.parse(nonhuman)); expect(reopened.rigs).toHaveLength(2);
   if (info.project.name === 'chromium') await page.locator('#preview-panel').screenshot({ path: 'private-docs/html-launcher-demo/offline-nonhuman.png' });
   expect(observed.errors).toEqual([]); expect(observed.dependencies).toEqual([]);

@@ -2,7 +2,7 @@ import { test,expect,type Page } from '@playwright/test';
 import { readFileSync,writeFileSync,mkdirSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import type { ActorProject } from '@actor-animator/types';
-import { click,field,open,save } from './actor-animator-authoring';
+import { disposePage, click,field,open,save } from './actor-animator-authoring';
 const beacon=readFileSync(new URL('../../examples/spacelab/beacon.actorproject',import.meta.url),'utf8');
 async function start(p:Page,text=beacon){await p.goto('/actor-tools.html');await p.getByRole('button',{name:'All tools',exact:true}).click();await open(p,text);}
 async function settings(p:Page){
@@ -67,7 +67,7 @@ test('late encoding is discarded on settings, clip, source replacement, file can
   await click(page,'prepare-sheet');await click(page,'download-sheet');await field(page,'sheet-centre-x',3);await flush();expect(downloads).toBe(0);
   await click(page,'prepare-sheet');await click(page,'download-sheet');await open(page,text);await flush();expect(downloads).toBe(0);
   await click(page,'prepare-sheet');await click(page,'download-sheet');await page.locator('#open').dispatchEvent('cancel');await expect(page.locator('#download-sheet')).toBeDisabled();await flush();expect(downloads).toBe(0);
-  await click(page,'prepare-sheet');await click(page,'download-sheet');await click(page,'close');await flush();expect(downloads).toBe(0);
+  await click(page,'prepare-sheet');await click(page,'download-sheet');await disposePage(page);await flush();expect(downloads).toBe(0);
 });
 
 test('character and bound multiple-rig originals produce independently usable flattened output; once and loop boundaries',async({page},info)=>{

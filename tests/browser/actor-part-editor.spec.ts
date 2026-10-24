@@ -17,7 +17,7 @@ test('tail and antenna draw → undo → save → close → reopen → reuse, wi
   await create(page, 'Antenna'); await dot(page, 4, 2); await page.getByRole('button', { name: 'Undo', exact: true }).click(); await page.getByRole('button', { name: 'Redo', exact: true }).click();
   const text = await save(page); source = JSON.parse(text); await expect(page.locator('#state')).toContainText('Unsaved'); await expect(page.locator('#message')).toContainText('Retention is unverified');
   await page.getByRole('button', { name: 'I retained this source', exact: true }).click(); await expect(page.locator('#state')).toContainText('unchanged');
-  await page.getByRole('button', { name: 'Close editor', exact: true }).click(); await page.getByRole('button', { name: 'Reopen editor', exact: true }).click(); await page.getByRole('button', { name: 'All tools', exact: true }).click();
+  await page.reload(); await page.getByRole('button', { name: 'All tools', exact: true }).click();
   await page.locator('#open').setInputFiles({ name: 'parts.actorproject', mimeType: 'application/json', buffer: Buffer.from(text) });
   await expect(page.locator('#parts option')).toHaveCount(2); expect(JSON.parse(await save(page))).toEqual(source);
   await page.locator('#parts').selectOption(source.parts[0]!.id); await dot(page, 3, 1);
@@ -59,8 +59,16 @@ test('native text focus/undo and unsaved replacement decisions remain local', as
   const name = page.getByLabel('Part name', { exact: true }); await name.fill(''); await name.pressSequentially('Typed name'); await name.press('Control+z'); await expect(name).toBeFocused(); await expect(name).not.toHaveValue('Typed name');
   expect((JSON.parse(await save(page)) as ActorProject).parts[0]!.name).toBe('Tail');
   page.once('dialog', d => d.dismiss()); await page.getByRole('button', { name: 'Empty project', exact: true }).click(); await expect(page.locator('#parts option')).toHaveCount(1);
-  page.once('dialog', d => d.dismiss()); await page.getByRole('button', { name: 'Close editor', exact: true }).click(); await expect(page.locator('#paint')).toBeVisible();
-  page.once('dialog', d => d.accept()); await page.getByRole('button', { name: 'Close editor', exact: true }).click(); await page.getByRole('button', { name: 'Reopen editor', exact: true }).click(); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await page.getByRole('button', { name: 'Recover local draft', exact: true }).click(); await expect(page.locator('#parts option')).toHaveCount(1); await expect(page.locator('#state')).toContainText('Unsaved');
+  let dialogType = '';
+  page.once('dialog', async d => { dialogType = d.type(); await d.dismiss(); });
+  await page.close({ runBeforeUnload: true }); await expect.poll(() => dialogType).toBe('beforeunload');
+  expect(page.isClosed()).toBe(false); await expect(page.locator('#paint')).toBeVisible();
+  const context = page.context(), closed = page.waitForEvent('close');
+  page.once('dialog', d => d.accept()); await page.close({ runBeforeUnload: true }); await closed;
+  const reopened = await context.newPage(); await reopened.goto('/actor-tools.html');
+  await reopened.getByRole('button', { name: 'All tools', exact: true }).click(); await reopened.getByRole('button', { name: 'Recover local draft', exact: true }).click();
+  await expect(reopened.locator('#parts option')).toHaveCount(1); await expect(reopened.locator('#state')).toContainText('Unsaved');
+  await reopened.close();
 });
 
 test('complete foreign project preserved; invalid source and stale source callbacks cannot overwrite edits', async ({ page }) => {
@@ -101,7 +109,7 @@ test('late PNG decode and file result after disposal are ignored', async ({ page
   await page.addInitScript(() => { const decode = window.createImageBitmap; window.createImageBitmap = ((...args: Parameters<typeof createImageBitmap>) => new Promise<ImageBitmap>((resolve, reject) => setTimeout(() => { (decode as Function)(...args).then(resolve, reject); }, 700))) as typeof createImageBitmap; });
   await page.goto('/actor-tools.html'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await create(page, 'Tail'); await dot(page, 1, 1); const pending = page.waitForEvent('download'); await page.getByRole('button', { name: 'Download flattened PNG', exact: true }).click(); const png = readFileSync((await (await pending).path())!);
   await page.locator('#png').setInputFiles({ name: 'late.png', mimeType: 'image/png', buffer: png }); await create(page, 'Newer antenna'); await page.waitForTimeout(850); await expect(page.locator('#parts option')).toHaveCount(2);
-  await page.locator('#png').setInputFiles({ name: 'late.png', mimeType: 'image/png', buffer: png }); page.once('dialog', d => d.accept()); await page.getByRole('button', { name: 'Close editor', exact: true }).click(); await page.waitForTimeout(850); await expect(page.getByRole('heading', { name: 'Actor tools closed' })).toBeVisible();
+  await page.locator('#png').setInputFiles({ name: 'late.png', mimeType: 'image/png', buffer: png }); await page.evaluate(() => window.dispatchEvent(new Event('pagehide'))); await page.waitForTimeout(850); await expect(page.getByRole('heading', { name: 'Actor tools closed' })).toBeVisible();
 });
 
 test('real file chooser empty selection releases input and preserves document', async ({ page }) => {

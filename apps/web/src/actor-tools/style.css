@@ -57,12 +57,14 @@ summary { cursor: pointer; font-size: 13px; color: #baddf3; padding: 3px 0; }
 #project-options > div { position: absolute; z-index: 10; right: 20px; top: 110px; width: 330px; max-height: 70vh; overflow: auto; background: #14212d; border: 1px solid #8ccee8; padding: 12px; box-shadow: 0 12px 30px #0008; }
 :focus-visible { outline: 2px solid #ffce84; outline-offset: 3px; }
 button, summary, input, select { scroll-margin: 8px; }
-.all-tools#actor-tools { height: auto; min-height: 100dvh; }
-.all-tools #workspace-body, .all-tools #emote-panel { display: block; }
-.all-tools #workspace-inspectors, .all-tools #emote-inspector, .all-tools #emote-view { overflow: visible; }
-.all-tools #preview-panel { margin-bottom: 16px; max-width: 640px; }
+.all-tools#actor-tools { height: 100dvh; min-height: 0; }
+.all-tools #workspace-body { grid-template-columns: minmax(420px, 1fr) minmax(380px, 1.1fr); }
+.all-tools #emote-panel { display: block; }
+.all-tools #workspace-inspectors { overflow: auto; }
+.all-tools #emote-inspector, .all-tools #emote-view { overflow: visible; }
+.all-tools #preview-panel { margin: 0; max-width: none; }
 .all-tools #project-options > div { position: static; max-height: none; box-shadow: none; }
-.all-tools .parts-workspace { grid-template-columns: 260px minmax(0, 1fr); }
+.all-tools .parts-workspace { grid-template-columns: 180px minmax(0, 1fr); }
 @media (max-width: 900px) {
   #actor-tools { padding: 10px; height: auto; min-height: 100dvh; }
   #workspace-body, #emote-panel { display: flex; flex-direction: column; }
@@ -91,9 +93,10 @@ button, summary, input, select { scroll-margin: 8px; }
 #preview-panel h2, #emote-view h2 { margin: 10px 0; padding: 0; }
 .all-tools #preview-panel #actor-preview, .all-tools #emote-view #emote-preview { height: auto; }
 
-.all-tools #workspace-body { display: flex; flex-direction: column; }
-.all-tools #preview-panel { order: 2; }
-.all-tools #project-options, .all-tools #project-options > div { display: contents; }
+.all-tools #project-options { flex-basis: 100%; margin: 0; padding: 4px 6px; }
+.all-tools #project-options > div { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; width: 100%; padding: 0; border: 0; background: none; }
+.all-tools #project-details { margin: 0; padding: 4px 8px; }
+.all-tools #project-details[open] { flex-basis: 100%; }
 .all-tools #project-options > summary, .all-tools #project-options > div > p { display: none; }
 #preview-panel { position: relative; }
 #preview-state { position: absolute; top: 10px; right: 12px; margin: 0; font-size: 12px; }
@@ -139,3 +142,40 @@ button, summary, input, select { scroll-margin: 8px; }
 .curve-numbers input { width: 100%; box-sizing: border-box; }
 #curve-segment, #curve-clock, #curve-status { display: block; margin-block: .4rem; }
 #curve-endpoints { white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* Keep project controls grouped, and reserve desktop space for direct rigging. */
+nav[aria-label=Project] { align-items: center; }
+nav[aria-label=Project] > .file { flex-direction: row; align-items: center; gap: 6px; }
+#open { width: 185px; }
+#project-options { position: relative; }
+#project-options > div { top: calc(100% + 6px); right: 0; }
+#preview-header { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding-top: 8px; }
+#preview-header h2 { margin: 0; flex: 1; }
+#preview-header button { flex: none; font-size: 12px; }
+#preview-header #preview-state { margin: 0; }
+#preview-selectors { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
+#preview-selectors:has(> #rig-viewport-tools:not([hidden])) { grid-template-columns: minmax(0, .7fr) minmax(0, 1.3fr); }
+#rig-view-help { position: relative; flex: none; margin: 0; padding: 4px 8px; }
+#rig-view-help > div { position: absolute; z-index: 20; right: 0; top: calc(100% + 6px); width: min(400px, calc(100vw - 48px)); padding: 12px; border: 1px solid #8ccee8; background: #14212d; box-shadow: 0 8px 24px #0008; }
+#preview-state { position: static; margin: 6px 0 0; }
+#assembly[data-task=rig] #workspace-body { grid-template-columns: minmax(280px, 330px) minmax(0, 1fr); }
+#assembly[data-task=rig] #actor-preview { height: clamp(260px, 43dvh, 520px); }
+.all-tools #preview-panel #actor-preview { height: clamp(150px, calc(100dvh - 460px), 420px); }
+#rig-editor button + button { margin-left: 4px; }
+.preview-expanded#actor-tools { padding: 8px; }
+.preview-expanded > header, .preview-expanded > nav[aria-label=Project], .preview-expanded > .feedback,
+.preview-expanded #task-navigation, .preview-expanded #task-help, .preview-expanded #selection-context { display: none; }
+.preview-expanded #assembly #workspace-body { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; }
+.preview-expanded #preview-panel { grid-column: 1; grid-row: 1; }
+.preview-expanded #preview-panel #actor-preview { height: clamp(350px, 65dvh, 900px); }
+@media (max-width: 540px) {
+  #preview-selectors:has(> #rig-viewport-tools:not([hidden])) { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 900px) {
+  .all-tools#actor-tools { height: auto; min-height: 100dvh; }
+  #project-options > div { position: fixed; }
+  .all-tools #workspace-body { display: flex; flex-direction: column; }
+  .all-tools #workspace-inspectors { overflow: visible; }
+  #assembly[data-task=rig] #actor-preview { height: clamp(240px, 45dvh, 460px); }
+  .preview-expanded#actor-tools { height: auto; min-height: 100dvh; }
+}

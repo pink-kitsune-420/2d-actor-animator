@@ -14,6 +14,8 @@ const tasks: { id: Task; label: string; help: string }[] = [
  * changing tasks never recompiles, serializes or edits the draft. */
 export class ActorWorkspace {
   private task: Task = 'parts';
+  private expanded = false;
+  private readonly expandButton: HTMLButtonElement;
   private readonly panels = new Map<Task, HTMLElement>();
   private readonly buttons = new Map<Task, HTMLButtonElement>();
   constructor(readonly root: HTMLElement, readonly host: ActorEditor) {
@@ -43,6 +45,23 @@ export class ActorWorkspace {
     body.prepend(el('preview-panel'));
     el('preview-panel').querySelector('h2')!.after(el('clip-choice'));
     const preview = el('preview-panel');
+    const previewHeader = document.createElement('div'); previewHeader.id = 'preview-header';
+    this.expandButton = document.createElement('button'); this.expandButton.id = 'expand-rig-view';
+    this.expandButton.type = 'button'; this.expandButton.setAttribute('aria-controls', 'preview-panel');
+    preview.prepend(previewHeader); previewHeader.append(preview.querySelector('h2')!, el('preview-state'), this.expandButton);
+    const selectors = document.createElement('div'); selectors.id = 'preview-selectors'; previewHeader.after(selectors);
+    const rigTools = el('rig-viewport-tools'); selectors.append(el('clip-choice'), rigTools);
+    const rigHelp = document.createElement('details'); rigHelp.id = 'rig-view-help';
+    const rigHelpTitle = document.createElement('summary'); rigHelpTitle.textContent = 'Rig controls help';
+    const rigHelpContent = document.createElement('div'); rigHelpContent.append(rigTools.querySelector('p')!, el('viewport-status'));
+    rigHelp.append(rigHelpTitle, rigHelpContent); previewHeader.insertBefore(rigHelp, this.expandButton);
+    this.expandButton.addEventListener('click', () => this.expand(!this.expanded, true), { signal: host.controller.signal });
+    window.addEventListener('keydown', event => {
+      // Escape on the canvas belongs to its existing gesture-cancel handler.
+      if (event.key === 'Escape' && this.expanded && event.target !== el('actor-preview')) {
+        event.preventDefault(); this.expand(false, true);
+      }
+    }, { signal: host.controller.signal });
     const view = document.createElement('details'); const viewSummary = document.createElement('summary'); viewSummary.textContent = 'View & playback options';
     view.append(viewSummary, el('preview-zoom').closest('label')!, el('reset')); preview.append(view);
     preview.querySelector('nav')!.before(el('actor-preview').parentElement!);
@@ -71,19 +90,35 @@ export class ActorWorkspace {
     this.activate('parts');
   }
   activate(task: Task) {
+    this.expand(false);
+    if (this.task === 'all' && task !== 'all') this.host.el<HTMLDetailsElement>('project-options').open = false;
     this.host.cancelGesture(); this.host.assembly.pause();
     this.host.assembly.viewport.setEnabled(task === 'rig' || task === 'all');
     this.host.el('rig-viewport-tools').hidden = task !== 'rig' && task !== 'all';
     this.task = task; this.root.classList.toggle('all-tools', task === 'all');
+    const emotes = this.host.el('emote-panel'), parent = task === 'all' ? this.host.el('workspace-inspectors') : this.host.el('workspace-body');
+    if (emotes.parentElement !== parent) parent.append(emotes);
     this.host.el('assembly').dataset.task = task;
     for (const [id, panel] of this.panels) panel.hidden = task !== 'all' && id !== task;
     this.host.el('workspace-inspectors').hidden = task === 'emotes';
+    this.expandButton.hidden = task !== 'rig' && task !== 'all';
+    this.host.el('rig-view-help').hidden = task !== 'rig' && task !== 'all';
     this.host.el('preview-panel').hidden = task === 'emotes';
     for (const [id, button] of this.buttons) button.setAttribute('aria-pressed', String(id === task));
     this.host.el('task-help').textContent = tasks.find(t => t.id === task)!.help;
-    if (task === 'all') for (const details of this.root.querySelectorAll('details')) if (details.id !== 'project-details') details.open = true;
+    if (task === 'all') for (const details of this.root.querySelectorAll('details')) if (details.id !== 'project-details' && details.id !== 'rig-view-help') details.open = true;
     this.host.el('workspace-inspectors').scrollTop = 0;
     this.render();
+  }
+  private expand(on: boolean, focus = false) {
+    this.host.cancelGesture();
+    this.expanded = on; this.root.classList.toggle('preview-expanded', on);
+    this.expandButton.textContent = on ? 'Restore split view' : 'Expand rig view';
+    this.expandButton.setAttribute('aria-pressed', String(on));
+    this.host.el('workspace-inspectors').hidden = on || this.task === 'emotes';
+    // Keep the exit control in view and focused; no modal/fullscreen API or
+    // source/player changes. ResizeObserver refreshes existing pointer geometry.
+    if (focus) { this.root.scrollIntoView({ block: 'start' }); this.expandButton.focus({ preventScroll: true }); }
   }
   openPainter() { if (this.task !== 'all') this.activate('parts'); }
   render() {

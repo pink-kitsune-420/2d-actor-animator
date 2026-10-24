@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import type { ActorProject } from '@actor-animator/types';
 import { markerSource } from '../../examples/modules/actor-project/src/source';
-import { authorAstronaut, click, field, key, open, save, addClip } from './actor-animator-authoring';
+import { disposePage, authorAstronaut, click, field, key, open, save, addClip } from './actor-animator-authoring';
 
 test('classic astronaut is reproducibly authored through the painter, rig and timeline; every clip is reviewable', async ({ page }, info) => {
   test.setTimeout(600_000);
@@ -11,7 +11,7 @@ test('classic astronaut is reproducibly authored through the painter, rig and ti
   const path = new URL('../fixtures/actor-projects/classic-astronaut-b2.project.json', import.meta.url);
   if (process.env.ACTOR_UPDATE_EXAMPLE === '1') writeFileSync(path, text + '\n');
   else expect(text).toBe(readFileSync(path, 'utf8').trimEnd());
-  await click(page, 'retained'); await click(page, 'close'); await click(page, 'reopen'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await open(page, text); expect(await save(page)).toBe(text);
+  await click(page, 'retained'); await disposePage(page); await click(page, 'reopen'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await open(page, text); expect(await save(page)).toBe(text);
   await page.locator('#preview-zoom').selectOption('128'); await field(page, 'preview-origin-y', .8); await field(page, 'preview-grid', .5); await page.locator('#preview-markers').uncheck(); await click(page, 'apply-preview-aids');
   const source = JSON.parse(text) as ActorProject;
   for (const c of source.clips) {
