@@ -1,3 +1,4 @@
+import { revealDetails } from './actor-animator-authoring';
 import { test, expect, type Page, type TestInfo, type Locator } from '@playwright/test';
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import type { ActorProject, ActorTransform } from '@actor-animator/types';
@@ -24,8 +25,8 @@ async function open(page: Page, s: ActorProject) {
   await expect(page.locator('#message')).toHaveText('Opened complete editable source.');
 }
 async function save(page: Page) { const d = page.waitForEvent('download'); await page.locator('#save').click(); return readFileSync((await (await d).path())!, 'utf8'); }
-async function setup(page: Page, s = fixture()) { page.on('dialog', d => d.accept()); await page.goto('/'); await open(page,s); await page.locator('#task-button-animate').click(); await page.locator('#sheet-filter').selectOption('keyed');
-  await page.getByText('View & playback options',{exact:true}).click();await page.locator('#preview-zoom').selectOption('128');await page.getByText('View & playback options',{exact:true}).click();await page.locator('#preview-panel').evaluate(el=>el.scrollTop=0);
+async function setup(page: Page, s = fixture()) { page.on('dialog', d => d.accept()); await page.goto('/'); await open(page,s); await page.locator('#task-button-all').click(); await page.locator('#sheet-filter').selectOption('keyed');
+  await revealDetails(page,'View & playback options');await page.locator('#preview-zoom').selectOption('128');await revealDetails(page,'View & playback options');await page.locator('#preview-panel').evaluate(el=>el.scrollTop=0);
 }
 function key(page: Page, channel: string, track: string, time: number) { return page.locator(`[data-key='${JSON.stringify([channel,track,time])}']`); }
 async function centre(el: Locator) { await el.scrollIntoViewIfNeeded(); const b = (await el.boundingBox())!; return { x: b.x + b.width/2, y: b.y + b.height/2 }; }
@@ -115,7 +116,7 @@ test('timeline character visual retime/copy/delete and retained playhead rows', 
   test.setTimeout(120_000);
   const s = JSON.parse(readFileSync(new URL('../fixtures/actor-projects/classic-astronaut-b3.project.json',import.meta.url),'utf8')) as ActorProject;
   await setup(page,s); await page.locator('#sheet-snap').fill('.25'); const before = await save(page), c = s.clips[0]!, track = c.tracks[0]!;
-  await page.getByText('Preview aids: speed, grid & onion skins',{exact:true}).click();await page.locator('#preview-origin-y').fill('.8');await page.locator('#apply-preview-aids').click();await page.getByText('Preview aids: speed, grid & onion skins',{exact:true}).click();
+  await revealDetails(page,'Preview aids: speed, grid & onion skins');await page.locator('#preview-origin-y').fill('.8');await page.locator('#apply-preview-aids').click();await revealDetails(page,'Preview aids: speed, grid & onion skins');
   await drag(page,key(page,'tracks',track.id,1),-40); // middle breathing pose -> .75s
   await key(page,'tracks',track.id,.75).click(); await page.locator('#sheet-copy').click();
   // Seek via the seconds ruler, then paste via the focused sheet shortcut.
@@ -133,7 +134,9 @@ test('timeline character visual retime/copy/delete and retained playhead rows', 
 
 test('timeline native cancel/lost capture/blur/hidden/focus/task/file/resize/selection/source/dispose leave no edit', async ({ page }) => {
   test.setTimeout(120_000); await setup(page); const before = await save(page), recovery = await page.evaluate(()=>localStorage.getItem('actor-animator:draft:1'));
-  const begin = async () => { const a = await centre(key(page,'tracks','t',.25)); await page.mouse.move(a.x,a.y); await page.mouse.down(); await page.mouse.move(a.x+20,a.y,{steps:3}); await expect(page.locator('#dope-status')).toContainText('Staged offset'); };
+  // Establish selection before capturing geometry: changing rigs in All tools
+  // can resize inspectors above the sheet and must cancel an active drag.
+  const begin = async () => { await key(page,'tracks','t',.25).click(); const a = await centre(key(page,'tracks','t',.25)); await page.mouse.move(a.x,a.y); await page.mouse.down(); await page.mouse.move(a.x+20,a.y,{steps:3}); await expect(page.locator('#dope-status')).toContainText('Staged offset'); };
   for (const reason of ['escape','pointercancel','lostpointercapture','blur','hidden','focus','task','file','resize','selection','clip','scroll']) {
     await begin();
     if (reason==='escape') await page.keyboard.press('Escape');
@@ -141,7 +144,7 @@ test('timeline native cancel/lost capture/blur/hidden/focus/task/file/resize/sel
     if(reason==='blur')await page.evaluate(()=>window.dispatchEvent(new Event('blur')));
     if(reason==='hidden')await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,value:true});document.dispatchEvent(new Event('visibilitychange'));Object.defineProperty(document,'hidden',{configurable:true,value:false});});
     if(reason==='focus')await page.locator('#sheet-offset').focus();
-    if(reason==='task'){await page.locator('#task-button-rig').focus();await page.mouse.up();await page.keyboard.press('Enter');await page.locator('#task-button-animate').click();}
+    if(reason==='task'){await page.locator('#task-button-rig').focus();await page.mouse.up();await page.keyboard.press('Enter');await page.locator('#task-button-all').click();}
     if(reason==='file'){const f=page.waitForEvent('filechooser');await page.locator('#project-library > summary').focus(); await page.keyboard.press('Enter'); await page.locator('#open').focus();await page.mouse.up();await page.keyboard.press('Enter');await(await f).setFiles([]);}
     if(reason==='resize')await page.setViewportSize({width:1100,height:800});
     if(reason==='selection')await page.locator('#track-target').selectOption(JSON.stringify({kind:'node',rigId:'other',nodeId:'n'}));

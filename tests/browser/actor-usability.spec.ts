@@ -1,7 +1,8 @@
+import { revealDetails } from './actor-animator-authoring';
 import { test, expect, type Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import type { ActorProject } from '@actor-animator/types';
-import { showProjects } from './actor-animator-authoring';
+import { showProjects, section } from './actor-animator-authoring';
 
 async function task(page: Page, name: string) {
   if (['Example: classic astronaut', 'Empty project'].includes(name)) await showProjects(page);
@@ -50,16 +51,14 @@ test('first-use astronaut: visible playback, keyboard scrub, edit/undo, download
 
 test('navigation preserves source, selections and pending text; advanced controls and native focus remain reachable', async ({ page }) => {
   await page.goto('/actor-tools.html'); await task(page, 'Example: classic astronaut'); const baseline = await save(page);
-  const name = page.getByLabel('Part name', { exact: true }); await name.fill(''); await name.pressSequentially('Unapplied name');
+  await section(page, 'parts', 'setup'); const name = page.getByLabel('Part name', { exact: true }); await name.fill(''); await name.pressSequentially('Unapplied name');
   await name.press('Control+z'); await expect(name).toBeFocused(); await expect(name).not.toHaveValue('Unapplied name');
   await name.fill('Pending name');
   await task(page, 'Rig'); await page.getByRole('combobox', { name: 'Assembly item', exact: true }).selectOption({ index: 2 }); const item = await page.locator('#items').inputValue();
-  await page.getByText('Structure, joints & constraints', { exact: true }).click(); await expect(page.locator('#constraints')).toBeVisible();
+  await section(page, 'rig', 'advanced'); await revealDetails(page, 'Structure, joints & constraints'); await expect(page.locator('#constraints')).toBeVisible();
   await task(page, 'Animate'); await expect(page.locator('#timeline-time')).toBeVisible();
-  for (const label of ['Cels & flipbooks', 'Composition: layers, states & transitions', 'Preview aids: speed, grid & onion skins']) {
-    await page.getByText(label, { exact: true }).click();
-  }
-  await expect(page.locator('#animators')).toBeVisible(); await expect(page.locator('#cels')).toBeVisible();
+  await section(page, 'animate', 'cels'); await revealDetails(page, 'Cels & flipbooks'); await expect(page.locator('#cels')).toBeVisible();
+  await section(page, 'animate', 'compose'); await revealDetails(page, 'Composition: layers, states & transitions'); await expect(page.locator('#animators')).toBeVisible();
   await task(page, 'Rig'); await expect(page.locator('#items')).toHaveValue(item);
   await task(page, 'Parts'); await expect(name).toHaveValue('Pending name'); expect(await save(page)).toBe(baseline);
   const rigButton = page.getByRole('button', { name: 'Rig', exact: true }); await rigButton.focus(); await page.keyboard.press('Tab'); await page.keyboard.press('Shift+Tab'); await rigButton.press('Enter');
@@ -76,17 +75,17 @@ test('nonhuman editing and a zero-bone scene are authored through task flows', a
   const fixture = readFileSync(new URL('../fixtures/actor-projects/nonhuman.project.json', import.meta.url), 'utf8'); await open(page, fixture);
   const baseline = await save(page); await task(page, 'Rig');
   await page.getByRole('combobox', { name: 'Assembly item', exact: true }).selectOption({ label: 'Child · Feeler 0' });
-  await page.getByLabel('Item name', { exact: true }).fill('Luminous feeler'); await task(page, 'Apply name, draw order and transform');
+  await page.getByLabel('Item name', { exact: true }).fill('Luminous feeler'); await task(page, 'Apply item');
   const creature = JSON.parse(await save(page)) as ActorProject;
   expect(creature.rigs[0]!.nodes.some(n => n.name === 'Luminous feeler')).toBe(true);
   expect(creature.rigs[0]!.nodes.length).toBe(JSON.parse(fixture).rigs[0].nodes.length);
   await task(page, 'Undo'); expect(await save(page)).toBe(baseline);
   await page.screenshot({ path: info.outputPath('nonhuman-rig.png') });
-  await task(page, 'Empty project'); await task(page, 'Parts');
+  await task(page, 'Empty project'); await section(page, 'parts', 'setup');
   await page.getByLabel('Part name', { exact: true }).fill('Floating lantern'); await page.getByLabel('Width', { exact: true }).fill('16'); await page.getByLabel('Height', { exact: true }).fill('16'); await task(page, 'Create part');
   const canvas = page.locator('#paint'); await canvas.scrollIntoViewIfNeeded(); const box = (await canvas.boundingBox())!; await page.mouse.click(box.x + 24, box.y + 24);
   await task(page, 'Rig'); await page.getByRole('combobox', { name: 'Item kind', exact: true }).selectOption('attachment'); await task(page, 'Create item');
-  await task(page, 'Animate'); await page.getByLabel('Clip name', { exact: true }).fill('Glow'); await task(page, 'Create clip');
+  await section(page, 'animate', 'clips'); await page.getByLabel('Clip name', { exact: true }).fill('Glow'); await task(page, 'Create clip');
   await page.getByText('Two-key shortcut', { exact: true }).click(); await page.getByLabel('Key B X', { exact: true }).fill('2'); await task(page, 'Apply two keys');
   await task(page, 'Play clip'); await task(page, 'Pause'); const lantern = JSON.parse(await save(page)) as ActorProject;
   expect(lantern.rigs).toEqual([]); expect(lantern.attachments).toHaveLength(1); expect(lantern.clips[0]!.tracks[0]!.keys[1]!.value.x).toBe(2);

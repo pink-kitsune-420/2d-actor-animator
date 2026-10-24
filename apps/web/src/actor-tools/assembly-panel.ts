@@ -15,7 +15,7 @@ interface EditorHost extends CelHost {}
 const components = ['x', 'y', 'rotation', 'scaleX', 'scaleY'] as const;
 const labels = ['X', 'Y', 'Rotation (radians)', 'Scale X', 'Scale Y'];
 function transformFields(prefix: string, label: string) {
-  return `<fieldset class="transform"><legend id="${prefix}-legend">${label}</legend>${components.map((key, i) => `<label>${label} ${labels[i]}<input id="${prefix}-${key}" type="number" step="any" value="${i < 3 ? 0 : 1}"></label>`).join('')}</fieldset>`;
+  return `<fieldset class="transform"><legend id="${prefix}-legend">${label}</legend>${components.map((key, i) => `<label>${labels[i]}<input aria-label="${label} ${labels[i]}" id="${prefix}-${key}" type="number" step="any" value="${i < 3 ? 0 : 1}"></label>`).join('')}</fieldset>`;
 }
 
 /** Host-local adapter over whole-project transactions. Selection is UI state;
@@ -33,14 +33,14 @@ export class AssemblyPanel {
   private source: ActorProject | null = null;
   constructor(readonly root: HTMLElement, readonly host: EditorHost) {
     root.innerHTML = `<h2>Assembly and animation</h2><p>Names are free. Translation uses x-right/y-up project units; angles are unwrapped CCW radians. Sockets are cosmetic. Scene attachments work with no rig or nodes.</p>
-      <div class="assembly-columns"><section id="rig-editor"><h3>Rig</h3><label>Rig<select id="rigs"></select></label><label>Rig name<input id="rig-name" value="My rig"></label><button id="add-rig">Create rig</button><button id="apply-rig">Rename rig</button><pre id="node-tree" aria-label="Node tree"></pre>
-      <h3>Assembly item</h3><p>Rest changes the base shape. Pose writes a key into the selected clip at the preview time. Angles are CCW radians; positions use project units.</p><label>Item kind<select id="item-kind"><option value="node">Node</option><option value="socket">Cosmetic socket</option><option value="attachment">Part attachment</option></select></label>
-      <label>Edit mode<select id="edit-mode"><option value="rest">Rest: edit source rest/transform</option><option value="pose">Pose: key the selected clip at the preview time</option></select></label>
-      <label>Assembly item<select id="items"></select></label><p id="item-id" class="identity"></p><label>Item name<input id="item-name" value="New item"></label><label>Parent node<select id="parent-node"></select></label>
+      <div class="assembly-columns"><section id="rig-editor"><h3>Rig</h3><label>Rig<select id="rigs"></select></label><div data-workspace-section="hierarchy"><label>Rig name<input id="rig-name" value="My rig"></label><button id="add-rig">Create rig</button><button id="apply-rig">Rename rig</button><pre id="node-tree" aria-label="Node tree"></pre>
+      </div><h3>Assembly item</h3><label>Item kind<select id="item-kind"><option value="node">Node</option><option value="socket">Cosmetic socket</option><option value="attachment">Part attachment</option></select></label><label>Assembly item<select id="items"></select></label><p id="item-id" class="identity" data-workspace-section="artwork"></p>
+      <div data-workspace-section="item"><p class="section-hint">Rest edits the starting shape. Pose records a key at the preview time.</p><label>Edit mode<select id="edit-mode"><option value="rest">Rest: edit source rest/transform</option><option value="pose">Pose: key the selected clip at the preview time</option></select></label>
+      <label>Item name<input id="item-name" value="New item"></label><label>Parent node<select id="parent-node"></select></label>
       ${transformFields('rest', 'Local rest')}<label>Draw order<input id="draw-order" type="number" value="0" step="1"></label>
-      <button id="add-item">Create item</button><button id="apply-item">Apply name, draw order and transform</button><button id="item-earlier">Move earlier in source</button><p id="revision" class="identity"></p><button id="accept-part">Accept selected painted part revision</button><p>Editing attached artwork creates a new editable part. Existing attachments retain the accepted part until explicitly updated here.</p></section>
+      <button id="add-item">Create item</button><button id="apply-item" title="Apply the item name, draw order and local transform">Apply item</button></div><div data-workspace-section="artwork"><p class="section-hint">An attachment places a painted part in the actor. Accept a revision explicitly to replace its artwork.</p><button id="item-earlier">Move earlier in source</button><p id="revision" class="identity"></p><button id="accept-part">Accept selected painted part revision</button><p>Editing attached artwork creates a new editable part. Existing attachments retain the accepted part until explicitly updated here.</p></div></section>
       <section id="skeleton" aria-label="Skeleton structure"></section>
-      <section id="clip-editor"><h3>Clip settings</h3><label id="clip-choice">Clip<select id="clips"></select></label><label>Clip name<input id="clip-name" value="Two poses"></label><label>Duration (seconds)<input id="duration" type="number" step="any" min="0" value="2"></label><label>Playback<select id="playback"><option value="once">Once</option><option value="loop">Loop</option><option value="ping-pong">Ping-pong</option></select></label><button id="add-clip">Create clip</button><button id="apply-clip">Apply clip settings</button>
+      <section id="clip-editor"><h3>Clip settings</h3><p class="section-hint">A clip is a named motion, such as Walk. Create it here, then add saved poses in Keys.</p><label id="clip-choice">Clip<select id="clips"></select></label><label>Clip name<input id="clip-name" value="Two poses"></label><label>Duration (seconds)<input id="duration" type="number" step="any" min="0" value="2"></label><label>Playback<select id="playback"><option value="once">Once</option><option value="loop">Loop</option><option value="ping-pong">Ping-pong</option></select></label><button id="add-clip">Create clip</button><button id="apply-clip">Apply clip settings</button>
       <label>Animation target<select id="track-target"></select></label><label>Interpolation<select id="interpolation"><option value="linear">Linear</option><option value="step">Step</option></select></label><p id="track-info"></p>
       <details><summary>Two-key shortcut</summary><label>Key A time<input id="key-a-time" type="number" step="any" value="0"></label>${transformFields('key-a', 'Key A')}
       <label>Key B time<input id="key-b-time" type="number" step="any" value="2"></label>${transformFields('key-b', 'Key B')}
@@ -232,7 +232,7 @@ export class AssemblyPanel {
     const target = this.options('track-target', targets, this.value('track-target'));
     const track = target ? clip?.tracks.find(t => sameTarget(t.target, this.target())) : undefined;
     const rich = track && (track.keys.length > 2 || track.angle !== undefined || track.keys.some(k => k.curve !== undefined || k.turns !== undefined));
-    this.el('track-info').textContent = rich ? `${track.keys.length} keys retained. Preview supported; two-key editing is disabled for this track.` : track ? `${track.keys.length} authored keys · ${track.id}` : 'No track yet. Apply two keys to this target.';
+    this.el('track-info').textContent = rich ? `${track.keys.length} keys retained. Preview supported; two-key editing is disabled for this track.` : track ? `${track.keys.length} authored keys · ${track.id}` : 'No keys on this target yet. Use Keys to insert a pose, or the Two-key shortcut below.';
     this.el<HTMLButtonElement>('apply-keys').disabled = !clip || !target || !!rich;
     if (target && !rich) {
       const rest = restForTarget(source, this.target());

@@ -58,7 +58,7 @@ test('relocated HTML launches offline and preserves character edit, undo, redo a
   const before = await save(page);
   expect(JSON.parse(before)).toEqual(JSON.parse(readFileSync('apps/web/src/actor-tools/classic-astronaut.project.json', 'utf8')));
   const selected = await page.locator('#parts').inputValue();
-  await page.locator('#part-name').fill('Offline edited part'); await click(page, 'rename');
+  await page.locator('#section-parts-setup').click(); await page.locator('#part-name').fill('Offline edited part'); await click(page, 'rename');
   const edited = await save(page);
   expect(JSON.parse(edited).parts.find((p: { id: string }) => p.id === selected).name).toBe('Offline edited part');
   await click(page, 'undo'); expect(await save(page)).toBe(before);

@@ -6,7 +6,7 @@ Under **View & playback options**, **Preview pixels per unit** starts at **128**
 
 Open a project or the classic astronaut example, then choose **Rig**. The same tools appear in **All tools**. Circles mark nodes, diamonds mark cosmetic sockets, and squares mark artwork attachment pivots. Click a joint, a bone segment or artwork to select it in the existing item controls. At overlapping pivots, the current selection wins; **Alt-click** cycles candidates in stable compiled order. Numeric selectors also reach coincident and zero-length items across multiple roots/rigs, including scene attachments with no bones.
 
-Choose the edit mode in the Rig inspector:
+Use **Item** for selection, transforms and edit mode, **Hierarchy** for creating/renaming rigs and inspecting the tree, **Artwork** for accepting painted revisions, and **Advanced** for structure and constraints. Choose the edit mode in **Item**:
 
 - **Rest** edits the base local transform. Show rest pose before dragging. Descendants follow a normal transform edit.
 - **Pose** writes one absolute local transform key to the selected, shown clip at its effective fractional-second time. Rest stays unchanged. Sockets have no animation tracks and use Rest.
@@ -21,7 +21,7 @@ A completed changed drag is one shared Undo step; Redo restores exact editable s
 
 With the canvas focused, **Ctrl/Cmd Z** undoes and **Ctrl/Cmd Shift Z** redoes. With a Move tool selected, arrow keys move one CSS pixel in screen space; Shift moves ten. Each key press is one source transaction. Text inputs keep native editing/undo. Tab reaches the canvas and the existing numeric controls.
 
-The preview can show solved visual constraints, but viewport pose gestures start from the **raw authored clip**, before constraints. They never bake solved rotations, composition or constraint output into keys. Constraints can keep the displayed pose away from an authored drag; turn off **Apply visual constraints in preview** under **Structure, joints & constraints** to inspect raw FK. The numeric Pose fields continue to show the displayed evaluated local pose. Existing key curves, turns, discrete/cel tracks, unrelated source and accepted artwork revisions remain intact.
+The preview can show solved visual constraints, but viewport pose gestures start from the **raw authored clip**, before constraints. They never bake solved rotations, composition or constraint output into keys. Constraints can keep the displayed pose away from an authored drag; turn off **Apply visual constraints in preview** under **Advanced → Structure, joints & constraints** to inspect raw FK. The numeric Pose fields continue to show the displayed evaluated local pose. Existing key curves, turns, discrete/cel tracks, unrelated source and accepted artwork revisions remain intact.
 
 Coordinates are x-right/y-up project units, CCW radians and seconds. Hit targets and handles use CSS pixels; backing pixels, zoom, view centre, letterboxing and optional cosmetic placement are accounted for. Translation inverts the complete parent affine, including reflected, rotated, nonuniform and sheared ancestry. Rotation changes local TRS without decomposing a world matrix. Negative and zero own scales remain valid. A singular parent/placement cannot be inverted; the viewport gives a diagnostic and retains source, while numeric local controls remain available. Moving a singular rest joint while preserving children can likewise be refused. Parenting/deletion use the existing explicit preserve modes and structural reviews.
 

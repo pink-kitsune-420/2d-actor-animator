@@ -1,4 +1,4 @@
-import { disposePage, showProjects, click as clickControl } from './actor-animator-authoring';
+import { disposePage, showProjects, revealDetails, click as clickControl } from './actor-animator-authoring';
 import { test, expect, type Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import type { ActorProject } from '@actor-animator/types';
@@ -49,6 +49,7 @@ async function save(page: Page): Promise<{ text: string; source: ActorProject }>
   const text = readFileSync(path!, 'utf8'); return { text, source: JSON.parse(text) as ActorProject };
 }
 async function open(page: Page, source: ActorProject | string, name = 'combined.actorproject') {
+  await revealDetails(page, 'View & playback options');
   await page.locator('#preview-zoom').selectOption('16');
   await page.locator('#open').setInputFiles({ name, mimeType: 'application/json', buffer: Buffer.from(typeof source === 'string' ? source : JSON.stringify(source)) });
   await expect(page.locator('#message')).toHaveText('Opened complete editable source.');
@@ -117,6 +118,10 @@ test('independent raster orientation, pivot and full affine shear oracle', async
     artwork: { kind: 'indexed-raster', width: 2, height: 2, palette: ['#ff0000ff', '#00ff00ff', '#0000ffff', '#ffffffff'], layers: [{ id: 'ink', name: 'Corners', opacity: 1, pixels: [0, 1, 2, 3] }] } });
   source.attachments.push({ id: '__proto__', name: 'Free raster', partId: source.parts[0]!.id, drawOrder: 0, transform: { x: 3, y: -2, rotation: Math.PI / 2, scaleX: 2, scaleY: .5 } });
   await page.goto('/actor-tools.html'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await page.locator('#preview-zoom').selectOption('16'); await open(page, source); closeMatrix(await matrix(page), [0, -64, 16, 0, 344, 248]);
+  // Inspect artwork without fixed-CSS-size rig handles covering pixel samples.
+  // The fitted viewport size can change handle coverage; backing pixels and
+  // the independent expected colours/matrices below remain unchanged.
+  await page.locator('#task-button-parts').click();
   const pixels = await page.locator('#actor-preview').evaluate((canvas: HTMLCanvasElement) => { const c = canvas.getContext('2d')!; return [[352, 216], [352, 152], [368, 216]].map(([x, y]) => Array.from(c.getImageData(x!, y!, 1, 1).data)); });
   expect(pixels).toEqual([[255, 0, 0, 255], [0, 255, 0, 255], [0, 0, 255, 255]]);
   await page.locator('#actor-preview').screenshot({ path: info.outputPath('raster-orientation.png') });

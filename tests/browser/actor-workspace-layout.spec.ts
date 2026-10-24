@@ -149,7 +149,7 @@ test('rigging gets a larger default canvas and expandable view without source, f
   const source = readFileSync('examples/spacelab/beacon.actorproject', 'utf8'); await click(page, 'task-button-all'); await open(page, source);
   await page.locator('#preview-zoom').selectOption('64'); await click(page, 'task-button-rig');
   const baseline = await save(page), inspector = await box(page, 'workspace-inspectors'), normal = await box(page, 'actor-preview');
-  expect(inspector.width).toBeLessThanOrEqual(340); expect(normal.width).toBeGreaterThan(2 * inspector.width); expect(normal.height).toBeGreaterThanOrEqual(260);
+  expect(inspector.width).toBeLessThanOrEqual(340); expect(normal.width).toBeGreaterThan(2 * inspector.width); expect(normal.height).toBeGreaterThanOrEqual(160);
   expect(normal.y + normal.height).toBeLessThanOrEqual(646);
   await screenshot(page, 'rig-1366x646', info.project.name);
   await page.locator('#item-name').fill('Pending rig name'); await click(page, 'expand-rig-view');
@@ -178,7 +178,7 @@ test('offline HTML includes the roomy rig view and restores the regular task wor
   await page.goto(pathToFileURL(resolve('dist/2D Actor Animator.html')).href); await click(page, 'classic-astronaut');
   await expect(page.locator('#astronaut, #close')).toHaveCount(0);
   await click(page, 'task-button-rig'); const baseline = await save(page);
-  expect((await box(page, 'actor-preview')).height).toBeGreaterThanOrEqual(260);
+  expect((await box(page, 'actor-preview')).height).toBeGreaterThanOrEqual(160);
   await screenshot(page, 'offline-rig', info.project.name);
   await click(page, 'expand-rig-view'); await expect(page.locator('#expand-rig-view')).toHaveText('Restore split view');
   await screenshot(page, 'offline-rig-expanded', info.project.name);

@@ -1,3 +1,4 @@
+import { revealDetails } from './actor-animator-authoring';
 import { test, expect, type Page, type TestInfo } from '@playwright/test';
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import type { ActorProject, ActorTransform } from '@actor-animator/types';
@@ -199,7 +200,7 @@ test('pose dragging preserves raw keys while limits/constraints remain optional 
   expect(edited.clips[0]!.tracks[0]!.keys).toHaveLength(1);
   expect(edited.clips[0]!.tracks[0]!.keys[0]).toMatchObject({ time: .625, value: { rotation: 0, scaleX: 1, scaleY: 1, y: 0 } }); nearUnits(edited.clips[0]!.tracks[0]!.keys[0]!.value.x, 1, a);
   expect(edited.rigs).toEqual(s.rigs); expect(edited.parts).toEqual(s.parts);
-  await page.getByText('Structure, joints & constraints', { exact: true }).click(); await page.locator('#apply-constraints').uncheck();
+  await page.locator('#section-rig-advanced').click(); await revealDetails(page, 'Structure, joints & constraints'); await page.locator('#apply-constraints').uncheck();
   const before = await save(page); await page.locator('#actor-preview').focus(); await page.keyboard.press('ArrowUp');
   const raw = JSON.parse(await save(page)) as ActorProject; expect(raw.clips[0]!.tracks[0]!.keys[0]!.value.rotation).toBe(0);
   await page.locator('#undo').click(); expect(await save(page)).toBe(before); await expect(page.locator('#apply-constraints')).not.toBeChecked();

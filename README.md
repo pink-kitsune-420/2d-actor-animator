@@ -10,8 +10,8 @@ Create characters, creatures and robots in an independent 2D rigging and animati
 
 ## First animation
 
-1. Choose **Projects → Examples → Example: classic astronaut**, then **Rig** to explore a character; or **Projects → Empty project → Parts → Create part** for your own artwork.
-2. Use **Rig** to assemble parts, **Animate** to create keys, and Preview to play or scrub explicit seconds. **Rest** changes the base shape; **Pose** keys the selected clip.
+1. Choose **Projects → Examples → Example: classic astronaut**, then **Rig** to explore a character; or **Projects → Empty project → Parts → Part setup → Create part** for your own artwork.
+2. Use **Rig → Item** to assemble parts, **Animate → Clips** to create a motion and **Animate → Keys** to record poses, and Preview to play or scrub explicit seconds. **Rest** changes the base shape; **Pose** keys the selected clip.
 3. Download the editable source and retain it. PNG sheets are flattened derivatives; download their matching metadata and keep your original source too.
 
 Follow the [character and nonhuman tutorial](docs/getting-started.md). **Help & shortcuts** in the editor also works offline. Painting needs a pointer; numeric rig/key controls and keyboard navigation support precise editing. A desktop or laptop is recommended.

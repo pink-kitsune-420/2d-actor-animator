@@ -25,14 +25,14 @@ export class AnimationPanel {
   constructor(readonly root: HTMLElement, readonly host: Host, readonly preview: ActorPreview,
     readonly selectedClip: () => string, readonly selectedTarget: () => ActorTrackTarget,
     readonly refresh: () => void, readonly selectTarget: (target: ActorTrackTarget) => void, readonly selectCel: (attachmentId: string, time?: number) => void) {
-    root.innerHTML = `<h2>Timeline</h2><p>Uses the clip and animation target above. Select an authored key to revise it, or “New key” to insert. Values are absolute local transforms.</p>
+    root.innerHTML = `<h2>Key pose</h2><p>Select a saved key to revise it, or choose New key. Set the time and local pose, then Insert / revise key. X/Y use project units; rotation uses counterclockwise radians.</p>
       <div id="visual-timeline"></div><nav><button id="duplicate-clip">Duplicate clip</button><button id="delete-clip">Delete clip</button></nav>
-      ${select('key-channel', 'Channel', ['transform', 'visibility', 'draw-order'])}<label>Authored keys<select id="timeline-keys"></select></label><button id="new-key">New key</button>
+      <div class="key-selection-row">${select('key-channel', 'Channel', ['transform', 'visibility', 'draw-order'])}<label>Authored keys<select id="timeline-keys"></select></label><button id="new-key">New key</button></div>
       ${input('timeline-time', 'Key time (s)')}
-      <div class="transform">${components.map((c, i) => input(`timeline-${c}`, c === 'rotation' ? 'Rotation (radians)' : c, i < 3 ? 0 : 1)).join('')}</div>
-      ${select('key-curve', 'Outgoing curve', ['track-default', ...ACTOR_CURVES])}${select('key-angle', 'Track angle mode', ['legacy-unwrapped', 'unwrapped', 'shortest'])}
-      <label>Cubic Bézier x1,y1,x2,y2<input id="key-bezier" value="0.42,0,0.58,1"></label>${input('key-turns', 'Extra full turns (shortest mode only)')}
-      <label><input id="key-visible" type="checkbox" checked>Visible</label>${input('key-order', 'Painter order')}
+      <div class="transform" data-key-channel="transform">${components.map((c, i) => input(`timeline-${c}`, c === 'rotation' ? 'Rotation (radians)' : c, i < 3 ? 0 : 1)).join('')}</div>
+      <details data-key-channel="transform"><summary>Interpolation &amp; rotation</summary>${select('key-curve', 'Outgoing curve', ['track-default', ...ACTOR_CURVES])}${select('key-angle', 'Track angle mode', ['legacy-unwrapped', 'unwrapped', 'shortest'])}
+      <label>Cubic Bézier x1,y1,x2,y2<input id="key-bezier" value="0.42,0,0.58,1"></label>${input('key-turns', 'Extra full turns (shortest mode only)')}</details>
+      <label data-key-channel="visibility"><input id="key-visible" type="checkbox" checked>Visible</label><div data-key-channel="draw-order">${input('key-order', 'Painter order')}</div>
       <nav><button id="write-key">Insert / revise key</button><button id="delete-key">Delete key</button><button id="previous-key">Previous key</button><button id="next-key">Next key</button><button id="step-back">−1/60 s</button><button id="step-forward">+1/60 s</button></nav>
       <pre id="timeline-summary"></pre><section id="curve-editor"></section>
       <details><summary>Composition: layers, states &amp; transitions</summary><h2>Composition</h2><p>Layers run bottom to top. Fades use shortest rotation arcs; additive layers use an explicit reference pose and ignore discrete channels. Incoming discrete values win at weight ≥ 0.5. Automatic next states require once clips and acyclic chains.</p>
@@ -196,6 +196,7 @@ export class AnimationPanel {
   render() {
     let targetKey = ''; try { targetKey = JSON.stringify(this.selectedTarget()); } catch { /* empty */ }
     const context = this.selectedClip() + this.value('key-channel') + targetKey; if (context !== this.keyContext) { this.keyTime = undefined; this.keyContext = context; }
+    this.root.dataset.channel = this.value('key-channel');
     this.timeline.render();
     const s = this.host.draft.source, track = this.track();
     this.options('timeline-keys', [{ id: '', name: 'New key' }, ...(track?.keys ?? []).map(k => ({ id: String(k.time), name: `${k.time} s` }))], this.keyTime === undefined ? '' : String(this.keyTime));

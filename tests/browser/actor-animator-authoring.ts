@@ -143,3 +143,12 @@ export async function authorAstronaut(p: Page) {
   expect(source.rigs[0]!.nodes).toHaveLength(15); expect(source.attachments).toHaveLength(15); expect(source.clips).toHaveLength(11); expect(source.animators![0]!.layers).toHaveLength(2);
   return text;
 }
+
+/** Navigate the retained UI rather than mutating disclosure state in tests. */
+export async function revealDetails(p: Page, label: string) {
+  const summary = p.getByText(label, { exact: true });
+  if (!await summary.locator('..').evaluate((el: HTMLDetailsElement) => el.open)) await summary.click();
+}
+export async function section(p: Page, task: string, name: string) {
+  await click(p, `task-button-${task}`); await click(p, `section-${task}-${name}`);
+}

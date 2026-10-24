@@ -188,3 +188,83 @@ nav[aria-label=Project] > .file { flex-direction: row; align-items: center; gap:
 #creator-guide li { margin: 12px 0; font-size: 14px; line-height: 1.5; }
 #creator-guide form { float: right; margin: 0 0 8px 12px; }
 #task-navigation button[aria-pressed=true] { font-weight: 700; text-decoration: underline; text-underline-offset: 4px; }
+
+/* Focused inspectors: choose a purpose without hunting down a long form. */
+.section-navigation { position: sticky; top: 0; z-index: 15; margin: 0 0 8px; padding: 6px 0; gap: 4px; background: #101820; border-bottom: 1px solid #456; align-items: center; }
+.section-navigation button { font-size: 13px; padding: 6px 9px; }
+.parts-workspace > .section-navigation { grid-column: 1 / -1; }
+.parts-workspace { grid-template-rows: auto minmax(0, 1fr); gap: 0 12px; align-content: start; }
+.section-hint { color: #b4cbdc; margin: 6px 0 10px; }
+#task-rig h3 { font-size: 13px; margin: 8px 0; }
+#task-rig > section { padding: 8px 10px; }
+#task-rig .transform { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+#task-rig .transform label, #task-animate .transform label { font-size: 11px; }
+#task-rig input, #task-rig select { padding: 5px; font-size: 13px; }
+#task-rig button { padding: 6px; font-size: 13px; margin-block: 3px; }
+#task-rig #node-tree { max-height: 240px; overflow: auto; }
+#task-rig .identity { font-size: 11px; color: #a8c0d2; }
+#selection-context { margin: 0 0 6px; font-size: 11px; }
+#task-help { margin: 6px 0 4px; }
+#next-step { display: flex; align-items: center; gap: 12px; padding: 6px 10px; margin: 4px 0 8px; background: #20394b; border-left: 3px solid #8ccee8; font-size: 12px; }
+#next-step button { flex: none; padding: 5px 8px; font-size: 12px; }
+#animation-panel > h2 { margin: 8px 0; padding-top: 0; border: 0; }
+#task-animate .transform { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+#task-animate #visual-timeline > nav:first-of-type { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+#task-animate #visual-timeline input, #task-animate #visual-timeline select { width: 100%; }
+#task-animate #visual-timeline button, #task-animate #visual-timeline input, #task-animate #visual-timeline select { font-size: 12px; padding: 5px; }
+#task-animate #sheet-help { font-size: 11px; }
+#task-animate #dope-sheet { max-height: 195px; }
+#task-animate label { margin-block: 4px; }
+#task-animate input, #task-animate select { padding: 5px; font-size: 13px; }
+#task-animate #curve-editor { margin-top: 0; }
+#task-animate #curve-editor h3 { margin-top: 0; }
+/* Leave transport visible while the artwork uses the remaining desktop space. */
+@media (min-width: 901px) {
+  #actor-tools { padding: 10px 16px; }
+  header { align-items: center; gap: 16px; }
+  h1 { font-size: 22px; }
+  nav[aria-label=Project] { margin: 6px 0 4px; }
+  #task-navigation { margin-top: 4px; }
+  #task-navigation button { padding: 6px 10px; }
+  #preview-panel { display: flex; flex-direction: column; min-height: 0; padding: 0 10px 8px; }
+  #preview-panel > * { flex: none; }
+  #preview-panel > .preview-viewport { flex: 1 1 auto; min-height: 100px; overflow: hidden; margin: 6px 0; }
+  #actor-tools #preview-panel #actor-preview { width: 100%; height: 100%; min-height: 100px; max-height: none; aspect-ratio: auto; object-fit: contain; }
+  #preview-header { gap: 8px; padding-top: 6px; }
+  #preview-header button, #preview-header summary { padding-block: 4px; font-size: 11px; }
+  #preview-selectors { gap: 8px; }
+  #preview-selectors label { flex-direction: row; align-items: center; gap: 8px; }
+  #preview-selectors select { flex: 1; min-width: 0; font-size: 12px; padding: 5px; }
+  #preview-panel nav { margin: 3px 0; }
+  #preview-panel button { padding: 5px 7px; }
+  #preview-panel > label { flex-direction: row; align-items: center; gap: 10px; }
+  #preview-panel > label input { flex: 1; }
+  #preview-panel nav[aria-label="Precise clip time"] { position: absolute; right: 10px; bottom: 8px; margin: 0; align-items: center; }
+  #preview-panel nav[aria-label="Precise clip time"] label { flex-direction: row; align-items: center; gap: 6px; }
+  #preview-panel #seek-time { width: 75px; padding: 4px; }
+  #preview-panel > details:last-child { margin: 4px 245px 0 0; padding: 3px 6px; min-height: 32px; }
+  #preview-panel > details:last-child[open] { margin-right: 0; padding-bottom: 35px; }
+  .preview-expanded #actor-tools, .preview-expanded#actor-tools { height: 100dvh; }
+}
+@media (max-width: 1100px) and (min-width: 901px) {
+  #preview-panel nav[aria-label="Precise clip time"] { position: static; }
+  #preview-panel > details:last-child { margin-right: 0; }
+  #preview-panel > details:last-child[open] { padding-bottom: 4px; }
+}
+@media (max-width: 900px) {
+  .section-navigation { top: 0; }
+  #next-step { flex-wrap: wrap; }
+}
+.key-selection-row { display: flex; gap: 8px; align-items: end; }
+.key-selection-row label { flex: 1; }
+.key-selection-row button { margin-bottom: 4px; padding: 5px 8px; font-size: 13px; }
+#animation-panel[data-channel=transform] [data-key-channel]:not([data-key-channel=transform]),
+#animation-panel[data-channel=visibility] [data-key-channel]:not([data-key-channel=visibility]),
+#animation-panel[data-channel=draw-order] [data-key-channel]:not([data-key-channel=draw-order]) { display: none; }
+#task-animate #timeline-time { max-width: 160px; }
+.rig-selection { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 8px; }
+.rig-selection > label:last-child { grid-column: 1 / -1; }
+#rig-editor > h3 { display: none; }
+#task-rig fieldset.transform { margin: 8px 0; padding: 6px 8px 8px; }
+#task-rig fieldset.transform label { margin: 0; }
+#task-animate #timeline-summary { margin: 6px 0; }

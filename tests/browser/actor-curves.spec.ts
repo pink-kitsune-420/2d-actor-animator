@@ -1,3 +1,4 @@
+import { revealDetails } from './actor-animator-authoring';
 import { test, expect, type Page, type TestInfo } from '@playwright/test';
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import type { ActorProject, ActorTransform } from '@actor-animator/types';
@@ -24,8 +25,8 @@ async function open(page: Page, s: ActorProject) {
   await expect(page.locator('#message')).toHaveText('Opened complete editable source.');
 }
 async function save(page: Page) { const d = page.waitForEvent('download'); await page.locator('#save').click(); return readFileSync((await (await d).path())!, 'utf8'); }
-async function setup(page: Page, s = fixture()) { page.on('dialog', d => d.accept()); await page.goto('/'); await open(page,s); await page.locator('#task-button-animate').click(); await page.locator('#sheet-filter').selectOption('keyed');
-  await page.getByText('View & playback options',{exact:true}).click();await page.locator('#preview-zoom').selectOption('128');await page.getByText('View & playback options',{exact:true}).click();await page.locator('#preview-panel').evaluate(el=>el.scrollTop=0);
+async function setup(page: Page, s = fixture()) { page.on('dialog', d => d.accept()); await page.goto('/'); await open(page,s); await page.locator('#task-button-all').click(); await page.locator('#sheet-filter').selectOption('keyed');
+  await revealDetails(page,'View & playback options');await page.locator('#preview-zoom').selectOption('128');await revealDetails(page,'View & playback options');await page.locator('#preview-panel').evaluate(el=>el.scrollTop=0);
 }
 function key(page: Page, channel: string, track: string, time: number) { return page.locator(`[data-key='${JSON.stringify([channel,track,time])}']`); }
 async function centre(el: import('@playwright/test').Locator) { await el.scrollIntoViewIfNeeded(); const b = (await el.boundingBox())!; return { x: b.x + b.width/2, y: b.y + b.height/2 }; }
@@ -77,7 +78,7 @@ test('curves native nonhuman handles, CSS coordinates, exact source undo and ind
 });
 
 test('curves character presets, deliberate conversion, keyboard handles and native text undo',async({page},info)=>{
-  test.setTimeout(120_000);const s=JSON.parse(readFileSync(new URL('../fixtures/actor-projects/classic-astronaut-b3.project.json',import.meta.url),'utf8')) as ActorProject;await setup(page,s);await page.getByText('Preview aids: speed, grid & onion skins',{exact:true}).click();await page.locator('#preview-origin-y').fill('.8');await page.locator('#apply-preview-aids').click();await page.getByText('Preview aids: speed, grid & onion skins',{exact:true}).click();const t=s.clips[0]!.tracks[0]!;await select(page,t.id,0);const before=await save(page);
+  test.setTimeout(120_000);const s=JSON.parse(readFileSync(new URL('../fixtures/actor-projects/classic-astronaut-b3.project.json',import.meta.url),'utf8')) as ActorProject;await setup(page,s);await revealDetails(page,'Preview aids: speed, grid & onion skins');await page.locator('#preview-origin-y').fill('.8');await page.locator('#apply-preview-aids').click();await revealDetails(page,'Preview aids: speed, grid & onion skins');const t=s.clips[0]!.tracks[0]!;await select(page,t.id,0);const before=await save(page);
   await page.locator('#curve-choice').selectOption('ease-in');expect(await save(page)).toBe(before);await page.locator('#curve-apply').click();const preset=await save(page);expect((JSON.parse(preset) as ActorProject).clips[0]!.tracks[0]!.keys[0]!.curve).toBe('ease-in');
   await expect(page.locator('#curve-h1')).toBeHidden();await page.locator('#curve-custom').click();await expect(page.locator('#curve-h1')).toBeVisible();const converted=await save(page);
   await begin(page);await page.mouse.up();await page.locator('#undo').click();expect(await save(page)).toBe(converted);
@@ -114,7 +115,7 @@ test('curves native cancellation capture focus file task source and geometry ret
     if(reason==='blur')await page.evaluate(()=>window.dispatchEvent(new Event('blur')));
     if(reason==='hidden')await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,value:true});document.dispatchEvent(new Event('visibilitychange'));Object.defineProperty(document,'hidden',{configurable:true,value:false});});
     if(reason==='focus')await page.locator('#curve-b0').focus();
-    if(reason==='task'){await page.locator('#task-button-rig').focus();await page.mouse.up();await page.keyboard.press('Enter');await page.locator('#task-button-animate').click();}
+    if(reason==='task'){await page.locator('#task-button-rig').focus();await page.mouse.up();await page.keyboard.press('Enter');await page.locator('#task-button-all').click();}
     if(reason==='file'){const f=page.waitForEvent('filechooser');await page.locator('#project-library > summary').focus(); await page.keyboard.press('Enter'); await page.locator('#open').focus();await page.mouse.up();await page.keyboard.press('Enter');await(await f).setFiles([]);}
     if(reason==='resize')await page.setViewportSize({width:1100,height:800});
     if(reason==='clip'){await page.locator('#clips').selectOption('dest');await page.locator('#clips').selectOption('c');}
@@ -130,7 +131,7 @@ test('curves native cancellation capture focus file task source and geometry ret
 test('curves raw graph stays distinct from animator fade diagnostics and scrub emits no requests',async({page})=>{
   const s=fixture();s.animators=[{id:'anim',name:'Mixer',layers:[{id:'layer',name:'Base',blend:'override',weight:.5,initialStateId:'s0',defaultTransition:{duration:1,priority:2},states:[{id:'s0',name:'Signal',clipId:'c',rate:1},{id:'s1',name:'Rest',clipId:null,rate:1}],transitions:[{id:'fade',from:'s0',to:'s1',duration:1,priority:2}]}]}];
   await setup(page,s);await select(page);const before=await save(page),path=await page.locator('#curve-path').getAttribute('d');
-  await page.getByText('Composition: layers, states & transitions',{exact:true}).click();await page.locator('#animation-states').selectOption('s1');await page.locator('#append-request').click();
+  await revealDetails(page,'Composition: layers, states & transitions');await page.locator('#animation-states').selectOption('s1');await page.locator('#append-request').click();
   await page.locator('#animator-time').fill('.25');await page.locator('#seek-animator').click();await page.locator('#refresh-composition').click();
   let status=JSON.parse((await page.locator('#composition-status').textContent())!);expect(status.layers[0].entries.map((e:{weight:number})=>e.weight)).toEqual([.75,.25]);expect(status.requests).toEqual([{time:0,layerId:'layer',stateId:'s1',outcome:'accepted'}]);
   await expect(page.locator('#curve-clock')).toContainText('Animator or rest');expect(await page.locator('#curve-path').getAttribute('d')).toBe(path);expect(await save(page)).toBe(before);

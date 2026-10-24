@@ -1,10 +1,11 @@
+import { revealDetails } from '../browser/actor-animator-authoring';
 import { test, expect, type Page } from '@playwright/test';
 import { openSheetConsumer } from '../support/consumers';
 import { mkdirSync, readFileSync, writeFileSync, mkdtempSync, cpSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { pathToFileURL } from 'node:url';
-import { click, field, open, save } from '../browser/actor-animator-authoring';
+import { click, field, open, save, section } from '../browser/actor-animator-authoring';
 
 async function download(page:Page,id:string) { const event=page.waitForEvent('download');await click(page,id);return readFileSync((await (await event).path())!); }
 async function task(page:Page,name:string) { await click(page,`task-button-${name}`); }
@@ -25,21 +26,21 @@ for(const delivery of ['hosted','offline'] as const)for(const actor of ['charact
       if(actor==='character') {
         await click(page,'classic-astronaut');
         const before=JSON.parse(await save(page));
-        await page.getByText('Pivot & pixel scale',{exact:true}).click();await field(page,'pivot-x',.25);await click(page,'pivot');
+        await section(page,'parts','setup'); await page.getByText('Pivot & pixel scale',{exact:true}).click();await field(page,'pivot-x',.25);await click(page,'pivot');
         const revised=JSON.parse(await save(page));expect(revised.parts.length).toBe(before.parts.length+1);expect(revised.attachments).toEqual(before.attachments);
         const revision=await page.locator('#parts').inputValue();
         await task(page,'rig');await page.locator('#item-kind').selectOption('attachment');await page.locator('#items').selectOption({index:0});
-        await task(page,'parts');await page.locator('#parts').selectOption(revision);await task(page,'rig');await click(page,'accept-part');
+        await task(page,'parts');await page.locator('#parts').selectOption(revision);await section(page,'rig','artwork');await click(page,'accept-part');
         expect(JSON.parse(await save(page)).attachments.some((a:{partId:string})=>a.partId===revision)).toBe(true);
       } else {
-        await click(page,'new');await field(page,'part-name','Beacon');await field(page,'width',8);await field(page,'height',8);await click(page,'add-part');
+        await click(page,'new');await section(page,'parts','setup');await field(page,'part-name','Beacon');await field(page,'width',8);await field(page,'height',8);await click(page,'add-part');
         const c=page.locator('#paint');await c.scrollIntoViewIfNeeded();const b=(await c.boundingBox())!;await page.mouse.move(b.x+24,b.y+24);await page.mouse.down();await page.mouse.move(b.x+72,b.y+72,{steps:3});await page.mouse.up();
         await page.getByText('Pivot & pixel scale',{exact:true}).click();await field(page,'units',.125);await field(page,'pivot-x',.5);await field(page,'pivot-y',.5);await click(page,'pivot');
         await task(page,'rig');await page.locator('#item-kind').selectOption('attachment');await field(page,'item-name','Light');await click(page,'add-item');
         const source=JSON.parse(await save(page));expect(source.rigs).toEqual([]);expect(source.attachments).toHaveLength(1);expect(source.parts[0].artwork.layers[0].pixels.filter((i:number)=>i===1).length).toBeGreaterThan(2);
         await page.getByText('View & playback options',{exact:true}).click();await page.locator('#preview-zoom').selectOption('128');
       }
-      await task(page,'animate');await field(page,'clip-name','Release motion');await field(page,'duration',1);await click(page,'add-clip');
+      await section(page,'animate','clips');await field(page,'clip-name','Release motion');await field(page,'duration',1);await click(page,'add-clip');
       await page.getByText('Two-key shortcut',{exact:true}).click();await field(page,'key-b-x',.5);await click(page,'apply-keys');
       // Inspect authoritative source rather than counting visible controls.
       const edited=await save(page),s=JSON.parse(edited),clip=s.clips.find((c:{name:string})=>c.name==='Release motion');
@@ -48,7 +49,7 @@ for(const delivery of ['hosted','offline'] as const)for(const actor of ['charact
       await click(page,'play');await expect(page.locator('#preview-state')).toContainText('Playing');await click(page,'pause');await field(page,'seek-time',.5);await click(page,'seek');
       await screen(page,`${delivery}-${actor}-workspace`,info.project.name);
       await retain(page);await open(page,edited);expect(await save(page)).toBe(edited);
-      await task(page,'animate');await page.getByText('Cels & flipbooks',{exact:true}).click();
+      await section(page,'animate','cels');await revealDetails(page, 'Cels & flipbooks');
       for(const [id,v]of [['sheet-frame-width',128],['sheet-frame-height',128],['sheet-scale',actor==='character'?64:96],['sheet-centre-y',actor==='character'?.8:0]] as const)await field(page,id,v);
       // Reopening selects the first clip: explicitly choose our authored motion.
       await page.locator('#clips').selectOption(clip.id);await click(page,'prepare-sheet');await expect(page.locator('#sheet-contact')).toBeVisible();
@@ -81,7 +82,7 @@ test('storage failure, invalid/cancelled import and incomplete fields retain sou
   page.once('dialog',dialog=>dialog.accept());
   await page.locator('#open').setInputFiles({name:'invalid.actorproject',mimeType:'application/json',buffer:Buffer.from('{}')});await expect(page.locator('#message')).toContainText('Missing');expect(await save(page)).toBe(before);
   await page.locator('#open').dispatchEvent('cancel');await expect(page.locator('#message')).toContainText('cancelled');expect(await save(page)).toBe(before);
-  await field(page,'width','');await click(page,'resize');await expect(page.locator('#message')).toContainText('finite number');expect(await save(page)).toBe(before);
+  await section(page,'parts','setup');await field(page,'width','');await click(page,'resize');await expect(page.locator('#message')).toContainText('finite number');expect(await save(page)).toBe(before);
   await field(page,'part-name','<img src=x onerror=alert(1)>');await click(page,'rename');expect(await page.locator('img')).toHaveCount(0);expect(JSON.parse(await save(page)).parts.some((p:{name:string})=>p.name.includes('<img'))).toBe(true);
 });
 
