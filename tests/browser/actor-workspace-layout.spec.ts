@@ -8,8 +8,8 @@ test.beforeEach(async ({ browser }, info) => console.log(`${info.project.name} a
 async function box(page: Page, id: string) { return (await page.locator(`#${id}`).boundingBox())!; }
 async function screenshot(page: Page, name: string, engine: string) {
   if (engine === 'chromium') {
-    mkdirSync('private-docs/workspace-layout-demo', { recursive: true });
-    await page.screenshot({ path: `private-docs/workspace-layout-demo/${name}.png` });
+    mkdirSync('test-results/evidence/workspace-layout-demo', { recursive: true });
+    await page.screenshot({ path: `test-results/evidence/workspace-layout-demo/${name}.png` });
   }
 }
 test('desktop toolbar and All tools keep a persistent preview beside scrolling inspectors', async ({ page }, info) => {

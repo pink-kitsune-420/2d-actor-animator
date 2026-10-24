@@ -179,3 +179,12 @@ nav[aria-label=Project] > .file { flex-direction: row; align-items: center; gap:
   #assembly[data-task=rig] #actor-preview { height: clamp(240px, 45dvh, 460px); }
   .preview-expanded#actor-tools { height: auto; min-height: 100dvh; }
 }
+
+/* Compact, keyboard-accessible creator help, also embedded in the offline copy. */
+#getting-started { font-size: 12px; }
+#creator-guide { width: min(680px, calc(100vw - 32px)); max-height: 85dvh; overflow: auto; color: #d5e8ff; background: #14212d; border: 1px solid #8ccee8; padding: 20px; }
+#creator-guide::backdrop { background: #0009; }
+#creator-guide h2 { border: 0; padding: 0; margin-top: 0; }
+#creator-guide li { margin: 12px 0; font-size: 14px; line-height: 1.5; }
+#creator-guide form { float: right; margin: 0 0 8px 12px; }
+#task-navigation button[aria-pressed=true] { font-weight: 700; text-decoration: underline; text-underline-offset: 4px; }

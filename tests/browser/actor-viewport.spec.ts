@@ -53,10 +53,10 @@ async function keepDemo(page: Page, info: TestInfo, name: string, before: string
   await info.attach(`${name}-after.actorproject`, { body: after, contentType: 'application/json' });
   await page.locator('#actor-preview').screenshot({ path: info.outputPath(`${name}.png`) });
   if (info.project.name === 'chromium') {
-    mkdirSync('private-docs/s2-demo', { recursive: true });
-    writeFileSync(`private-docs/s2-demo/${name}-before.actorproject`, before);
-    writeFileSync(`private-docs/s2-demo/${name}-after.actorproject`, after);
-    await page.locator('#preview-panel').screenshot({ path: `private-docs/s2-demo/${name}.png` });
+    mkdirSync('test-results/evidence/s2-demo', { recursive: true });
+    writeFileSync(`test-results/evidence/s2-demo/${name}-before.actorproject`, before);
+    writeFileSync(`test-results/evidence/s2-demo/${name}-after.actorproject`, after);
+    await page.locator('#preview-panel').screenshot({ path: `test-results/evidence/s2-demo/${name}.png` });
   }
 }
 test.beforeEach(async ({ page }) => {

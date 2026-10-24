@@ -1,8 +1,22 @@
 # Actor Animator
 
-An independent, actor-focused 2D rigging and animation editor, extracted from Space Lab's MIT-licensed actor tools. Build characters, creatures and robots with freely named parts and skeletons; preserve layered artwork, rigs and animation in editable projects.
+Create characters, creatures and robots in an independent 2D rigging and animation editor. Paint layered parts, build freely named skeletons or use no bones, animate and keep complete editable projects. Built with Space Lab as its first intended consumer.
 
-The editor includes a locally buildable ESM runtime with TypeScript declarations and zero runtime dependencies. Space Lab's game copy continues independently. No registry publication or live engine adapter is supplied.
+**[Open Actor Animator](https://pink-kitsune-420.github.io/2d-actor-animator/)** — proposed Pages address; **not yet deployed or live-verified**.
+
+**Offline:** build and open `dist/Actor Animator.html` directly in your browser. It is self-contained; no server is needed. A public release download is pending. Keep your work with **Download editable source**, then reopen the `.actorproject` file with **Open source**.
+
+![Actor Animator character workspace](docs/images/character.png)
+
+## First animation
+
+1. Choose **Example: classic astronaut**, then **Rig** to explore a character; or **Empty project → Parts → Create part** for your own artwork.
+2. Use **Rig** to assemble parts, **Animate** to create keys, and Preview to play or scrub explicit seconds. **Rest** changes the base shape; **Pose** keys the selected clip.
+3. Download the editable source and retain it. PNG sheets are flattened derivatives; download their matching metadata and keep your original source too.
+
+Follow the [character and nonhuman tutorial](docs/getting-started.md). **Help & shortcuts** in the editor also works offline. Painting needs a pointer; numeric rig/key controls and keyboard navigation support precise editing. A desktop or laptop is recommended.
+
+Project files are processed locally in your browser. Hosting still loads application files over the network; demos fetch their bundled examples. Recovery is best effort, namespaced browser storage shared across tabs on the same origin, not a permanent backup. See [privacy, recovery and file guidance](docs/getting-started.md#files-recovery-and-mistakes).
 
 ## Run locally
 
@@ -15,7 +29,7 @@ npm run dev
 
 Open **http://127.0.0.1:4500/**. Choose **Example: classic astronaut**, then use Parts, Rig, Animate or Emotes. The example demonstrates the tools; its animation is not a finished quality reference. Empty projects and nonhuman/zero-bone projects use the same editor.
 
-Stop the server with **Ctrl+C**. It uses a strict port, so it will refuse to take an occupied port. Files stay local; the editor requires no account or hosted game.
+Stop the server with **Ctrl+C**. It uses a strict port, so it will refuse to take an occupied port. The editor requires no account or hosted game.
 
 For a production preview:
 
@@ -56,6 +70,10 @@ The existing `.actorproject` format and its `spacelab:*` capability identifiers 
 
 The optional [`@actor-animator/runtime/spacelab` historical source profile](docs/spacelab.md) checks the retained data contract and exports accepted original text exactly. After `npm run check`, open `/spacelab-example/` in the production preview for separate source and rendered-art evidence. Current live game support is unverified; no game provider or module installer is implemented. Ship/tile artwork uses different formats and is outside this actor-focused project.
 
+## Browser evidence
+
+The local candidate is being qualified on Linux with the pinned Playwright Chromium, Firefox and WebKit builds. Exact tested versions and scope are recorded in [browser qualification](docs/browser-support.md). Other operating systems, hardware GPU drivers, mobile authoring and arbitrary browser versions are not qualified. WebGL2 is the optional runtime primary backend; Canvas2D is its backup. The editor uses native Canvas2D previews.
+
 ## Layout and verification
 
 - `apps/web/src/actor-tools/`: retained editor, artwork and previews.
@@ -75,6 +93,8 @@ ANIMATOR_TEST_PORT=4501 npm run test:browser -- --project=chromium
 `check` verifies isolation, actual pinned tool versions, types, all units, production editor/runtime builds, fresh archive imports/declarations/content and licenses. Build before browser tests; keep that build fixed during the run. Chromium, Firefox and WebKit projects are configured. To install the matching browser binaries when absent, run `npx playwright install chromium` (or the required browser names). Installed browser executables are development tools and are not bundled with the editor.
 
 Use this repository's own `npm ci`; do not symlink another project's mutable installation. There are zero third-party runtime dependencies.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md), [CHANGELOG.md](CHANGELOG.md), [SECURITY.md](SECURITY.md) and [static hosting](docs/hosting.md). Public bug reports can use this repository’s Issues once published; include a minimal non-sensitive example.
 
 ## Origin and license
 

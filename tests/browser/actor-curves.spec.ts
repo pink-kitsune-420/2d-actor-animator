@@ -31,14 +31,14 @@ function key(page: Page, channel: string, track: string, time: number) { return 
 async function centre(el: import('@playwright/test').Locator) { await el.scrollIntoViewIfNeeded(); const b = (await el.boundingBox())!; return { x: b.x + b.width/2, y: b.y + b.height/2 }; }
 async function demo(page: Page, info: TestInfo, name: string, before: string, after: string) {
   if (info.project.name !== 'chromium') return;
-  mkdirSync('private-docs/s4-demo', { recursive: true }); writeFileSync(`private-docs/s4-demo/${name}-before.actorproject`,before); writeFileSync(`private-docs/s4-demo/${name}-after.actorproject`,after);
+  mkdirSync('test-results/evidence/s4-demo', { recursive: true }); writeFileSync(`test-results/evidence/s4-demo/${name}-before.actorproject`,before); writeFileSync(`test-results/evidence/s4-demo/${name}-after.actorproject`,after);
   await page.locator('#preview-panel').evaluate(el=>el.scrollTop=0);
   await page.locator('#workspace-inspectors').evaluate(el=>el.scrollTop=0);
   await page.locator('#dope-sheet').evaluate(el=>el.scrollTop=0);
   await page.locator('#dope-sheet').scrollIntoViewIfNeeded();
   await page.locator('.curve-surface').scrollIntoViewIfNeeded();
-  await page.locator('.curve-surface').screenshot({ path: `private-docs/s4-demo/${name}.png` });
-  await page.screenshot({path:`private-docs/s4-demo/${name}-workspace.png`});
+  await page.locator('.curve-surface').screenshot({ path: `test-results/evidence/s4-demo/${name}.png` });
+  await page.screenshot({path:`test-results/evidence/s4-demo/${name}-workspace.png`});
 }
 test.beforeEach(async({page,browser},info)=>{
   console.log(`${info.project.name} actual browser ${browser.version()}`);
@@ -50,7 +50,7 @@ test.beforeEach(async({page,browser},info)=>{
     const draw=CanvasRenderingContext2D.prototype.drawImage;CanvasRenderingContext2D.prototype.drawImage=function(this:CanvasRenderingContext2D,...args:Parameters<typeof draw>){if(this.canvas.id==='actor-preview'){const m=this.getTransform();Object.assign(window,{curveMatrix:[m.a,m.b,m.c,m.d,m.e,m.f]});}return draw.apply(this,args);} as typeof draw;
   });
 });
-test.afterEach(async({page,browser},info)=>{if(page.isClosed())return;const data=await page.evaluate(()=>(window as unknown as {curveEvidence:unknown}).curveEvidence);mkdirSync(`private-docs/s4-performance/${info.project.name}`,{recursive:true});writeFileSync(`private-docs/s4-performance/${info.project.name}/${info.title.replace(/\W/g,'-')}.json`,JSON.stringify({browser:browser.version(),data},null,2));});
+test.afterEach(async({page,browser},info)=>{if(page.isClosed())return;const data=await page.evaluate(()=>(window as unknown as {curveEvidence:unknown}).curveEvidence);mkdirSync(`test-results/evidence/s4-performance/${info.project.name}`,{recursive:true});writeFileSync(`test-results/evidence/s4-performance/${info.project.name}/${info.title.replace(/\W/g,'-')}.json`,JSON.stringify({browser:browser.version(),data},null,2));});
 async function select(page:Page,track='t',time=.25){await key(page,'tracks',track,time).click();await page.locator('#curve-editor').scrollIntoViewIfNeeded();}
 async function custom(page:Page,b:number[]){for(let i=0;i<4;i++)await page.locator(`#curve-b${i}`).fill(String(b[i]));await page.locator('#curve-controls-apply').click();}
 async function begin(page:Page){const a=await centre(page.locator('#curve-h1'));await page.mouse.move(a.x,a.y);await page.mouse.down();await page.mouse.move(a.x+15,a.y-8,{steps:3});await expect(page.locator('#curve-status')).toContainText('Staged');}

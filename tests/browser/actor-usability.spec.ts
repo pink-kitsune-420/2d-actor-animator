@@ -58,7 +58,7 @@ test('navigation preserves source, selections and pending text; advanced control
   await expect(page.locator('#animators')).toBeVisible(); await expect(page.locator('#cels')).toBeVisible();
   await task(page, 'Rig'); await expect(page.locator('#items')).toHaveValue(item);
   await task(page, 'Parts'); await expect(name).toHaveValue('Pending name'); expect(await save(page)).toBe(baseline);
-  const rigButton = page.getByRole('button', { name: 'Rig', exact: true }); await rigButton.focus(); await rigButton.press('Enter');
+  const rigButton = page.getByRole('button', { name: 'Rig', exact: true }); await rigButton.focus(); await page.keyboard.press('Tab'); await page.keyboard.press('Shift+Tab'); await rigButton.press('Enter');
   await expect(rigButton).toBeFocused(); await expect(rigButton).toHaveAttribute('aria-pressed', 'true');
   expect(await rigButton.evaluate(el => getComputedStyle(el).outlineStyle)).toBe('solid');
   await rigButton.press('Tab'); await expect(page.getByRole('button', { name: 'Animate', exact: true })).toBeFocused();

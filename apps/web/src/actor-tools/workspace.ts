@@ -20,6 +20,30 @@ export class ActorWorkspace {
   private readonly buttons = new Map<Task, HTMLButtonElement>();
   constructor(readonly root: HTMLElement, readonly host: ActorEditor) {
     const el = (id: string) => host.el(id);
+    const guide = document.createElement('dialog'); guide.id = 'creator-guide';
+    guide.setAttribute('aria-labelledby', 'guide-title');
+    guide.innerHTML = `<h2 id="guide-title">Create your first animation</h2><form method="dialog"><button autofocus>Close help</button></form>
+      <ol><li><strong>Parts:</strong> start with Example: classic astronaut, or name a part and choose Create part. Paint with the selected palette colour.</li>
+      <li><strong>Rig:</strong> create a rig and joints, or attach a part directly to the scene with no bones. Rest edits the base shape; Pose keys the selected clip. Numeric transforms are available beside the viewport.</li>
+      <li><strong>Animate:</strong> create or choose a clip, select an item and insert keys in seconds. Play and scrub in Preview. Emotes previews solo or paired gestures on a separate clock.</li>
+      <li><strong>Keep your original:</strong> Download editable source saves every layer, rig and clip as .actorproject. Reopen with Open source. Confirm “I retained this source” only after keeping the current file.</li>
+      <li><strong>Export:</strong> Animate → Cels &amp; flipbooks → Flattened sheet and PNG. Prepare the sheet, then download both PNG and metadata. These are lossy copies; keep the editable source too.</li></ol>
+      <h3>Shortcuts &amp; units</h3><p>Tab / Shift+Tab moves between controls; Enter / Space activates buttons. On painting, rig and timeline surfaces, Ctrl/Cmd+Z undoes and Ctrl/Cmd+Shift+Z redoes. Text fields keep native text undo. Escape cancels a gesture; outside the rig canvas it restores an expanded view. Arrow keys scrub a focused time slider. Numeric fields provide precise transforms and key times; painting and rectangle selection require a pointer.</p>
+      <p>Scene X points right, Y up; rotations use counterclockwise radians and clip times use seconds. Artwork dimensions and selection moves use pixels, with pixel Y down.</p>
+      <h3>Local files &amp; recovery</h3><p>Project files are processed in your browser. Recovery is best effort, namespaced browser storage, shared across tabs on this origin; it is not a file backup or cloud sync. The hosted app loads its code from the site. The separate offline HTML needs no network. Download source before clearing browser data, changing browsers or closing unsaved work.</p>`;
+    root.append(guide);
+    el('getting-started').addEventListener('click', () => {
+      host.cancelGesture(); host.assembly.pause(); guide.showModal();
+    }, { signal: host.controller.signal });
+    root.addEventListener('keydown', event => {
+      if (event.key !== 'Escape' || guide.open) return;
+      for (const id of ['project-options', 'rig-view-help']) {
+        const details = el(id) as HTMLDetailsElement;
+        if (details.open && details.contains(document.activeElement)) {
+          details.open = false; details.querySelector('summary')!.focus(); event.preventDefault(); return;
+        }
+      }
+    }, { signal: host.controller.signal });
     const assembly = el('assembly');
     const layout = root.querySelector<HTMLElement>('.layout')!;
     const aside = layout.querySelector('aside')!;
@@ -131,7 +155,10 @@ export class ActorWorkspace {
       const available = localStorage.getItem(RECOVERY_KEY) !== null;
       this.host.el<HTMLButtonElement>('recover').disabled = !available;
       help.textContent = available ? 'A local recovery draft is available in this browser. It is separate from your downloaded files.' : 'No local recovery draft yet. Edits are recovered in this browser when storage is available.';
-    } catch { help.textContent = 'Local recovery is unavailable. Download editable source to keep your work.'; }
+    } catch {
+      this.host.el<HTMLButtonElement>('recover').disabled = true;
+      help.textContent = 'Local recovery is unavailable. Download editable source to keep your work.';
+    }
     const hasPart = source.parts.length > 0;
     for (const id of ['rename', 'resize', 'pivot', 'add-layer', 'edit-layer', 'layer-up', 'remove-layer', 'apply-colour', 'add-colour', 'export', 'move']) this.host.el<HTMLButtonElement>(id).disabled = !hasPart;
   }

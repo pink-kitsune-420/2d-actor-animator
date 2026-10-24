@@ -32,13 +32,13 @@ async function centre(el: Locator) { await el.scrollIntoViewIfNeeded(); const b 
 async function drag(page: Page, key: Locator, deltaPixels: number) { const a = await centre(key); await page.mouse.move(a.x,a.y); await page.mouse.down(); await page.mouse.move(a.x+deltaPixels,a.y,{ steps:4 }); await page.mouse.up(); }
 async function demo(page: Page, info: TestInfo, name: string, before: string, after: string) {
   if (info.project.name !== 'chromium') return;
-  mkdirSync('private-docs/s3-demo', { recursive: true }); writeFileSync(`private-docs/s3-demo/${name}-before.actorproject`,before); writeFileSync(`private-docs/s3-demo/${name}-after.actorproject`,after);
+  mkdirSync('test-results/evidence/s3-demo', { recursive: true }); writeFileSync(`test-results/evidence/s3-demo/${name}-before.actorproject`,before); writeFileSync(`test-results/evidence/s3-demo/${name}-after.actorproject`,after);
   await page.locator('#preview-panel').evaluate(el=>el.scrollTop=0);
   await page.locator('#workspace-inspectors').evaluate(el=>el.scrollTop=0);
   await page.locator('#dope-sheet').evaluate(el=>el.scrollTop=0);
   await page.locator('#dope-sheet').scrollIntoViewIfNeeded();
-  await page.locator('#dope-sheet').screenshot({ path: `private-docs/s3-demo/${name}.png` });
-  await page.screenshot({path:`private-docs/s3-demo/${name}-workspace.png`});
+  await page.locator('#dope-sheet').screenshot({ path: `test-results/evidence/s3-demo/${name}.png` });
+  await page.screenshot({path:`test-results/evidence/s3-demo/${name}-workspace.png`});
 }
 test.beforeEach(async ({ page, browser }, info) => {
   console.log(`${info.project.name} actual browser ${browser.version()}`);
@@ -66,8 +66,8 @@ test.beforeEach(async ({ page, browser }, info) => {
 test.afterEach(async ({page,browser},info) => {
   if (page.isClosed()) return;
   const data=await page.evaluate(()=>(window as unknown as {timelineEvidence:unknown}).timelineEvidence), body=JSON.stringify({test:info.title,browser:browser.version(),data},null,2);
-  mkdirSync(`private-docs/s3-performance/${info.project.name}`,{recursive:true});
-  writeFileSync(`private-docs/s3-performance/${info.project.name}/${info.title.replace(/\W+/g,'-')}.json`,body+'\n');
+  mkdirSync(`test-results/evidence/s3-performance/${info.project.name}`,{recursive:true});
+  writeFileSync(`test-results/evidence/s3-performance/${info.project.name}/${info.title.replace(/\W+/g,'-')}.json`,body+'\n');
   await info.attach('timeline-performance',{body,contentType:'application/json'});
 });
 

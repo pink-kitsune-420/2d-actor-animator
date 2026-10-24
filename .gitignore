@@ -12,3 +12,11 @@ KICKOFF.txt
 __pycache__/
 *.pyc
 *.tgz
+
+/tk
+_site/
+release-artifacts/
+.env
+.env.*
+*.log
+*.trace

@@ -9,3 +9,7 @@ The antenna creature, zero-bone lamp, runtime examples and package tooling added
 There are zero third-party runtime dependencies. Build and verification tools remain development-only: Vite and Vitest (MIT), TypeScript (Apache-2.0), Node type declarations (MIT), and Playwright (Apache-2.0). Exact versions/transitive packages are locked in package-lock.json and inspected by npm run check:licenses. A Node runtime is supplied by the user; no Node executable is bundled.
 
 The sampled-sheet consumer in `examples/sheet/` and its analytic verification artwork are original MIT work by Actor Animator contributors.
+
+## Release tooling and documentation
+
+Creator tutorial screenshots are captured from first-party Actor Animator examples and UI (MIT). No third-party branding or artwork is added. GitHub Actions checkout, setup-node, upload-artifact and deploy-pages are development/deployment-only tools from GitHub's official actions organization, under MIT licenses. Their reviewed revisions are pinned in the workflow files; they are not bundled into the editor or runtime.

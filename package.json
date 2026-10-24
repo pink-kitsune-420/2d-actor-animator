@@ -20,8 +20,12 @@
     "check:isolation": "node scripts/check-isolation.mjs",
     "check:toolchain": "node scripts/check-toolchain.mjs",
     "check:licenses": "node scripts/check-licenses.mjs",
-    "check": "npm run check:isolation && npm run check:toolchain && npm run typecheck && npm test && vite build && npm run build:runtime && npm run build:launcher && npm run check:runtime && npm run check:licenses",
-    "build:launcher": "node scripts/build-launcher.mjs"
+    "check": "npm run check:isolation && npm run check:toolchain && npm run check:public && npm run typecheck && npm test && vite build && npm run build:runtime && npm run build:launcher && npm run check:runtime && npm run check:licenses",
+    "build:launcher": "node scripts/build-launcher.mjs",
+    "check:public": "node scripts/check-public.mjs",
+    "stage:pages": "node scripts/stage-pages.mjs",
+    "test:release": "playwright test --config playwright.release.config.ts",
+    "package:release": "node scripts/package-release.mjs"
   },
   "devDependencies": {
     "@playwright/test": "1.63.0",

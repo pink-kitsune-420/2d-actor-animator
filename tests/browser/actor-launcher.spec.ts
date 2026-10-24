@@ -40,8 +40,8 @@ test('relocated HTML launches offline and preserves character edit, undo, redo a
     let n = 0; for (let i = 3; i < data.length; i += 4) if (data[i]) n++; return n;
   }); expect(ink).toBeGreaterThan(100);
   if (info.project.name === 'chromium') {
-    mkdirSync('private-docs/html-launcher-demo', { recursive: true });
-    await page.locator('#preview-panel').screenshot({ path: 'private-docs/html-launcher-demo/offline-character.png' });
+    mkdirSync('test-results/evidence/html-launcher-demo', { recursive: true });
+    await page.locator('#preview-panel').screenshot({ path: 'test-results/evidence/html-launcher-demo/offline-character.png' });
   }
   expect(observed.errors).toEqual([]); expect(observed.dependencies).toEqual([]);
 });
@@ -64,6 +64,6 @@ test('local HTML works without recovery storage and preserves zero-bone RGBA and
   const nonhuman = readFileSync(resolve('dist/rendering-example/nonhuman.actorproject'), 'utf8');
   await page.locator('#project-options > summary').click(); await click(page, 'retained'); await open(page, nonhuman); const reopened = JSON.parse(await save(page));
   expect(reopened).toEqual(JSON.parse(nonhuman)); expect(reopened.rigs).toHaveLength(2);
-  if (info.project.name === 'chromium') await page.locator('#preview-panel').screenshot({ path: 'private-docs/html-launcher-demo/offline-nonhuman.png' });
+  if (info.project.name === 'chromium') await page.locator('#preview-panel').screenshot({ path: 'test-results/evidence/html-launcher-demo/offline-nonhuman.png' });
   expect(observed.errors).toEqual([]); expect(observed.dependencies).toEqual([]);
 });

@@ -10,7 +10,7 @@ async function proof(page: Page, name: string, mode = 'webgl2') {
 }
 function near(actual: number[], expected: number[], tolerance=1) { for(let i=0;i<expected.length;i++)expect(Math.abs(actual[i]!-expected[i]!)).toBeLessThanOrEqual(tolerance); }
 function evidence(name: string, value: unknown, browser: string){
-  if(process.env.ANIMATOR_S7_DEMO==='1'&&browser==='chromium'){mkdirSync('private-docs/s7-demo',{recursive:true});writeFileSync(`private-docs/s7-demo/${name}.json`,JSON.stringify(value,null,2));}
+  if(process.env.ANIMATOR_S7_DEMO==='1'&&browser==='chromium'){mkdirSync('test-results/evidence/s7-demo',{recursive:true});writeFileSync(`test-results/evidence/s7-demo/${name}.json`,JSON.stringify(value,null,2));}
 }
 test.beforeEach(async({browser},info)=>{console.log(`${info.project.name} actual browser ${browser.version()}`);});
 for(const mode of ['webgl2','canvas2d']){
@@ -51,11 +51,11 @@ test('standalone installed consumer demonstrates character, bound multiple-root 
     const report=JSON.parse((await page.locator('#report').textContent())!);expect(report.independentBuffers).toBe(true);expect(report.sourceUnchanged).toBe(true);expect(report.sourceCounts.rigs).toBe(name==='character'?1:name==='nonhuman'?2:0);
     if(name==='nonhuman')expect(report.sourceCounts.roots).toBe(3);
     if(process.env.ANIMATOR_S7_DEMO==='1'&&info.project.name==='chromium'){
-      mkdirSync('private-docs/s7-demo',{recursive:true});writeFileSync(`private-docs/s7-demo/${name}.actorproject`,text);writeFileSync(`private-docs/s7-demo/${name}-webgl2-report.json`,JSON.stringify(report,null,2));await page.screenshot({path:`private-docs/s7-demo/${name}-webgl2.png`,fullPage:true});
+      mkdirSync('test-results/evidence/s7-demo',{recursive:true});writeFileSync(`test-results/evidence/s7-demo/${name}.actorproject`,text);writeFileSync(`test-results/evidence/s7-demo/${name}-webgl2-report.json`,JSON.stringify(report,null,2));await page.screenshot({path:`test-results/evidence/s7-demo/${name}-webgl2.png`,fullPage:true});
     }
     await page.locator('#backend').selectOption('canvas2d');await expect(page.locator('#status')).toContainText('Prepared canvas2d');expect(await page.locator('#source').inputValue()).toBe(text);
     const ink=await page.locator('canvas').evaluate((c:HTMLCanvasElement)=>{const d=c.getContext('2d')!.getImageData(0,0,c.width,c.height).data;let n=0;for(let i=3;i<d.length;i+=4)if(d[i])n++;return n;});expect(ink).toBeGreaterThan(100);
-    if(process.env.ANIMATOR_S7_DEMO==='1'&&info.project.name==='chromium')await page.screenshot({path:`private-docs/s7-demo/${name}-canvas2d.png`,fullPage:true});
+    if(process.env.ANIMATOR_S7_DEMO==='1'&&info.project.name==='chromium')await page.screenshot({path:`test-results/evidence/s7-demo/${name}-canvas2d.png`,fullPage:true});
     await page.locator('#dispose').click();await expect(page.locator('#status')).toContainText('Resources disposed');expect(JSON.parse((await page.locator('#report').textContent())!).bindings).toBe(0);
     await page.locator('#reopen').click();await expect(page.locator('#status')).toContainText('Prepared canvas2d');expect(await page.locator('#source').inputValue()).toBe(text);await page.locator('#backend').selectOption('webgl2');
   }

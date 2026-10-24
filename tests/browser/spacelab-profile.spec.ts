@@ -30,9 +30,9 @@ test('historical profile installed consumer draws independent RGBA/pivot samples
   const download = page.waitForEvent('download'); await page.locator('#download').click();
   const downloaded = readFileSync((await (await download).path())!, 'utf8'); expect(downloaded).toBe(original);
   if (info.project.name === 'chromium') {
-    mkdirSync('private-docs/s5-demo', { recursive: true }); writeFileSync('private-docs/s5-demo/zero-bone.actorproject', downloaded);
-    writeFileSync('private-docs/s5-demo/rgba-evidence.json', JSON.stringify({ pixels, report }, null, 2));
-    await page.screenshot({ path: 'private-docs/s5-demo/zero-bone-consumer.png', fullPage: true });
+    mkdirSync('test-results/evidence/s5-demo', { recursive: true }); writeFileSync('test-results/evidence/s5-demo/zero-bone.actorproject', downloaded);
+    writeFileSync('test-results/evidence/s5-demo/rgba-evidence.json', JSON.stringify({ pixels, report }, null, 2));
+    await page.screenshot({ path: 'test-results/evidence/s5-demo/zero-bone-consumer.png', fullPage: true });
   }
   expect(errors).toEqual([]); expect(external).toEqual([]);
 });
@@ -50,13 +50,13 @@ test('historical profile character, bound-art multi-rig and zero-bone source sta
       let pixels = 0; for(let i=3;i<data.length;i+=4) if(data[i]) pixels++; return pixels;
     }); expect(ink).toBeGreaterThan(name === 'character' ? 1000 : 10);
     const download = page.waitForEvent('download'); await page.locator('#download').click(); expect(readFileSync((await (await download).path())!, 'utf8')).toBe(text);
-    if (info.project.name === 'chromium') { mkdirSync('private-docs/s5-demo',{recursive:true}); writeFileSync(`private-docs/s5-demo/${name}.actorproject`,text); await page.screenshot({path:`private-docs/s5-demo/${name}-consumer.png`,fullPage:true}); }
+    if (info.project.name === 'chromium') { mkdirSync('test-results/evidence/s5-demo',{recursive:true}); writeFileSync(`test-results/evidence/s5-demo/${name}.actorproject`,text); await page.screenshot({path:`test-results/evidence/s5-demo/${name}-consumer.png`,fullPage:true}); }
     const editor = await page.context().newPage(); editor.on('dialog', d => d.accept()); await editor.goto('/');
     await editor.locator('#open').setInputFiles({ name: `${name}.actorproject`, mimeType: 'application/json', buffer: Buffer.from(text) });
     await expect(editor.locator('#message')).toHaveText('Opened complete editable source.');
     const saved = editor.waitForEvent('download'); await editor.locator('#save').click();
     expect(JSON.parse(readFileSync((await (await saved).path())!,'utf8'))).toEqual(s);
-    if(info.project.name === 'chromium') await editor.screenshot({path:`private-docs/s5-demo/${name}-workspace.png`});
+    if(info.project.name === 'chromium') await editor.screenshot({path:`test-results/evidence/s5-demo/${name}-workspace.png`});
     await editor.close();
   }
 });
