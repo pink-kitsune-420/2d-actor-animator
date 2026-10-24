@@ -4,9 +4,10 @@
 
 Create characters, creatures and robots in an independent 2D rigging and animation editor. Paint layered parts, build freely named skeletons or use no bones, animate and keep complete editable projects. Built with Space Lab as its first intended consumer.
 
+**[Open 2D Actor Animator](https://pink-kitsune-420.github.io/2d-actor-animator/)** — use the alpha editor in your browser.
+
 **[Download 0.1.0a (Alpha)](https://github.com/pink-kitsune-420/2d-actor-animator/releases/tag/v0.1.0a)** — download **2D Actor Animator.html** from the release assets and open it in a desktop browser.
 
-A hosted editor is not yet deployed or live-verified.
 
 **Offline:** build and open `dist/2D Actor Animator.html` directly in your browser. It is self-contained; no server is needed. The release includes a prebuilt offline HTML download. Keep your work with **Download editable source**, then reopen the `.actorproject` file with **Open source**.
 

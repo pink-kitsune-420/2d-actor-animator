@@ -18,4 +18,4 @@
 - Zero-dependency DOM-free runtime and optional WebGL2 / Canvas2D rendering entries.
 - Self-contained offline HTML and prepared static hosting with creator help and tutorials.
 
-Live Space Lab provider adoption, arbitrary engine/file compatibility, phone authoring, mesh deformation and live hosting are not qualified by this candidate.
+Live Space Lab provider adoption, arbitrary engine/file compatibility, phone authoring and mesh deformation are not qualified by this candidate.
