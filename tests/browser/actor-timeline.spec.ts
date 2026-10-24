@@ -142,7 +142,7 @@ test('timeline native cancel/lost capture/blur/hidden/focus/task/file/resize/sel
     if(reason==='hidden')await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,value:true});document.dispatchEvent(new Event('visibilitychange'));Object.defineProperty(document,'hidden',{configurable:true,value:false});});
     if(reason==='focus')await page.locator('#sheet-offset').focus();
     if(reason==='task'){await page.locator('#task-button-rig').focus();await page.mouse.up();await page.keyboard.press('Enter');await page.locator('#task-button-animate').click();}
-    if(reason==='file'){const f=page.waitForEvent('filechooser');await page.locator('#open').focus();await page.mouse.up();await page.keyboard.press('Enter');await(await f).setFiles([]);}
+    if(reason==='file'){const f=page.waitForEvent('filechooser');await page.locator('#project-library > summary').focus(); await page.keyboard.press('Enter'); await page.locator('#open').focus();await page.mouse.up();await page.keyboard.press('Enter');await(await f).setFiles([]);}
     if(reason==='resize')await page.setViewportSize({width:1100,height:800});
     if(reason==='selection')await page.locator('#track-target').selectOption(JSON.stringify({kind:'node',rigId:'other',nodeId:'n'}));
     if(reason==='clip'){await page.locator('#clips').selectOption('dest');await page.locator('#clips').selectOption('c');}

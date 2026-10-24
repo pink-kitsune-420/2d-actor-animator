@@ -4,17 +4,17 @@ Open the editor and choose **Help & shortcuts** for an offline copy of the essen
 
 ## Character: start from the example
 
-1. Choose **Example: classic astronaut**, then **Rig**. Select a clip in Preview and use **Play clip**, **Pause** or the seconds slider. **Show rest pose** returns to the base shape.
+1. Choose **Projects → Examples → Example: classic astronaut**, then **Rig**. Select a clip in Preview and use **Play clip**, **Pause** or the seconds slider. **Show rest pose** returns to the base shape.
 2. In **Parts**, select a part and paint or adjust **Pivot & pixel scale**. Editing accepted artwork creates a separate revision. The assembled actor keeps its accepted artwork until you select the attachment in Rig and choose **Accept selected painted part revision**. Select the new part again if selecting the attachment changed your part selection.
 3. In **Rig**, select a joint. **Rest** changes its base transform. **Pose** inserts a key in the selected clip at the preview time. Positions are project units, Y up; angles are counterclockwise radians. Numeric controls and viewport tools edit the same source.
 4. In **Animate**, create a short clip, choose a track target, and insert keys at explicit seconds. The **Two-key shortcut** is useful for a first motion. Preview and scrub the clip. Use **Undo**, then **Redo**, to review a change.
-5. **Download editable source**. Keep the `.actorproject` file and reopen it with **Open source**. The browser cannot verify that you kept a download: **Project & recovery → I retained this source** acknowledges only the current downloaded source.
+5. **Download editable source**. Keep the `.actorproject` file and reopen it with **Projects → Open source**. The browser cannot verify that you kept a download: **Project & recovery → I retained this source** acknowledges only the current downloaded source.
 
 ![Character rig and preview](images/character.png)
 
 ## Nonhuman: a floating beacon with no bones
 
-1. Choose **Empty project**, then **Parts**. Name a part “Beacon”, choose width/height 8×8 and **Create part**. Paint several pixels. In **Pivot & pixel scale**, use 0.125 project units per pixel and pivot X/Y 0.5/0.5.
+1. Choose **Projects → Empty project**, then **Parts**. Name a part “Beacon”, choose width/height 8×8 and **Create part**. Paint several pixels. In **Pivot & pixel scale**, use 0.125 project units per pixel and pivot X/Y 0.5/0.5.
 2. In **Rig**, choose item kind **Part attachment**, leave the parent at scene root, name it “Light”, and **Create item**. A skeleton is optional. To build a creature instead, create a rig and freely named nodes; several scene roots are allowed.
 3. In **Animate**, create a 1-second “Float” clip. Expand **Two-key shortcut**, set Key B X to 0.5, and **Apply two keys**. Play and pause the preview. Undo and redo the key edit.
 4. Download the editable source, acknowledge retention after keeping it, and reopen it. Layers, pivot, source IDs, rigs and all clips are preserved. Unknown extensions remain inert.

@@ -23,10 +23,11 @@ export class ActorWorkspace {
     const guide = document.createElement('dialog'); guide.id = 'creator-guide';
     guide.setAttribute('aria-labelledby', 'guide-title');
     guide.innerHTML = `<h2 id="guide-title">Create your first animation</h2><form method="dialog"><button autofocus>Close help</button></form>
-      <ol><li><strong>Parts:</strong> start with Example: classic astronaut, or name a part and choose Create part. Paint with the selected palette colour.</li>
+      <ol><li><strong>Projects:</strong> choose Empty project, Open source, or Example: classic astronaut under Examples.</li>
+      <li><strong>Parts:</strong> name a part and choose Create part. Paint with the selected palette colour.</li>
       <li><strong>Rig:</strong> create a rig and joints, or attach a part directly to the scene with no bones. Rest edits the base shape; Pose keys the selected clip. Numeric transforms are available beside the viewport.</li>
       <li><strong>Animate:</strong> create or choose a clip, select an item and insert keys in seconds. Play and scrub in Preview. Emotes previews solo or paired gestures on a separate clock.</li>
-      <li><strong>Keep your original:</strong> Download editable source saves every layer, rig and clip as .actorproject. Reopen with Open source. Confirm “I retained this source” only after keeping the current file.</li>
+      <li><strong>Keep your original:</strong> Download editable source saves every layer, rig and clip as .actorproject. Reopen with Projects → Open source. Confirm “I retained this source” only after keeping the current file.</li>
       <li><strong>Export:</strong> Animate → Cels &amp; flipbooks → Flattened sheet and PNG. Prepare the sheet, then download both PNG and metadata. These are lossy copies; keep the editable source too.</li></ol>
       <h3>Shortcuts &amp; units</h3><p>Tab / Shift+Tab moves between controls; Enter / Space activates buttons. On painting, rig and timeline surfaces, Ctrl/Cmd+Z undoes and Ctrl/Cmd+Shift+Z redoes. Text fields keep native text undo. Escape cancels a gesture; outside the rig canvas it restores an expanded view. Arrow keys scrub a focused time slider. Numeric fields provide precise transforms and key times; painting and rectangle selection require a pointer.</p>
       <p>Scene X points right, Y up; rotations use counterclockwise radians and clip times use seconds. Artwork dimensions and selection moves use pixels, with pixel Y down.</p>
@@ -37,12 +38,24 @@ export class ActorWorkspace {
     }, { signal: host.controller.signal });
     root.addEventListener('keydown', event => {
       if (event.key !== 'Escape' || guide.open) return;
-      for (const id of ['project-options', 'rig-view-help']) {
+      for (const id of ['project-library', 'project-options', 'rig-view-help']) {
         const details = el(id) as HTMLDetailsElement;
         if (details.open && details.contains(document.activeElement)) {
           details.open = false; details.querySelector('summary')!.focus(); event.preventDefault(); return;
         }
       }
+    }, { signal: host.controller.signal });
+    const projects = el('project-library') as HTMLDetailsElement;
+    const closeProjects = (focus = false) => {
+      projects.open = false;
+      if (focus) projects.querySelector('summary')!.focus({ preventScroll: true });
+    };
+    projects.addEventListener('click', event => {
+      if (event.target instanceof Element && event.target.closest('button')) closeProjects(true);
+    }, { signal: host.controller.signal });
+    el('open').addEventListener('change', () => closeProjects(true), { signal: host.controller.signal });
+    document.addEventListener('pointerdown', event => {
+      if (projects.open && event.target instanceof Node && !projects.contains(event.target)) closeProjects();
     }, { signal: host.controller.signal });
     const assembly = el('assembly');
     const layout = root.querySelector<HTMLElement>('.layout')!;
@@ -130,7 +143,7 @@ export class ActorWorkspace {
     this.host.el('preview-panel').hidden = task === 'emotes';
     for (const [id, button] of this.buttons) button.setAttribute('aria-pressed', String(id === task));
     this.host.el('task-help').textContent = tasks.find(t => t.id === task)!.help;
-    if (task === 'all') for (const details of this.root.querySelectorAll('details')) if (details.id !== 'project-details' && details.id !== 'rig-view-help') details.open = true;
+    if (task === 'all') for (const details of this.root.querySelectorAll('details')) if (!['project-library', 'project-details', 'rig-view-help'].includes(details.id)) details.open = true;
     this.host.el('workspace-inspectors').scrollTop = 0;
     this.render();
   }

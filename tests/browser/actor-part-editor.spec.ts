@@ -1,5 +1,6 @@
 import { test, expect, type Page, type Download } from '@playwright/test';
 import { readFileSync } from 'node:fs';
+import { showProjects } from './actor-animator-authoring';
 import type { ActorProject } from '@actor-animator/types';
 
 async function downloadText(download: Download) { const path = await download.path(); expect(path).not.toBeNull(); return readFileSync(path!, 'utf8'); }
@@ -58,7 +59,7 @@ test('native text focus/undo and unsaved replacement decisions remain local', as
   await page.goto('/actor-tools.html'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await create(page, 'Tail');
   const name = page.getByLabel('Part name', { exact: true }); await name.fill(''); await name.pressSequentially('Typed name'); await name.press('Control+z'); await expect(name).toBeFocused(); await expect(name).not.toHaveValue('Typed name');
   expect((JSON.parse(await save(page)) as ActorProject).parts[0]!.name).toBe('Tail');
-  page.once('dialog', d => d.dismiss()); await page.getByRole('button', { name: 'Empty project', exact: true }).click(); await expect(page.locator('#parts option')).toHaveCount(1);
+  page.once('dialog', d => d.dismiss()); await showProjects(page); await page.getByRole('button', { name: 'Empty project', exact: true }).click(); await expect(page.locator('#parts option')).toHaveCount(1);
   let dialogType = '';
   page.once('dialog', async d => { dialogType = d.type(); await d.dismiss(); });
   await page.close({ runBeforeUnload: true }); await expect.poll(() => dialogType).toBe('beforeunload');

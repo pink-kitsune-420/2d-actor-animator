@@ -1,8 +1,12 @@
 import { test, expect, type Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import type { ActorProject } from '@actor-animator/types';
+import { showProjects } from './actor-animator-authoring';
 
-async function task(page: Page, name: string) { await page.getByRole('button', { name, exact: true }).click(); }
+async function task(page: Page, name: string) {
+  if (['Example: classic astronaut', 'Empty project'].includes(name)) await showProjects(page);
+  await page.getByRole('button', { name, exact: true }).click();
+}
 async function save(page: Page) {
   const download = page.waitForEvent('download'); await task(page, 'Download editable source');
   return readFileSync((await (await download).path())!, 'utf8');

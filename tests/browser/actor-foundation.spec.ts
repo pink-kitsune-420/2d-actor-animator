@@ -1,4 +1,4 @@
-import { disposePage } from './actor-animator-authoring';
+import { disposePage, showProjects } from './actor-animator-authoring';
 import { test, expect, type Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import type { ActorProject } from '@actor-animator/types';
@@ -42,7 +42,7 @@ test.beforeEach(async ({ page }) => {
     };
   });
 });
-async function click(page: Page, id: string) { await page.locator(`#${id}`).click(); }
+async function click(page: Page, id: string) { if (['classic-astronaut', 'new', 'open'].includes(id)) await showProjects(page); await page.locator(`#${id}`).click(); }
 async function field(page: Page, id: string, value: string | number) { await page.locator(`#${id}`).fill(String(value)); }
 async function save(page: Page): Promise<{ text: string; source: ActorProject }> {
   const pending = page.waitForEvent('download'); await click(page, 'save'); const path = await (await pending).path(); expect(path).not.toBeNull();
@@ -155,7 +155,7 @@ test('clock, raster resources and stale callbacks stop on blur, picker, replacem
   let count = await page.evaluate(() => window.actorEvidence.matrices.length);
   await page.evaluate(() => { for (const callback of window.actorEvidence.callbacks) callback(performance.now() + 5000); });
   expect(await page.evaluate(() => window.actorEvidence.matrices.length)).toBe(count);
-  await click(page, 'play'); const chooser = page.waitForEvent('filechooser'); await page.locator('#open').click(); await (await chooser).setFiles([]);
+  await click(page, 'play'); const chooser = page.waitForEvent('filechooser'); await showProjects(page); await page.locator('#open').click(); await (await chooser).setFiles([]);
   count = await page.evaluate(() => window.actorEvidence.matrices.length);
   await page.evaluate(() => { for (const callback of window.actorEvidence.callbacks) callback(performance.now() + 5000); }); expect(await page.evaluate(() => window.actorEvidence.matrices.length)).toBe(count);
   await click(page, 'new'); expect(await page.evaluate(() => window.actorEvidence.rasters.every(c => c.width === 0 && c.height === 0))).toBe(true);

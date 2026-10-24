@@ -3,7 +3,14 @@ import { readFileSync } from 'node:fs';
 import type { ActorProject, ActorTransform } from '@actor-animator/types';
 
 export const field = async (p: Page, id: string, v: string | number) => { await p.locator(`#${id}`).fill(String(v)); };
-export const click = async (p: Page, id: string) => { await p.locator(`#${id}`).click(); };
+export async function showProjects(p: Page) {
+  const projects = p.locator('#project-library');
+  if (!await projects.evaluate((el: HTMLDetailsElement) => el.open)) await projects.locator(':scope > summary').click();
+}
+export const click = async (p: Page, id: string) => {
+  if (['classic-astronaut', 'new', 'open'].includes(id)) await showProjects(p);
+  await p.locator(`#${id}`).click();
+};
 /** Keep old-document resource oracles observable while invoking the actual page-close lifecycle. */
 export const disposePage = async (p: Page) => { await p.evaluate(() => window.dispatchEvent(new Event('pagehide'))); };
 export async function save(p: Page) { const download = p.waitForEvent('download'); await click(p, 'save'); return readFileSync((await (await download).path())!, 'utf8'); }

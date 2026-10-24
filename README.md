@@ -10,7 +10,7 @@ Create characters, creatures and robots in an independent 2D rigging and animati
 
 ## First animation
 
-1. Choose **Example: classic astronaut**, then **Rig** to explore a character; or **Empty project → Parts → Create part** for your own artwork.
+1. Choose **Projects → Examples → Example: classic astronaut**, then **Rig** to explore a character; or **Projects → Empty project → Parts → Create part** for your own artwork.
 2. Use **Rig** to assemble parts, **Animate** to create keys, and Preview to play or scrub explicit seconds. **Rest** changes the base shape; **Pose** keys the selected clip.
 3. Download the editable source and retain it. PNG sheets are flattened derivatives; download their matching metadata and keep your original source too.
 
@@ -27,7 +27,7 @@ npm ci --ignore-scripts --no-audit --no-fund
 npm run dev
 ```
 
-Open **http://127.0.0.1:4500/**. Choose **Example: classic astronaut**, then use Parts, Rig, Animate or Emotes. The example demonstrates the tools; its animation is not a finished quality reference. Empty projects and nonhuman/zero-bone projects use the same editor.
+Open **http://127.0.0.1:4500/**. Choose **Projects → Examples → Example: classic astronaut**, then use Parts, Rig, Animate or Emotes. The example demonstrates the tools; its animation is not a finished quality reference. Empty projects and nonhuman/zero-bone projects use the same editor.
 
 Stop the server with **Ctrl+C**. It uses a strict port, so it will refuse to take an occupied port. The editor requires no account or hosted game.
 

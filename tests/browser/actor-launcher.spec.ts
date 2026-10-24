@@ -18,7 +18,8 @@ async function launch(page: Page) {
   page.on('pageerror', e => errors.push(e.message));
   page.on('request', r => { if (r.url() !== url && !r.url().startsWith('blob:')) dependencies.push(r.url()); });
   await page.goto(url);
-  await expect(page.getByRole('button', { name: 'Example: classic astronaut', exact: true })).toBeVisible();
+  await expect(page.locator('#project-library > summary')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Example: classic astronaut', exact: true })).toBeHidden();
   expect(await page.evaluate(() => [...document.scripts].map(s => [s.type, s.src]))).toEqual([['', '']]);
   return { errors, dependencies };
 }

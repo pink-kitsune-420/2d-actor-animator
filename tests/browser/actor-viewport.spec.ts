@@ -135,7 +135,7 @@ test('native drag cancellation, capture loss, blur, task/selection/file/source r
     if (reason === 'blur') await page.evaluate(() => window.dispatchEvent(new Event('blur')));
     if (reason === 'task') { await page.locator('#task-button-parts').focus(); await page.mouse.up(); await page.keyboard.press('Enter'); await page.locator('#task-button-rig').focus(); await page.keyboard.press('Enter'); }
     if (reason === 'selection') { await page.locator('#items').selectOption('base'); await page.locator('#items').selectOption('free'); }
-    if (reason === 'file') { const chooser = page.waitForEvent('filechooser'); page.once('dialog', d => d.accept()); await page.locator('#open').focus(); await page.mouse.up(); await page.keyboard.press('Enter'); await (await chooser).setFiles([]); }
+    if (reason === 'file') { const chooser = page.waitForEvent('filechooser'); page.once('dialog', d => d.accept()); await page.locator('#project-library > summary').focus(); await page.keyboard.press('Enter'); await page.locator('#open').focus(); await page.mouse.up(); await page.keyboard.press('Enter'); await (await chooser).setFiles([]); }
     if (reason === 'resize') await page.setViewportSize({ width: 1100, height: 800 });
     await page.mouse.up(); expect(await save(page), reason).toBe(before); await expect(page.locator('#undo')).toBeDisabled();
     await page.setViewportSize({ width: 1280, height: 720 });
@@ -162,7 +162,7 @@ test('singular parents refuse edits, joint move preserves children, hidden setti
 });
 
 test('classic character visible native rest and pose edits, exact source history and preview-clock measurement', async ({ page }, info) => {
-  await page.goto('/'); await page.locator('#classic-astronaut').click(); await page.locator('#task-button-rig').click();
+  await page.goto('/'); await page.locator('#project-library > summary').click(); await page.locator('#classic-astronaut').click(); await page.locator('#task-button-rig').click();
   const original = JSON.parse(await save(page)) as ActorProject, root = original.rigs[0]!.nodes[0]!;
   await pick(page, 'node', root.id); const before = await save(page);
   let a = await point(page, 0, .8, 128, .8); await drag(page, a, { x: a.x + .125 * 128 * a.b.width / 640, y: a.y });

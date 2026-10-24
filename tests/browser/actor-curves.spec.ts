@@ -115,7 +115,7 @@ test('curves native cancellation capture focus file task source and geometry ret
     if(reason==='hidden')await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,value:true});document.dispatchEvent(new Event('visibilitychange'));Object.defineProperty(document,'hidden',{configurable:true,value:false});});
     if(reason==='focus')await page.locator('#curve-b0').focus();
     if(reason==='task'){await page.locator('#task-button-rig').focus();await page.mouse.up();await page.keyboard.press('Enter');await page.locator('#task-button-animate').click();}
-    if(reason==='file'){const f=page.waitForEvent('filechooser');await page.locator('#open').focus();await page.mouse.up();await page.keyboard.press('Enter');await(await f).setFiles([]);}
+    if(reason==='file'){const f=page.waitForEvent('filechooser');await page.locator('#project-library > summary').focus(); await page.keyboard.press('Enter'); await page.locator('#open').focus();await page.mouse.up();await page.keyboard.press('Enter');await(await f).setFiles([]);}
     if(reason==='resize')await page.setViewportSize({width:1100,height:800});
     if(reason==='clip'){await page.locator('#clips').selectOption('dest');await page.locator('#clips').selectOption('c');}
     if(reason==='target'){await page.locator('#track-target').selectOption(JSON.stringify({kind:'node',rigId:'other',nodeId:'n'}));await page.locator('#track-target').selectOption(JSON.stringify({kind:'node',rigId:'r',nodeId:'n'}));}
