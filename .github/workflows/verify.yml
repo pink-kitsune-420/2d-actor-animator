@@ -24,9 +24,19 @@ jobs:
       - run: npm run test:browser -- --project=chromium
         env:
           ANIMATOR_TEST_PORT: 4510
-      - run: npm run test:release
+      # Firefox WebGL needs a display/GL provider on hosted Linux runners.
+      # Keep the same native backend assertions; serialize headed browser work.
+      - run: xvfb-run -a npm run test:release -- --headed --workers=1
         env:
           ANIMATOR_TEST_PORT: 4512
+      - name: Retain failed browser diagnostics
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2, MIT
+        with:
+          name: browser-diagnostics-${{ github.run_id }}
+          path: playwright-report/
+          if-no-files-found: ignore
+          retention-days: 3
       - name: Archive the exact tested site for manual deployment
         if: github.event_name == 'workflow_dispatch'
         run: tar --dereference --hard-dereference -cf "$RUNNER_TEMP/artifact.tar" -C _site .
