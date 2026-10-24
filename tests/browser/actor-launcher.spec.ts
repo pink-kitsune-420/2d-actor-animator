@@ -23,6 +23,35 @@ async function launch(page: Page) {
   expect(await page.evaluate(() => [...document.scripts].map(s => [s.type, s.src]))).toEqual([['', '']]);
   return { errors, dependencies };
 }
+test('offline notices stay compact and preserve complete license and credits behind keyboard disclosures', async ({ page }, info) => {
+  const observed = await launch(page);
+  const notices = page.locator('#offline-notices'), summary = notices.locator(':scope > summary');
+  const license = page.locator('#offline-license pre'), credits = page.locator('#offline-credits pre');
+  await expect(summary).toHaveText('License & credits');
+  await expect(notices).not.toHaveAttribute('open'); await expect(license).toBeHidden(); await expect(credits).toBeHidden();
+  // Compare preserved notices independently against their authoritative files.
+  expect(await license.textContent()).toBe(readFileSync('LICENSE', 'utf8'));
+  expect(await credits.textContent()).toBe(readFileSync('CREDITS.md', 'utf8'));
+  await expect(notices).not.toContainText('This copy works directly');
+  await expect(notices).not.toContainText('Browser recovery storage may depend');
+  await summary.focus(); await page.keyboard.press('Enter');
+  await expect(notices).toHaveAttribute('open'); await expect(license).toBeHidden(); await expect(credits).toBeHidden();
+  expect(await notices.innerText()).toContain('Spacelab Contributors · MIT licensed.');
+  expect(await notices.innerText()).not.toContain('Build and verification tools');
+  if (info.project.name === 'chromium') {
+    mkdirSync('test-results/evidence/offline-footer-demo', { recursive: true });
+    await notices.screenshot({ path: 'test-results/evidence/offline-footer-demo/compact-notices.png' });
+  }
+  await page.keyboard.press('Tab'); await expect(page.locator('#offline-license > summary')).toBeFocused();
+  await page.keyboard.press('Enter'); await expect(license).toBeVisible(); await expect(credits).toBeHidden();
+  await page.keyboard.press('Enter'); await expect(license).toBeHidden();
+  await page.keyboard.press('Tab'); await expect(page.locator('#offline-credits > summary')).toBeFocused();
+  await page.keyboard.press('Enter'); await expect(credits).toBeVisible();
+  await expect(credits).toContainText('not affiliated with, endorsed by, or sponsored by NASA or ESA');
+  await page.keyboard.press('Enter'); await expect(credits).toBeHidden();
+  await summary.focus(); await page.keyboard.press('Enter'); await expect(notices).not.toHaveAttribute('open');
+  expect(observed.errors).toEqual([]); expect(observed.dependencies).toEqual([]);
+});
 test('relocated HTML launches offline and preserves character edit, undo, redo and downloaded source reopen', async ({ page }, info) => {
   const observed = await launch(page);
   await click(page, 'classic-astronaut');
