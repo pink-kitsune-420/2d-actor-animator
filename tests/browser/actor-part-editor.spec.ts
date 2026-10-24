@@ -1,6 +1,6 @@
 import { test, expect, type Page, type Download } from '@playwright/test';
 import { readFileSync } from 'node:fs';
-import { showProjects } from './actor-animator-authoring';
+import { showProjects, showProjectOptions } from './actor-animator-authoring';
 import type { ActorProject } from '@actor-animator/types';
 
 async function downloadText(download: Download) { const path = await download.path(); expect(path).not.toBeNull(); return readFileSync(path!, 'utf8'); }
@@ -17,7 +17,7 @@ test('tail and antenna draw → undo → save → close → reopen → reuse, wi
   await page.getByRole('button', { name: 'Redo', exact: true }).click();
   await create(page, 'Antenna'); await dot(page, 4, 2); await page.getByRole('button', { name: 'Undo', exact: true }).click(); await page.getByRole('button', { name: 'Redo', exact: true }).click();
   const text = await save(page); source = JSON.parse(text); await expect(page.locator('#state')).toContainText('Unsaved'); await expect(page.locator('#message')).toContainText('Retention is unverified');
-  await page.getByRole('button', { name: 'I retained this source', exact: true }).click(); await expect(page.locator('#state')).toContainText('unchanged');
+  await showProjectOptions(page); await page.getByRole('button', { name: 'I retained this source', exact: true }).click(); await page.locator('#project-options > summary').click(); await expect(page.locator('#state')).toContainText('unchanged');
   await page.reload(); await page.getByRole('button', { name: 'All tools', exact: true }).click();
   await page.locator('#open').setInputFiles({ name: 'parts.actorproject', mimeType: 'application/json', buffer: Buffer.from(text) });
   await expect(page.locator('#parts option')).toHaveCount(2); expect(JSON.parse(await save(page))).toEqual(source);
@@ -67,7 +67,7 @@ test('native text focus/undo and unsaved replacement decisions remain local', as
   const context = page.context(), closed = page.waitForEvent('close');
   page.once('dialog', d => d.accept()); await page.close({ runBeforeUnload: true }); await closed;
   const reopened = await context.newPage(); await reopened.goto('/actor-tools.html');
-  await reopened.getByRole('button', { name: 'All tools', exact: true }).click(); await reopened.getByRole('button', { name: 'Recover local draft', exact: true }).click();
+  await reopened.getByRole('button', { name: 'All tools', exact: true }).click(); await showProjectOptions(reopened); await reopened.getByRole('button', { name: 'Recover local draft', exact: true }).click();
   await expect(reopened.locator('#parts option')).toHaveCount(1); await expect(reopened.locator('#state')).toContainText('Unsaved');
   await reopened.close();
 });

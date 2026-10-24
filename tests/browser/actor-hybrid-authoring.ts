@@ -1,7 +1,7 @@
 import { expect, type Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import type { ActorProject } from '@actor-animator/types';
-import { click, field, open, save, transform } from './actor-animator-authoring';
+import { showProjectDetails, click, field, open, save, transform } from './actor-animator-authoring';
 
 export async function selectPart(p:Page,name:string){const value=await p.locator('#parts option').filter({hasText:`${name} ·`}).first().getAttribute('value');await p.locator('#parts').selectOption(value!);}
 export async function dot(p:Page,x:number,y:number){await p.locator('#paint').scrollIntoViewIfNeeded();const b=(await p.locator('#paint').boundingBox())!;await p.mouse.click(b.x+x*16+8,b.y+y*16+8);}
@@ -13,7 +13,7 @@ export async function part(p:Page,name:string,width:number,height:number){await 
 export async function authorAstronautHybrid(p:Page){
   await p.addInitScript(()=>{let n=0;Object.defineProperty(crypto,'randomUUID',{value:()=>`10000000-0000-4000-8000-${String(++n).padStart(12,'0')}`});});
   await p.goto('/actor-tools.html'); await p.getByRole('button', { name: 'All tools', exact: true }).click();await open(p,readFileSync(new URL('../fixtures/actor-projects/classic-astronaut-b2.project.json',import.meta.url),'utf8'));
-  await p.locator('details').filter({ has: p.locator('summary', { hasText: 'Project details' }) }).last().evaluate((el: HTMLDetailsElement) => { el.open = true; });await field(p,'project-name','Classic astronaut — layered animation');await field(p,'project-version','0.2.0');await field(p,'project-provenance','Original MIT artwork and hybrid visual clips authored through Actor tools. 16 pixels/metre; developer art review pending.');await click(p,'apply-project');
+  await showProjectDetails(p);await field(p,'project-name','Classic astronaut — layered animation');await field(p,'project-version','0.2.0');await field(p,'project-provenance','Original MIT artwork and hybrid visual clips authored through Actor tools. 16 pixels/metre; developer art review pending.');await click(p,'apply-project');
   await selectPart(p,'Helmet');await cel(p,'Helmet base');await click(p,'copy-cel-art');await p.locator('#palette').selectOption('1');await dot(p,6,4);await dot(p,7,3);await cel(p,'Visor glint');
   const before=JSON.parse(await save(p)) as ActorProject;
   for(const c of before.clips){await p.locator('#clips').selectOption(c.id);for(const [t,name]of [[0,'Helmet base'],[c.duration*.45,'Visor glint'],[c.duration*.6,'Helmet base']]as const)await celKey(p,'Helmet art',t,name);}

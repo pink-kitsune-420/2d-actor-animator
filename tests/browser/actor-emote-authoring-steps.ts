@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
-import { click,field,open,save,addClip,key,transform } from './actor-animator-authoring';
+import { showProjectDetails, click,field,open,save,addClip,key,transform } from './actor-animator-authoring';
 
 export async function socket(page:Page,name:string,parent:string){await page.locator('#item-kind').selectOption('socket');await field(page,'item-name',name);await page.locator('#parent-node').selectOption({label:parent});await transform(page,'rest',{x:0,y:0,rotation:0,scaleX:1,scaleY:1});await click(page,'add-item');}
 async function definition(page:Page,id:string,label:string,priority:number){await field(page,'emote-id',id);await field(page,'emote-label',label);await field(page,'emote-revision',1);await field(page,'emote-duration',2);await page.locator('#emote-playback').selectOption('once');await field(page,'emote-priority',priority);await click(page,'add-emote');}
@@ -11,7 +11,7 @@ async function bind(page:Page,name:string){await field(page,'emote-binding-name'
 export async function authorAstronautEmotes(page:Page){
   await page.addInitScript(()=>{let n=0;Object.defineProperty(crypto,'randomUUID',{value:()=>`20000000-0000-4000-8000-${String(++n).padStart(12,'0')}`});});
   await page.goto('/actor-tools.html'); await page.getByRole('button', { name: 'All tools', exact: true }).click();await open(page,readFileSync(new URL('../fixtures/actor-projects/classic-astronaut-b3.project.json',import.meta.url),'utf8'));
-  await page.locator('details').filter({ has: page.locator('summary', { hasText: 'Project details' }) }).last().evaluate((el: HTMLDetailsElement) => { el.open = true; });await field(page,'project-name','Classic astronaut — editable gestures and animation');await field(page,'project-version','0.3.0');await field(page,'project-provenance','Original MIT layered artwork, clips and solo/two-role choreography authored through Actor tools. Preview only; developer art review pending.');await click(page,'apply-project');
+  await showProjectDetails(page);await field(page,'project-name','Classic astronaut — editable gestures and animation');await field(page,'project-version','0.3.0');await field(page,'project-provenance','Original MIT layered artwork, clips and solo/two-role choreography authored through Actor tools. Preview only; developer art review pending.');await click(page,'apply-project');
   await socket(page,'Palm contact','Near hand');
   await addClip(page,'Wave',2,'once');
   for(const[t,r]of [[0,0],[.4,2.4],[1.6,2.4],[2,0]])await key(page,'Astronaut / Near shoulder',t!,{rotation:r});

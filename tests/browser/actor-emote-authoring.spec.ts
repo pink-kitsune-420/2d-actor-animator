@@ -1,7 +1,7 @@
 import { test,expect } from '@playwright/test';
 import { readFileSync,writeFileSync,readdirSync } from 'node:fs';
 import type { ActorProject } from '@actor-animator/types';
-import { disposePage, click,field,open,save } from './actor-animator-authoring';
+import { showProjectDetails, disposePage, click,field,open,save } from './actor-animator-authoring';
 import { authorAstronautEmotes,authorNonhumanEmotes } from './actor-emote-authoring-steps';
 
 interface Draws{roles:{role:string|undefined;time:string|undefined;instance:string}[];points:number[][];callbacks:FrameRequestCallback[];frameTimes:number[]}
@@ -37,7 +37,7 @@ test('independent nonhuman mappings, optional/mismatched definitions and source 
   await click(page,'swap-emote-roles');await field(page,'emote-time',1);await click(page,'seek-emote');expect(await page.evaluate(()=>window.emoteEvidence.roles.map(r=>r.role))).toEqual(['receiver','initiator']);
   const absent=JSON.parse(nonhuman)as ActorProject;delete absent.emotes;absent.requiredCapabilities=absent.requiredCapabilities.filter(c=>c!=='spacelab:emote-authoring/1');await page.locator('#emote-secondary').setInputFiles({name:'no-emotes.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(absent))});await expect(page.locator('#emote-secondary-state')).toContainText('Second source');await click(page,'configure-emote');await expect(page.locator('#emote-status')).toContainText('missing-emote');expect(await save(page)).toBe(before);
   const mismatch=JSON.parse(nonhuman)as ActorProject;mismatch.emotes![0]!.revision++;await page.locator('#emote-secondary').setInputFiles({name:'revision.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(mismatch))});await click(page,'configure-emote');await expect(page.locator('#emote-status')).toContainText('definition-mismatch');
-  await click(page,'clear-emote-secondary');await click(page,'play-emote');await expect(page.locator('#emote-status')).toContainText('Playing');await page.locator('details').filter({ has: page.locator('summary', { hasText: 'Project details' }) }).last().evaluate((el: HTMLDetailsElement) => { el.open = true; });await field(page,'project-version','0.3.1');await click(page,'apply-project');await expect(page.locator('#emote-status')).toContainText('cancelled');await info.attach('nonhuman-role-mapping.actorproject',{body:nonhuman,contentType:'application/json'});
+  await click(page,'clear-emote-secondary');await click(page,'play-emote');await expect(page.locator('#emote-status')).toContainText('Playing');await showProjectDetails(page);await field(page,'project-version','0.3.1');await click(page,'apply-project');await expect(page.locator('#emote-status')).toContainText('cancelled');await info.attach('nonhuman-role-mapping.actorproject',{body:nonhuman,contentType:'application/json'});
 });
 
 test('one owned clock, cancel/reset/blur/disposal and stale frames have no source or world effects',async({page},info)=>{

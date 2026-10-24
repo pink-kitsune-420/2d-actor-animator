@@ -2,7 +2,7 @@ import { test,expect,type Page } from '@playwright/test';
 import { readFileSync,writeFileSync,mkdirSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import type { ActorProject } from '@actor-animator/types';
-import { disposePage, click,field,open,save } from './actor-animator-authoring';
+import { showProjectDetails, disposePage, click,field,open,save } from './actor-animator-authoring';
 const beacon=readFileSync(new URL('../../examples/spacelab/beacon.actorproject',import.meta.url),'utf8');
 async function start(p:Page,text=beacon){await p.goto('/actor-tools.html');await p.getByRole('button',{name:'All tools',exact:true}).click();await open(p,text);}
 async function settings(p:Page){
@@ -54,7 +54,7 @@ test('recipe inputs retain native focus/undo and invalidate settings, clip, hist
   await start(page);const text=await save(page),recovery=await page.evaluate(()=>({...localStorage}));await settings(page);await click(page,'prepare-sheet');
   await page.locator('#sheet-times').focus();await page.keyboard.press('End');await page.keyboard.type('9');await expect(page.locator('#sheet-times')).toBeFocused();await expect(page.locator('#download-sheet')).toBeDisabled();await page.keyboard.press('ControlOrMeta+z');expect(await page.locator('#sheet-times').inputValue()).toBe('0, .5, .75, .875');expect(await save(page)).toBe(text);expect(await page.evaluate(()=>({...localStorage}))).toEqual(recovery);
   for(const times of ['0,.5,.5','0,1','.5,.75','0,.75,.5']){await field(page,'sheet-times',times);await click(page,'prepare-sheet');await expect(page.locator('#message')).toContainText('Samples must start');await expect(page.locator('#download-sheet')).toBeDisabled();expect(await save(page)).toBe(text);}
-  await settings(page);await click(page,'prepare-sheet');await page.locator('#project-details > summary').click();await field(page,'project-name','A source edit');await click(page,'apply-project');await expect(page.locator('#download-sheet')).toBeDisabled();await click(page,'undo');expect(await save(page)).toBe(text);await click(page,'prepare-sheet');await click(page,'redo');await expect(page.locator('#download-sheet')).toBeDisabled();
+  await settings(page);await click(page,'prepare-sheet');await showProjectDetails(page);await field(page,'project-name','A source edit');await click(page,'apply-project');await expect(page.locator('#download-sheet')).toBeDisabled();await click(page,'undo');expect(await save(page)).toBe(text);await click(page,'prepare-sheet');await click(page,'redo');await expect(page.locator('#download-sheet')).toBeDisabled();
   await save(page);await click(page,'retained');const next=JSON.parse(text)as ActorProject;next.clips.push({...structuredClone(next.clips[0]!),id:'other',name:'Other clip',tracks:[],celTracks:[],visibilityTracks:[],drawOrderTracks:[]});await open(page,JSON.stringify(next));await click(page,'prepare-sheet');await page.locator('#clips').selectOption('other');await expect(page.locator('#download-sheet')).toBeDisabled();await click(page,'prepare-sheet');await open(page,text);await expect(page.locator('#download-sheet')).toBeDisabled();
 });
 

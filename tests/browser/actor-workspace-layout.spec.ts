@@ -2,7 +2,7 @@ import { test, expect, type Page } from '@playwright/test';
 import { mkdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { click, open, save } from './actor-animator-authoring';
+import { click, open, save, showProjectDetails, showProjectOptions } from './actor-animator-authoring';
 
 test.beforeEach(async ({ browser }, info) => console.log(`${info.project.name} actual browser ${browser.version()}`));
 async function box(page: Page, id: string) { return (await page.locator(`#${id}`).boundingBox())!; }
@@ -12,6 +12,44 @@ async function screenshot(page: Page, name: string, engine: string) {
     await page.screenshot({ path: `test-results/evidence/workspace-layout-demo/${name}.png` });
   }
 }
+test('project toolbar keeps its geometry and disclosure state across All tools and other tasks', async ({ page }, info) => {
+  await page.setViewportSize({ width: 1366, height: 768 }); await page.goto('/'); await click(page, 'classic-astronaut');
+  const source = await save(page), toolbar = page.locator('nav[aria-label=Project]');
+  const original = await toolbar.boundingBox(), saveBox = await box(page, 'save');
+  const options = page.locator('#project-options'), summary = options.locator(':scope > summary');
+  for (const task of ['all', 'rig', 'animate', 'emotes', 'parts', 'all']) {
+    await click(page, `task-button-${task}`);
+    expect(await toolbar.boundingBox(), task).toEqual(original); expect(await box(page, 'save'), task).toEqual(saveBox);
+    await expect(summary).toBeVisible(); await expect(options).not.toHaveAttribute('open');
+    await expect(page.locator('#retained')).toBeHidden(); await expect(page.locator('#project-library')).not.toHaveAttribute('open');
+  }
+  await showProjectOptions(page); expect(await toolbar.boundingBox()).toEqual(original);
+  await expect(page.locator('#retained')).toBeVisible();
+  // Keyboard task activation leaves an explicitly opened menu untouched.
+  await page.locator('#task-button-parts').focus(); await page.keyboard.press('Enter');
+  await expect(options).toHaveAttribute('open'); expect(await toolbar.boundingBox()).toEqual(original);
+  await summary.focus(); await page.keyboard.press('Escape'); await expect(options).not.toHaveAttribute('open'); await expect(summary).toBeFocused();
+  expect(await save(page)).toBe(source);
+  await click(page, 'task-button-all'); await screenshot(page, 'stable-all-tools-toolbar', info.project.name);
+});
+test('All tools project details remain editable and recovery dropdown stays inside small windows', async ({ page }) => {
+  await page.goto('/'); await click(page, 'classic-astronaut'); const before = await save(page);
+  await click(page, 'task-button-all'); await showProjectDetails(page);
+  await page.locator('#project-name').fill('Toolbar regression project'); await click(page, 'apply-project');
+  const edited = JSON.parse(await save(page)); expect(edited).toEqual({ ...JSON.parse(before), name: 'Toolbar regression project' });
+  await click(page, 'undo'); expect(await save(page)).toBe(before);
+  for (const [width, height] of [[1366, 768], [800, 768], [390, 844], [683, 384]]) {
+    await page.setViewportSize({ width: width!, height: height! }); await showProjectOptions(page);
+    const menu = (await page.locator('#project-options > div').boundingBox())!;
+    expect(menu.x).toBeGreaterThanOrEqual(0); expect(menu.y).toBeGreaterThanOrEqual(0);
+    expect(menu.x + menu.width).toBeLessThanOrEqual(width!); expect(menu.y + menu.height).toBeLessThanOrEqual(height!);
+    await page.locator('#retained').focus(); await page.keyboard.press('Escape');
+    await expect(page.locator('#project-options')).not.toHaveAttribute('open');
+    await expect(page.locator('#project-options > summary')).toBeFocused();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width!);
+  }
+  expect(await save(page)).toBe(before);
+});
 test('desktop toolbar and All tools keep a persistent preview beside scrolling inspectors', async ({ page }, info) => {
   await page.setViewportSize({ width: 1357, height: 592 }); await page.goto('/'); await click(page, 'classic-astronaut');
   await click(page, 'task-button-all'); const baseline = await save(page);

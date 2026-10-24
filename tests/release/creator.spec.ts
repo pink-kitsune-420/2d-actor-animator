@@ -7,7 +7,7 @@ import { click, field, open, save } from '../browser/actor-animator-authoring';
 
 async function download(page:Page,id:string) { const event=page.waitForEvent('download');await click(page,id);return readFileSync((await (await event).path())!); }
 async function task(page:Page,name:string) { await click(page,`task-button-${name}`); }
-async function retain(page:Page) {const details=page.locator('#project-options');if(!await details.evaluate((d:HTMLDetailsElement)=>d.open))await details.locator(':scope > summary').click();await click(page,'retained');await details.locator(':scope > summary').click();}
+async function retain(page:Page) {await click(page,'retained');}
 async function screen(page:Page,name:string,engine:string) {
   if(engine==='chromium') {mkdirSync('playwright-report/release-demo',{recursive:true});await page.screenshot({path:`playwright-report/release-demo/${name}.png`});}
 }

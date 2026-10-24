@@ -7,9 +7,23 @@ export async function showProjects(p: Page) {
   const projects = p.locator('#project-library');
   if (!await projects.evaluate((el: HTMLDetailsElement) => el.open)) await projects.locator(':scope > summary').click();
 }
+export async function showProjectOptions(p: Page) {
+  const options = p.locator('#project-options');
+  if (!await options.evaluate((el: HTMLDetailsElement) => el.open)) await options.locator(':scope > summary').click();
+}
+export async function showProjectDetails(p: Page) {
+  await showProjectOptions(p);
+  const details = p.locator('#project-details');
+  if (!await details.evaluate((el: HTMLDetailsElement) => el.open)) await details.locator(':scope > summary').click();
+}
 export const click = async (p: Page, id: string) => {
   if (['classic-astronaut', 'new', 'open'].includes(id)) await showProjects(p);
+  if (['retained', 'recover'].includes(id)) await showProjectOptions(p);
   await p.locator(`#${id}`).click();
+  if (['retained', 'recover', 'apply-project'].includes(id)) {
+    const options = p.locator('#project-options');
+    if (await options.evaluate((el: HTMLDetailsElement) => el.open)) await options.locator(':scope > summary').click();
+  }
 };
 /** Keep old-document resource oracles observable while invoking the actual page-close lifecycle. */
 export const disposePage = async (p: Page) => { await p.evaluate(() => window.dispatchEvent(new Event('pagehide'))); };
@@ -62,7 +76,7 @@ async function paint(p: Page, name: string, rows: string[], pivot: [number, numb
 export async function authorAstronaut(p: Page) {
   await p.addInitScript(() => { let n = 0; Object.defineProperty(crypto, 'randomUUID', { value: () => `00000000-0000-4000-8000-${String(++n).padStart(12, '0')}` }); });
   await p.goto('/actor-tools.html'); await p.getByRole('button', { name: 'All tools', exact: true }).click();
-  await p.locator('details').filter({ has: p.locator('summary', { hasText: 'Project details' }) }).last().evaluate((el: HTMLDetailsElement) => { el.open = true; });
+  await showProjectDetails(p);
   await field(p, 'project-name', 'Classic astronaut — editable pixel art'); await field(p, 'project-author', 'Space Lab'); await field(p, 'project-provenance', 'Original MIT artwork and clips authored through Actor tools; 16 pixels/metre. Visual review pending.'); await click(p, 'apply-project');
   await paint(p, 'Helmet', ['00011111000','00111111100','01144444110','11433333411','14322222341','14322222341','11433333411','01144444110','00111111100','00055555000'], [5.5, 4]);
   // Explicit artwork revision through the painter before assembly.

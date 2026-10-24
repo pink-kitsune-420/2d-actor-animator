@@ -1,4 +1,4 @@
-import { disposePage, showProjects } from './actor-animator-authoring';
+import { disposePage, showProjects, click as clickControl } from './actor-animator-authoring';
 import { test, expect, type Page } from '@playwright/test';
 import { readdirSync, readFileSync } from 'node:fs';
 import type { ActorProject, ActorTransform } from '@actor-animator/types';
@@ -41,7 +41,7 @@ function socketWorld(source: ActorProject, name: string): M {
 const near = (a: readonly number[], b: readonly number[], digits = 9) => { expect(a).toHaveLength(b.length); b.forEach((v, i) => expect(a[i]).toBeCloseTo(v, digits)); };
 
 // ---- real UI helpers ---------------------------------------------------------
-async function click(page: Page, id: string) { if (['classic-astronaut', 'new', 'open'].includes(id)) await showProjects(page); await page.locator(`#${id}`).click(); }
+async function click(page: Page, id: string) { await clickControl(page, id); }
 async function field(page: Page, id: string, value: string | number) { await page.locator(`#${id}`).fill(String(value)); }
 async function save(page: Page): Promise<{ text: string; source: ActorProject }> {
   const pending = page.waitForEvent('download'); await click(page, 'save'); const path = await (await pending).path();

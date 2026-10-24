@@ -128,7 +128,6 @@ export class ActorWorkspace {
   }
   activate(task: Task) {
     this.expand(false);
-    if (this.task === 'all' && task !== 'all') this.host.el<HTMLDetailsElement>('project-options').open = false;
     this.host.cancelGesture(); this.host.assembly.pause();
     this.host.assembly.viewport.setEnabled(task === 'rig' || task === 'all');
     this.host.el('rig-viewport-tools').hidden = task !== 'rig' && task !== 'all';
@@ -143,7 +142,7 @@ export class ActorWorkspace {
     this.host.el('preview-panel').hidden = task === 'emotes';
     for (const [id, button] of this.buttons) button.setAttribute('aria-pressed', String(id === task));
     this.host.el('task-help').textContent = tasks.find(t => t.id === task)!.help;
-    if (task === 'all') for (const details of this.root.querySelectorAll('details')) if (!['project-library', 'project-details', 'rig-view-help'].includes(details.id)) details.open = true;
+    if (task === 'all') for (const details of this.host.el('assembly').querySelectorAll('details')) if (details.id !== 'rig-view-help') details.open = true;
     this.host.el('workspace-inspectors').scrollTop = 0;
     this.render();
   }
