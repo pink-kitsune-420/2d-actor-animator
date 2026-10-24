@@ -26,6 +26,12 @@ npm run preview -- --port 4502 --strictPort
 
 Open http://127.0.0.1:4502/.
 
+## Open a single HTML file
+
+Run `npm run build`, then double-click **`dist/Actor Animator.html`**. It contains the editor, styles and bundled examples, so it works offline without starting a server. You can move or copy this file by itself. `npm run build:launcher` rebuilds just the HTML copy.
+
+Use **Download editable source** to save your work, and **Open** to reopen an `.actorproject` file. Browser recovery storage for local HTML files depends on the browser and file location; keep downloaded project files as your originals. The HTML copy contains its MIT license and credits.
+
 ## Current capabilities
 
 - Indexed raster actor parts with editable layers, palette transparency, pivots and explicit scale.
