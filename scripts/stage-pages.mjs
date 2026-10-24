@@ -26,16 +26,16 @@ function copy(src,path) {
 }
 for (const path of selected) copy(resolve('dist',path),path);
 for (const name of ['LICENSE','CREDITS.md','UPSTREAM.json']) copy(name,name);
-copy('dist/Actor Animator.html','downloads/Actor Animator.html');
+copy('dist/2D Actor Animator.html','downloads/2D Actor Animator.html');
 copy('examples/spacelab/beacon.actorproject','examples/beacon.actorproject');
 // Served index gets a compact delivery footer; offline copy retains its own notices.
 const index=resolve(out,'index.html');
-writeFileSync(index,readFileSync(index,'utf8').replace('</body>',`<footer style="padding:12px 20px;color:#baddf3"><p><a style="color:inherit" href="./downloads/Actor%20Animator.html" download>Download offline HTML</a> · <a style="color:inherit" href="./examples/beacon.actorproject" download>Editable beacon example</a> · <a style="color:inherit" href="./runtime-example/">Runtime demo</a> · <a style="color:inherit" href="./rendering-example/">Rendering demo</a> · <a style="color:inherit" href="./sheet-example/">Sheet consumer</a> · <a style="color:inherit" href="./LICENSE">MIT license</a> · <a style="color:inherit" href="./CREDITS.md">Credits</a></p></footer></body>`));
+writeFileSync(index,readFileSync(index,'utf8').replace('</body>',`<footer style="padding:12px 20px;color:#baddf3"><p><a style="color:inherit" href="./downloads/2D%20Actor%20Animator.html" download>Download offline HTML</a> · <a style="color:inherit" href="./examples/beacon.actorproject" download>Editable beacon example</a> · <a style="color:inherit" href="./runtime-example/">Runtime demo</a> · <a style="color:inherit" href="./rendering-example/">Rendering demo</a> · <a style="color:inherit" href="./sheet-example/">Sheet consumer</a> · <a style="color:inherit" href="./LICENSE">MIT license</a> · <a style="color:inherit" href="./CREDITS.md">Credits</a></p></footer></body>`));
 writeFileSync(resolve(out,'.nojekyll'),'');
 // Prove every local HTML/CSS/JS reference resolves within the staged site.
 for (const path of files(out)) {
   assert.ok(sitePath(path),path);
-  if (path === 'downloads/Actor Animator.html' || !/\.(?:html|css|mjs|js)$/.test(path)) continue;
+  if (path === 'downloads/2D Actor Animator.html' || !/\.(?:html|css|mjs|js)$/.test(path)) continue;
   const text=readFileSync(resolve(out,path),'utf8');
   const references = path.endsWith('.html')
     ? [...text.matchAll(/\b(?:href|src)=["']([^"']+)["']/g)].map(m=>m[1])

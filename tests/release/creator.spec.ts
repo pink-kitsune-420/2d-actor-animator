@@ -18,7 +18,7 @@ for(const delivery of ['hosted','offline'] as const)for(const actor of ['charact
     await page.setViewportSize({width:1366,height:768});
     let scratch='';const errors:string[]=[],network:string[]=[];page.on('pageerror',e=>errors.push(e.message));
     page.on('request',r=>{if(/^https?:/.test(r.url()))network.push(r.url());});
-    if(delivery==='offline') {scratch=mkdtempSync(join(tmpdir(),'actor-release-offline-'));cpSync('_site/downloads/Actor Animator.html',join(scratch,'Editor.html'));await page.goto(pathToFileURL(join(scratch,'Editor.html')).href);}
+    if(delivery==='offline') {scratch=mkdtempSync(join(tmpdir(),'actor-release-offline-'));cpSync('_site/downloads/2D Actor Animator.html',join(scratch,'Editor.html'));await page.goto(pathToFileURL(join(scratch,'Editor.html')).href);}
     else await page.goto('./');
     try {
       if(actor==='character') {

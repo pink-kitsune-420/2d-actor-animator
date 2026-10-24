@@ -1,6 +1,6 @@
 # Static hosting and downloads
 
-The proposed destination is `pink-kitsune-420/2d-actor-animator`. The intended editor URL is [Open Actor Animator](https://pink-kitsune-420.github.io/2d-actor-animator/). It is **pending deployment and live verification**. The local candidate has not been uploaded. Release download URLs and a private security reporting channel are also pending.
+The proposed destination is `pink-kitsune-420/2d-actor-animator`. The intended editor URL is [Open 2D Actor Animator](https://pink-kitsune-420.github.io/2d-actor-animator/). It is **pending deployment and live verification**. The local candidate has not been uploaded. Release download URLs and a private security reporting channel are also pending.
 
 ```sh
 npm ci --ignore-scripts --no-audit --no-fund

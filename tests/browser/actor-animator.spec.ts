@@ -80,7 +80,7 @@ test('the production preview draws the shared blend result with the independentl
   const s = markerSource(); s.actions = []; s.requiredCapabilities.push('spacelab:animation-composition/1');
   s.clips = [0,10,20].map((x,i) => ({ id: `c${i}`, name: `C${i}`, duration: 2, playback: 'once', tracks: [{ id: 't', target: { kind: 'attachment', attachmentId: 'example:drawing' }, interpolation: 'linear', keys: [{ time: 0, value: { x, y:0, rotation:0, scaleX:1, scaleY:1 } }, { time: 2, value: { x:x+2, y:0, rotation:0, scaleX:1, scaleY:1 } }] }] }));
   s.animators = [{ id:'a',name:'A',layers:[{id:'l',name:'L',blend:'override',weight:1,initialStateId:'s0',defaultTransition:{duration:2,priority:0},states:s.clips.map((c,i)=>({id:`s${i}`,name:`S${i}`,clipId:c.id,rate:1})),transitions:[]}] }];
-  await page.goto('/actor-tools.html'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await open(page,JSON.stringify(s));
+  await page.goto('/actor-tools.html'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await open(page,JSON.stringify(s)); await page.locator('#preview-zoom').selectOption('16');
   for (const [time,name] of [[0,'S1'],[.5,'S2']] as const) { await page.locator('#animation-states').selectOption({label:name}); await field(page,'request-time',time); await click(page,'append-request'); }
   await field(page,'animator-time',1); await click(page,'seek-animator');
   const drawn = await page.evaluate(() => (window as unknown as {animationDraws:number[][]}).animationDraws);

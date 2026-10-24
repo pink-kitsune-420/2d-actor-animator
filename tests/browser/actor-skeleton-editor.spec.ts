@@ -48,6 +48,7 @@ async function save(page: Page): Promise<{ text: string; source: ActorProject }>
   const text = readFileSync(path!, 'utf8'); return { text, source: JSON.parse(text) as ActorProject };
 }
 async function open(page: Page, source: ActorProject | string) {
+  await page.locator('#preview-zoom').selectOption('16');
   await page.locator('#open').setInputFiles({ name: 'skeleton.actorproject', mimeType: 'application/json', buffer: Buffer.from(typeof source === 'string' ? source : JSON.stringify(source)) });
   await expect(page.locator('#message')).toHaveText('Opened complete editable source.');
 }
@@ -73,7 +74,7 @@ test('six-limb creature with segmented tail, tool socket and detached accessory:
   // Generated end-to-end authoring includes dozens of validated source operations.
   test.setTimeout(120_000);
   const errors: string[] = []; page.on('pageerror', e => errors.push(e.message));
-  await page.goto('/actor-tools.html'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await part(page, 'Chitin plate');
+  await page.goto('/actor-tools.html'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await page.locator('#preview-zoom').selectOption('16'); await part(page, 'Chitin plate');
   await field(page, 'rig-name', 'Skitterling'); await click(page, 'add-rig');
   await add(page, 'node', 'Carapace', null, { rotation: .1 });
   for (let i = 0; i < 3; i++) {
@@ -163,7 +164,7 @@ test('six-limb creature with segmented tail, tool socket and detached accessory:
 
   // Save, close, reopen: byte-identical source and identical drawn poses (constraint + clip at t=1).
   await field(page, 'seek-time', 1); await click(page, 'seek'); const drawn = await page.evaluate(() => window.skeletonEvidence.matrices.slice(-7));
-  await click(page, 'retained'); await disposePage(page); await click(page, 'reopen'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await open(page, deleted.text);
+  await click(page, 'retained'); await disposePage(page); await click(page, 'reopen'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await page.locator('#preview-zoom').selectOption('16'); await open(page, deleted.text);
   expect((await save(page)).text).toBe(deleted.text);
   await page.locator('#clips').selectOption({ label: 'Scuttle' }); await field(page, 'seek-time', 1); await click(page, 'seek');
   expect(await page.evaluate(() => window.skeletonEvidence.matrices.slice(-7))).toEqual(drawn);
@@ -178,7 +179,7 @@ test('six-limb creature with segmented tail, tool socket and detached accessory:
 });
 
 test('rejected structural edits are atomic with useful diagnostics; stale reviews and cancelled files change nothing', async ({ page }) => {
-  await page.goto('/actor-tools.html'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await part(page, 'Shard');
+  await page.goto('/actor-tools.html'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await page.locator('#preview-zoom').selectOption('16'); await part(page, 'Shard');
   await click(page, 'add-rig');
   await add(page, 'node', 'Stretch', null, { scaleX: 2 });
   await add(page, 'node', 'Turned', null, { rotation: Math.PI / 4 });
@@ -212,7 +213,7 @@ test('rejected structural edits are atomic with useful diagnostics; stale review
 });
 
 test('multiple rigs/roots and a zero-bone project use the same tools; old Phase 1 sources reopen unchanged', async ({ page }, info) => {
-  await page.goto('/actor-tools.html'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await part(page, 'Glow');
+  await page.goto('/actor-tools.html'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await page.locator('#preview-zoom').selectOption('16'); await part(page, 'Glow');
   // Zero-bone: scene attachments only, pose-mode keying works without a rig.
   await add(page, 'attachment', 'Free glow', null, { x: 1 }); await add(page, 'attachment', 'Second glow', null, { x: -1 }, 1);
   await click(page, 'add-clip'); await page.locator('#edit-mode').selectOption('pose');
@@ -261,7 +262,7 @@ test('constraint preview clock, blur and disposal; measured edited/constraint wo
     clipTracks.push({ id: `t${c}`, target: { kind: 'node', rigId: 'swarm', nodeId: `goal-${c}` }, interpolation: 'linear', keys: [{ time: 0, value: rig.nodes.at(-9)!.rest }, { time: 4, value: { ...rig.nodes.at(-9)!.rest, x: -rig.nodes.at(-9)!.rest.x } }] });
   }
   source.rigs.push(rig); source.clips.push({ id: 'orbit', name: 'Orbit goals', duration: 4, playback: 'loop', tracks: clipTracks });
-  await page.goto('/actor-tools.html'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await open(page, source); await page.locator('#clips').selectOption({ label: 'Orbit goals' });
+  await page.goto('/actor-tools.html'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await page.locator('#preview-zoom').selectOption('16'); await open(page, source); await page.locator('#clips').selectOption({ label: 'Orbit goals' });
   await page.evaluate(() => { window.skeletonEvidence.frameTimes = []; });
   await click(page, 'play'); await expect.poll(() => page.evaluate(() => window.skeletonEvidence.frameTimes.length)).toBeGreaterThanOrEqual(90);
   await page.evaluate(() => window.dispatchEvent(new Event('blur')));

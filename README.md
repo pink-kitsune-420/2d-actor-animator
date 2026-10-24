@@ -1,12 +1,12 @@
-# Actor Animator
+# 2D Actor Animator
 
 Create characters, creatures and robots in an independent 2D rigging and animation editor. Paint layered parts, build freely named skeletons or use no bones, animate and keep complete editable projects. Built with Space Lab as its first intended consumer.
 
-**[Open Actor Animator](https://pink-kitsune-420.github.io/2d-actor-animator/)** — proposed Pages address; **not yet deployed or live-verified**.
+**[Open 2D Actor Animator](https://pink-kitsune-420.github.io/2d-actor-animator/)** — proposed Pages address; **not yet deployed or live-verified**.
 
-**Offline:** build and open `dist/Actor Animator.html` directly in your browser. It is self-contained; no server is needed. A public release download is pending. Keep your work with **Download editable source**, then reopen the `.actorproject` file with **Open source**.
+**Offline:** build and open `dist/2D Actor Animator.html` directly in your browser. It is self-contained; no server is needed. A public release download is pending. Keep your work with **Download editable source**, then reopen the `.actorproject` file with **Open source**.
 
-![Actor Animator character workspace](docs/images/character.png)
+![2D Actor Animator character workspace](docs/images/character.png)
 
 ## First animation
 
@@ -42,7 +42,7 @@ Open http://127.0.0.1:4502/.
 
 ## Open a single HTML file
 
-Run `npm run build`, then double-click **`dist/Actor Animator.html`**. It contains the editor, styles and bundled examples, so it works offline without starting a server. You can move or copy this file by itself. `npm run build:launcher` rebuilds just the HTML copy.
+Run `npm run build`, then double-click **`dist/2D Actor Animator.html`**. It contains the editor, styles and bundled examples, so it works offline without starting a server. You can move or copy this file by itself. `npm run build:launcher` rebuilds just the HTML copy.
 
 Use **Download editable source** to save your work, and **Open** to reopen an `.actorproject` file. Browser recovery storage for local HTML files depends on the browser and file location; keep downloaded project files as your originals. The HTML copy contains its MIT license and credits.
 

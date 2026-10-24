@@ -1,4 +1,4 @@
-# Actor Animator runtime 0.1.0
+# 2D Actor Animator runtime 0.1.0
 
 An engine-free ESM package for validating editable actor projects and sampling retained Float64 poses. It has zero runtime dependencies. The editor and runtime build use the same project validator, evaluator and animation implementation. This local package is private and has not been published to a registry.
 

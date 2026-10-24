@@ -49,6 +49,7 @@ async function save(page: Page): Promise<{ text: string; source: ActorProject }>
   const text = readFileSync(path!, 'utf8'); return { text, source: JSON.parse(text) as ActorProject };
 }
 async function open(page: Page, source: ActorProject | string, name = 'combined.actorproject') {
+  await page.locator('#preview-zoom').selectOption('16');
   await page.locator('#open').setInputFiles({ name, mimeType: 'application/json', buffer: Buffer.from(typeof source === 'string' ? source : JSON.stringify(source)) });
   await expect(page.locator('#message')).toHaveText('Opened complete editable source.');
 }
@@ -65,7 +66,7 @@ function closeMatrix(actual: number[], expected: number[]) { expect(actual).toHa
 
 test('draw → arbitrary three-node assembly/socket → two poses → intentional revision → combined reopen', async ({ page }, info) => {
   const errors: string[] = [], requests: string[] = []; page.on('pageerror', e => errors.push(e.message)); page.on('request', r => requests.push(r.url()));
-  await page.goto('/actor-tools.html'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await createPart(page); await dot(page, 1, 0); await dot(page, 1, 1); await dot(page, 2, 1);
+  await page.goto('/actor-tools.html'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await page.locator('#preview-zoom').selectOption('16'); await createPart(page); await dot(page, 1, 0); await dot(page, 1, 1); await dot(page, 2, 1);
   await field(page, 'pivot-x', .5); await field(page, 'pivot-y', .5); await field(page, 'units', .25); await click(page, 'pivot');
   await field(page, 'rig-name', 'Kite colony'); await click(page, 'add-rig');
   await field(page, 'item-name', 'Whorl / 🪼'); await field(page, 'rest-x', 2); await field(page, 'rest-y', 3); await click(page, 'add-item'); const root = await page.locator('#items').inputValue();
@@ -86,7 +87,7 @@ test('draw → arbitrary three-node assembly/socket → two poses → intentiona
   expect(edited.parts[0]).toEqual(original); expect(edited.parts).toHaveLength(2); expect(edited.attachments).toEqual(assembled.attachments);
   await page.locator('#item-kind').selectOption('attachment'); await expect(page.locator('#revision')).toContainText(`r${original.revision}`); await click(page, 'accept-part');
   const combined = await save(page); expect(combined.source.attachments[0]!.partId).toBe(edited.parts[1]!.id); expect(combined.source.parts[1]!.revision).toBe(original.revision + 1);
-  await expect(page.locator('#state')).toContainText('Unsaved'); await click(page, 'retained'); await disposePage(page); await click(page, 'reopen'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await open(page, combined.text);
+  await expect(page.locator('#state')).toContainText('Unsaved'); await click(page, 'retained'); await disposePage(page); await click(page, 'reopen'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await page.locator('#preview-zoom').selectOption('16'); await open(page, combined.text);
   expect((await save(page)).text).toBe(combined.text); await seek(page, 1); closeMatrix(await matrix(page), [0, -4, 4, 0, 344, 128]);
   await page.locator('#assembly').screenshot({ path: info.outputPath('unconventional-assembly.png') });
   expect(errors).toEqual([]); expect(requests.some(u => /universe|world-save|\.wasm/.test(u))).toBe(false); await expect(page.locator('#flight-view')).toHaveCount(0);
@@ -94,7 +95,7 @@ test('draw → arbitrary three-node assembly/socket → two poses → intentiona
 });
 
 test('zero-bone attachments have linear/step boundaries, scrub, authored turns, loop, rest and reset', async ({ page }) => {
-  await page.goto('/actor-tools.html'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await createPart(page, 2, 2); await dot(page, 0, 0);
+  await page.goto('/actor-tools.html'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await page.locator('#preview-zoom').selectOption('16'); await createPart(page, 2, 2); await dot(page, 0, 0);
   await page.locator('#item-kind').selectOption('attachment'); await field(page, 'item-name', 'Free lantern'); await click(page, 'add-item'); await click(page, 'add-clip');
   await field(page, 'key-b-x', 4); await field(page, 'key-b-y', 2); await field(page, 'key-b-rotation', 2 * Math.PI); await click(page, 'apply-keys');
   await seek(page, 1); closeMatrix(await matrix(page), [-16, 0, 0, -16, 352, 216]);
@@ -115,7 +116,7 @@ test('independent raster orientation, pivot and full affine shear oracle', async
   source.parts.push({ id: '🪼 / pixels', name: 'Independent colour corners', revision: 1, pivot: [.5, 1], unitsPerPixel: 2,
     artwork: { kind: 'indexed-raster', width: 2, height: 2, palette: ['#ff0000ff', '#00ff00ff', '#0000ffff', '#ffffffff'], layers: [{ id: 'ink', name: 'Corners', opacity: 1, pixels: [0, 1, 2, 3] }] } });
   source.attachments.push({ id: '__proto__', name: 'Free raster', partId: source.parts[0]!.id, drawOrder: 0, transform: { x: 3, y: -2, rotation: Math.PI / 2, scaleX: 2, scaleY: .5 } });
-  await page.goto('/actor-tools.html'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await open(page, source); closeMatrix(await matrix(page), [0, -64, 16, 0, 344, 248]);
+  await page.goto('/actor-tools.html'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await page.locator('#preview-zoom').selectOption('16'); await open(page, source); closeMatrix(await matrix(page), [0, -64, 16, 0, 344, 248]);
   const pixels = await page.locator('#actor-preview').evaluate((canvas: HTMLCanvasElement) => { const c = canvas.getContext('2d')!; return [[352, 216], [352, 152], [368, 216]].map(([x, y]) => Array.from(c.getImageData(x!, y!, 1, 1).data)); });
   expect(pixels).toEqual([[255, 0, 0, 255], [0, 255, 0, 255], [0, 0, 255, 255]]);
   await page.locator('#actor-preview').screenshot({ path: info.outputPath('raster-orientation.png') });
@@ -131,7 +132,7 @@ test('independent raster orientation, pivot and full affine shear oracle', async
 });
 
 test('historical schematic and richer source stay intact; no silent truncation or extension rewriting', async ({ page }, info) => {
-  await page.goto('/actor-tools.html'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await open(page, JSON.parse(readFileSync(new URL('../fixtures/actor-projects/astronaut.project.json', import.meta.url), 'utf8')));
+  await page.goto('/actor-tools.html'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await page.locator('#preview-zoom').selectOption('16'); await open(page, JSON.parse(readFileSync(new URL('../fixtures/actor-projects/astronaut.project.json', import.meta.url), 'utf8')));
   const schematic = (await save(page)).source; expect(schematic.rigs[0]!.nodes).toHaveLength(6); expect(schematic.provenance).toContain('First-party schematic');
   await page.locator('#preview-zoom').selectOption('128'); await click(page, 'play'); await expect.poll(() => page.evaluate(() => window.actorEvidence.frames)).toBeGreaterThan(2); await click(page, 'pause');
   await page.locator('#actor-preview').screenshot({ path: info.outputPath('schematic-starter.png') });
@@ -147,7 +148,7 @@ test('historical schematic and richer source stay intact; no silent truncation o
 });
 
 test('clock, raster resources and stale callbacks stop on blur, picker, replacement and close', async ({ page }) => {
-  await page.goto('/actor-tools.html'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await open(page, JSON.parse(readFileSync(new URL('../fixtures/actor-projects/astronaut.project.json', import.meta.url), 'utf8')));
+  await page.goto('/actor-tools.html'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await page.locator('#preview-zoom').selectOption('16'); await open(page, JSON.parse(readFileSync(new URL('../fixtures/actor-projects/astronaut.project.json', import.meta.url), 'utf8')));
   // Use the production unsaved decisions throughout this lifecycle test.
   page.on('dialog', dialog => dialog.accept());
   await click(page, 'play'); await expect.poll(() => page.evaluate(() => window.actorEvidence.frames)).toBeGreaterThan(2);
@@ -163,11 +164,11 @@ test('clock, raster resources and stale callbacks stop on blur, picker, replacem
   count = await page.evaluate(() => window.actorEvidence.matrices.length);
   await page.evaluate(() => { for (const callback of window.actorEvidence.callbacks) callback(performance.now() + 5000); });
   expect(await page.evaluate(() => window.actorEvidence.matrices.length)).toBe(count); expect(await page.evaluate(() => window.actorEvidence.rasters.every(c => c.width === 0 && c.height === 0))).toBe(true);
-  await click(page, 'reopen'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await expect(page.locator('#actor-preview')).toHaveAttribute('data-clip', 'rest');
+  await click(page, 'reopen'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await page.locator('#preview-zoom').selectOption('16'); await expect(page.locator('#actor-preview')).toHaveAttribute('data-clip', 'rest');
 });
 
 test('attributable production preview/input measurements, retained rasters and independent source graph', async ({ page }, info) => {
-  await page.goto('/actor-tools.html'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await open(page, JSON.parse(readFileSync(new URL('../fixtures/actor-projects/astronaut.project.json', import.meta.url), 'utf8')));
+  await page.goto('/actor-tools.html'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await page.locator('#preview-zoom').selectOption('16'); await open(page, JSON.parse(readFileSync(new URL('../fixtures/actor-projects/astronaut.project.json', import.meta.url), 'utf8')));
   await page.evaluate(() => { window.actorEvidence.frameTimes = []; window.actorEvidence.imageDrawTimes = []; });
   await click(page, 'play'); await expect.poll(() => page.evaluate(() => window.actorEvidence.frameTimes.length)).toBeGreaterThanOrEqual(90); await click(page, 'pause');
   expect(await page.evaluate(() => window.actorEvidence.rasters.length)).toBe(2);
@@ -195,7 +196,7 @@ test('layerless and unreferenced source is preserved without allocating a previe
     source.parts.push({ id: `blank/${i}`, name: `Blank ${i}`, revision: 1, pivot: [0, 0], unitsPerPixel: 1, artwork: { kind: 'indexed-raster', width: 1024, height: 1024, palette: ['#00000000'], layers: [] } });
     source.attachments.push({ id: `draw/${i}`, name: `Blank ${i}`, partId: `blank/${i}`, drawOrder: i, transform: { x: i, y: 0, rotation: 0, scaleX: 1, scaleY: 1 } });
   }
-  await page.goto('/actor-tools.html'); await page.getByRole('button', { name: 'All tools', exact: true }).click();
+  await page.goto('/actor-tools.html'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await page.locator('#preview-zoom').selectOption('16');
   await page.evaluate(() => {
     const create = document.createElement; let canvases = 0;
     const instrumented = function(this: Document, ...args: Parameters<typeof create>) { if (args[0] === 'canvas') canvases++; return create.apply(this, args); };

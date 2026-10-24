@@ -2,6 +2,8 @@
 
 The Rig workspace gives the canvas most of the window, with a narrower scrolling inspector. Use **Expand rig view** to fill the workspace, then **Restore split view** to bring the inspector back. Escape from the view controls also restores the split view; Escape on the canvas keeps its gesture-cancel behavior. Clip and viewport-tool controls stay above the canvas. Expand **Rig controls help** for shortcuts and transform status. **All tools** keeps the preview beside the scrolling editors.
 
+Under **View & playback options**, **Preview pixels per unit** starts at **128**. Choose **64** for a wider view, or **256**, **512** or **1024** for close-up work. Smaller scales remain available for larger rigs. This changes the view only; artwork dimensions, project units, animation and exports stay the same.
+
 Open a project or the classic astronaut example, then choose **Rig**. The same tools appear in **All tools**. Circles mark nodes, diamonds mark cosmetic sockets, and squares mark artwork attachment pivots. Click a joint, a bone segment or artwork to select it in the existing item controls. At overlapping pivots, the current selection wins; **Alt-click** cycles candidates in stable compiled order. Numeric selectors also reach coincident and zero-length items across multiple roots/rigs, including scene attachments with no bones.
 
 Choose the edit mode in the Rig inspector:

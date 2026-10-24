@@ -13,7 +13,7 @@ const version=JSON.parse(readFileSync('package.json','utf8')).version;
 mkdirSync('release-artifacts',{recursive:true});
 const source=`actor-animator-${version}-source.tar.gz`;
 run('git',['archive','--format=tar.gz','--prefix=actor-animator/','--output',resolve('release-artifacts',source),ref]);
-copyFileSync('dist/Actor Animator.html','release-artifacts/Actor Animator.html');
+copyFileSync('dist/2D Actor Animator.html','release-artifacts/2D Actor Animator.html');
 copyFileSync('CHANGELOG.md','release-artifacts/RELEASE-NOTES.md');
 for(const path of files('_site')) assert.ok(sitePath(path),path);
 run('tar',['--sort=name','--mtime=@0','--owner=0','--group=0','--numeric-owner','-czf',resolve('release-artifacts/pages.tar.gz'),'-C','_site','.']);
@@ -25,7 +25,7 @@ const listing=run('git',['ls-tree','-rz','--full-tree',ref]).split('\0').filter(
 writeFileSync('release-artifacts/source-manifest.json',JSON.stringify({ref,tree,files:listing},null,2)+'\n');
 writeFileSync('release-artifacts/pages-manifest.json',JSON.stringify(manifest('_site'),null,2)+'\n');
 writeFileSync('release-artifacts/runtime-manifest.json',JSON.stringify(runtime.files,null,2)+'\n');
-writeFileSync('release-artifacts/README.txt',`Actor Animator ${version} local release candidate\nSource commit ${ref}\nSource tree ${tree}\n\nActor Animator.html: self-contained editor; open directly in a browser. Download editable source to retain your project. MIT license and credits are embedded.\n${source}: repository source; extract, npm ci --ignore-scripts --no-audit --no-fund, npm run build. See README.md.\n${runtime.filename}: optional local developer runtime; npm install ./archive.tgz in a separate consumer. Not a registry publication.\npages.tar.gz: allowlisted static site for owner-reviewed Pages deployment.\nSource/site/runtime manifests list exact contents; SHA256SUMS verifies all other deliverables.\nLive hosting and GitHub upload have not been performed.\n`);
+writeFileSync('release-artifacts/README.txt',`2D Actor Animator ${version} local release candidate\nSource commit ${ref}\nSource tree ${tree}\n\n2D Actor Animator.html: self-contained editor; open directly in a browser. Download editable source to retain your project. MIT license and credits are embedded.\n${source}: repository source; extract, npm ci --ignore-scripts --no-audit --no-fund, npm run build. See README.md.\n${runtime.filename}: optional local developer runtime; npm install ./archive.tgz in a separate consumer. Not a registry publication.\npages.tar.gz: allowlisted static site for owner-reviewed Pages deployment.\nSource/site/runtime manifests list exact contents; SHA256SUMS verifies all other deliverables.\nLive hosting and GitHub upload have not been performed.\n`);
 const entries=manifest('release-artifacts').filter(f=>f.path!=='SHA256SUMS');
 writeFileSync('release-artifacts/SHA256SUMS',entries.map(f=>`${f.sha256}  ${f.path}`).join('\n')+'\n');
 console.log(`Prepared local ${version} candidate ${ref} / ${tree}; ${listing.length} source files. No upload performed.`);

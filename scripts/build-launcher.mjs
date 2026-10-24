@@ -36,5 +36,5 @@ const html = readFileSync(resolve(root, 'apps/standalone/index.html'), 'utf8')
   .replace('/* ACTOR_SCRIPT */', () => script.code.replace(/<\/script/gi, '<\\/script'));
 assert.equal(/<script\b[^>]*\bsrc\s*=|<link\b[^>]*\b(?:href|rel)\s*=|sourceMappingURL/.test(html), false, 'Standalone HTML must not load companion resources');
 mkdirSync(resolve(root, 'dist'), { recursive: true });
-writeFileSync(resolve(root, 'dist/Actor Animator.html'), html);
-console.log(`Built dist/Actor Animator.html (${Buffer.byteLength(html)} bytes); double-click to open offline.`);
+writeFileSync(resolve(root, 'dist/2D Actor Animator.html'), html);
+console.log(`Built dist/2D Actor Animator.html (${Buffer.byteLength(html)} bytes); double-click to open offline.`);

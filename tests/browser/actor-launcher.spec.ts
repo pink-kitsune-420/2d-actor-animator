@@ -9,11 +9,11 @@ let scratch: string;
 test.beforeEach(async ({ browser }, info) => {
   console.log(`${info.project.name} actual browser ${browser.version()}, isolated file:// HTML`);
   scratch = mkdtempSync(join(tmpdir(), 'actor-html-launcher-'));
-  cpSync('dist/Actor Animator.html', join(scratch, 'Launch Actor Animator.html'));
+  cpSync('dist/2D Actor Animator.html', join(scratch, 'Launch 2D Actor Animator.html'));
 });
 test.afterEach(() => rmSync(scratch, { recursive: true, force: true }));
 async function launch(page: Page) {
-  const url = pathToFileURL(join(scratch, 'Launch Actor Animator.html')).href;
+  const url = pathToFileURL(join(scratch, 'Launch 2D Actor Animator.html')).href;
   const errors: string[] = [], dependencies: string[] = [];
   page.on('pageerror', e => errors.push(e.message));
   page.on('request', r => { if (r.url() !== url && !r.url().startsWith('blob:')) dependencies.push(r.url()); });

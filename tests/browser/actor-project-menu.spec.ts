@@ -15,7 +15,7 @@ test('Projects groups actions, dismisses with keyboard or outside pointer, and n
   await page.keyboard.press('Tab'); await expect(page.locator('#new')).toBeFocused();
   await page.keyboard.press('Escape'); await expect(menu).not.toHaveAttribute('open'); await expect(summary).toBeFocused();
   expect(await save(page)).toBe(baseline);
-  await showProjects(page); await page.getByRole('heading', { name: 'Actor Animator', exact: true }).click(); await expect(menu).not.toHaveAttribute('open');
+  await showProjects(page); await page.getByRole('heading', { name: '2D Actor Animator', exact: true }).click(); await expect(menu).not.toHaveAttribute('open');
   await click(page, 'task-button-all'); await expect(menu).not.toHaveAttribute('open');
   expect(await save(page)).toBe(baseline);
   if (info.project.name === 'chromium') {
