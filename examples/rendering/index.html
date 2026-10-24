@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Actor runtime rendering</title>
+<style>body{margin:24px auto;max-width:1040px;padding:0 20px;font:16px system-ui;background:#101b26;color:#e6edf3}h1{font-size:28px}label{display:inline-block;margin:8px}button,input,select{font:inherit;padding:6px}canvas{width:100%;height:auto;background:repeating-conic-gradient(#263544 0% 25%,#1c2a36 0% 50%) 0 0/24px 24px;border:1px solid #526778}textarea{box-sizing:border-box;width:100%;height:170px;font:12px monospace}pre{white-space:pre-wrap;font-size:13px;max-height:300px;overflow:auto}#status{min-height:1.5em;color:#c5e1e9}</style>
+<h1>Independent actor playback</h1>
+<p>Two actors share prepared artwork and keep separate poses. Sample explicit seconds; project coordinates are x-right/y-up. WebGL2 is primary, Canvas2D is the backup.</p>
+<label>Original <select id="example"><option value="zero-bone">Zero-bone layered beacon</option><option value="nonhuman">Multiple-root antenna creature</option><option value="character">Astronaut character</option></select></label>
+<label>Backend <select id="backend"><option value="webgl2">WebGL2 primary</option><option value="canvas2d">Canvas2D backup</option></select></label>
+<label>A seconds <input id="time-a" type="number" value="0.375" step="0.125"></label>
+<label>B seconds <input id="time-b" type="number" value="0.75" step="0.125"></label>
+<label>Pixels per project unit <input id="scale" type="number" value="40" min="0.1" step="1"></label>
+<label>Clip <select id="clip"></select></label>
+<button id="sample">Sample</button> <button id="dispose">Dispose resources</button> <button id="reopen">Reopen original</button>
+<p id="status" role="status">Loading original…</p>
+<div id="stage"></div><p>Actor A (left) · Actor B (right). Framing is a host view; source pivots, density and calibration stay intact.</p>
+<pre id="report"></pre>
+<details><summary>Editable original</summary><p>The original remains authoritative. Apply creates a new compiled snapshot; it does not accept artwork revision changes.</p><textarea id="source" aria-label="Editable original"></textarea><button id="apply">Apply original</button></details>
+<script type="importmap">{"imports":{"@actor-animator/runtime":"./package/runtime.js","@actor-animator/runtime/webgl2":"./package/webgl2.js","@actor-animator/runtime/canvas2d":"./package/canvas2d.js"}}</script>
+<script type="module" src="browser.mjs"></script></html>

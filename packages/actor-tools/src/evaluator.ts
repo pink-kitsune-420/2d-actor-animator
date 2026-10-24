@@ -179,6 +179,14 @@ export interface ActorResources {
 }
 const resources = new WeakMap<CompiledActorProject, ActorResources>();
 const owners = new WeakMap<ActorPose, CompiledActorProject>();
+const completed = new WeakMap<ActorPose, boolean>();
+/** @internal Constant-time rendering admission; never inspects editable source. */
+export function requireCompletedPose(compiled: CompiledActorProject, pose: ActorPose): void {
+  checkPose(compiled, requireResources(compiled), pose);
+  if (completed.get(pose) !== true) throw new TypeError('Actor pose has no completed evaluation');
+}
+/** @internal Invalidate immediately before any evaluation can mutate buffers. */
+export function beginPose(pose: ActorPose): void { completed.set(pose, false); }
 const COMPILER_VERSION = 'spacelab-actor-compiler/5';
 /** Results depend on these; they are part of compiled identity. */
 export const BLEND_STACK_CAP = 8;
@@ -431,6 +439,7 @@ export function evaluateActorPose(compiled: CompiledActorProject, clipId: string
   if (clipId !== null && !clip) throw new RangeError('Unknown actor clip; select a fallback explicitly');
   if (!Number.isFinite(timeSeconds)) throw new RangeError('Actor time must be finite seconds');
   checkPose(compiled, data, into);
+  beginPose(into);
   into.localTRS.set(data.rest); into.localVisible.fill(1); into.drawOrders.set(data.restDrawOrders); into.partIndices.set(data.restParts);
   if (clip) { SAMPLE_TIME[0] = timeSeconds; sampleClip(clip, into.localTRS, into.localVisible, into.drawOrders, into.partIndices); }
   finishPose(compiled, data, into, applyConstraints);
@@ -549,4 +558,5 @@ export function finishPose(compiled: CompiledActorProject, data: ActorResources,
     }
     sequence[j + 1] = slot;
   }
+  completed.set(into, true);
 }

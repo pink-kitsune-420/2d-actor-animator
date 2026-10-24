@@ -1,5 +1,5 @@
 import {
-  BLEND_STACK_CAP, SAMPLE_TIME, checkPose, finishPose, requireResources, sampleClip,
+  BLEND_STACK_CAP, SAMPLE_TIME, beginPose, checkPose, finishPose, requireResources, sampleClip,
   type ActorPose, type CompiledActorProject, type CompiledAnimator, type CompiledLayer,
 } from './evaluator';
 
@@ -212,6 +212,7 @@ export function evaluateActorAnimation(compiled: CompiledActorProject, player: A
   if (data.compiled !== compiled) throw new TypeError('Animation player belongs to another compiled actor');
   if (!Number.isFinite(timeSeconds)) throw new RangeError('Actor time must be finite seconds');
   checkPose(compiled, resources, into);
+  beginPose(into);
   data.clock[0] = timeSeconds; advance(data);
   into.localTRS.set(resources.rest); into.localVisible.fill(1); into.drawOrders.set(resources.restDrawOrders); into.partIndices.set(resources.restParts);
   const layers = data.animator.layers;

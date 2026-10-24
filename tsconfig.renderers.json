@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.runtime.json",
+  "compilerOptions": {
+    "lib": [
+      "ES2022",
+      "DOM"
+    ]
+  },
+  "include": [
+    "packages/adapters/canvas2d/src/index.ts",
+    "packages/adapters/webgl2/src/index.ts"
+  ]
+}
