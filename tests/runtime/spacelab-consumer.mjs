@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { performance } from 'node:perf_hooks';
 import { SPACELAB_ACTOR_SOURCE_PROFILE as profile, inspectSpaceLabActorSource, exportSpaceLabActorSource } from '@actor-animator/runtime/spacelab';
 import { compileActorProject, createActorPose, evaluateActorPose, saveActorProject, openActorProject } from '@actor-animator/runtime';
-import { createActors } from './actors.mjs';
+import { createActors } from './analytic-fixtures.mjs';
 const options = { profile: profile.id }, beacon = readFileSync(new URL('./beacon.actorproject', import.meta.url), 'utf8');
 test('installed optional profile preserves full original sources and source-value round trips', () => {
   for (const input of [beacon, JSON.stringify(createActors().creature), ...['astronaut', 'classic-astronaut-b3', 'nonhuman', 'zero-bone'].map(name => readFileSync(new URL(`./fixtures/${name}.project.json`, import.meta.url), 'utf8'))]) {

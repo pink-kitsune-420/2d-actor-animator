@@ -1,4 +1,4 @@
-// Original MIT analytic examples. No evaluator code or game/editor imports.
+// Retained original MIT analytic regression fixtures. No evaluator code or game/editor imports.
 export const transform = (x = 0, y = 0, rotation = 0) => ({ x, y, rotation, scaleX: 1, scaleY: 1 });
 export function createActors() {
   const shared = {

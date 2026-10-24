@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { openRuntimeOracle } from '../support/consumers';
 
 test('native built runtime renders two independent analytic poses and zero-bone RGBA artwork', async ({ page }) => {
   const errors: string[] = [], external: string[] = [], runtimeRequests: string[] = [];
@@ -8,7 +9,7 @@ test('native built runtime renders two independent analytic poses and zero-bone 
     if (url.hostname !== '127.0.0.1') external.push(url.href);
     if (url.pathname === '/runtime/runtime.js') runtimeRequests.push(url.pathname);
   });
-  await page.goto('/runtime-example/');
+  await openRuntimeOracle(page);
   const status = page.locator('#status');
   await expect(status).toContainText('independentBuffers');
   const initial = JSON.parse((await status.textContent())!);

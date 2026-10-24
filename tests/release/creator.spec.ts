@@ -1,4 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
+import { openSheetConsumer } from '../support/consumers';
 import { mkdirSync, readFileSync, writeFileSync, mkdtempSync, cpSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -56,8 +57,8 @@ for(const delivery of ['hosted','offline'] as const)for(const actor of ['charact
       if(info.project.name==='chromium'){mkdirSync('playwright-report/release-demo',{recursive:true});for(const [ext,bytes]of [['actorproject',edited],['png',png],['sheet.json',metadata]] as const)writeFileSync(`playwright-report/release-demo/${delivery}-${actor}.${ext}`,bytes);await screen(page,`${delivery}-${actor}-sheet`,info.project.name);}
       if(delivery==='offline')expect(network).toEqual([]);
       else expect(network.every(url=>new URL(url).pathname.startsWith('/2d-actor-animator/'))).toBe(true);
-      // Independent public consumer reads only flattened PNG + metadata.
-      await page.goto('./sheet-example/');await page.locator('#metadata').setInputFiles({name:'m.json',mimeType:'application/json',buffer:metadata});await page.locator('#png').setInputFiles({name:'p.png',mimeType:'image/png',buffer:png});await expect(page.locator('#report')).toContainText('"frame": 0');
+      // Independent test-only consumer reads only flattened PNG + metadata.
+      await openSheetConsumer(page);await page.locator('#metadata').setInputFiles({name:'m.json',mimeType:'application/json',buffer:metadata});await page.locator('#png').setInputFiles({name:'p.png',mimeType:'image/png',buffer:png});await expect(page.locator('#report')).toContainText('"frame": 0');
       const coloured=await page.locator('#view').evaluate((c:HTMLCanvasElement)=>{const a=c.getContext('2d')!.getImageData(0,0,c.width,c.height).data;let n=0;for(let i=3;i<a.length;i+=4)if(a[i])n++;return n;});expect(coloured).toBeGreaterThan(0);
       expect(errors).toEqual([]);
     } finally {if(scratch)rmSync(scratch,{recursive:true,force:true});}

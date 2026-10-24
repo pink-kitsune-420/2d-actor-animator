@@ -24,7 +24,7 @@ evaluateActorPose(compiled, null, 0, actorB); // explicit rest pose
 
 Use Node >=22.12 or a modern browser supporting ES2022 modules and `structuredClone`. Native browser modules can import `runtime.js` directly with its adjacent `core.js` chunk; no bundler or DOM is needed by the runtime. ESM is the supported module format; CommonJS is outside this package's contract. Type declarations work with NodeNext and bundler resolution without DOM types or workspace aliases.
 
-`npm run demo:runtime` installs the built archive in an isolated temporary consumer and runs the original antenna/zero-bone Node example. `npm run check:runtime` also verifies archive content, declarations and independent source/math assertions. To see the browser example, build, run `npm run preview -- --port 4502 --strictPort`, and open `/runtime-example/`. It has independent time controls for two nonhuman actors and a zero-bone lamp. `/` opens the existing editor. Examples are first-party MIT schematic art.
+`npm run check:runtime` verifies archive content, declarations and independent source/math assertions in an isolated installed-package consumer. `npm run check:conformance` runs the Draft 1 semantic fixture kit; preview `/conformance-example/` after building for its browser report. Runtime and sheet demonstration pages previously listed in Credits are retired; test-only analytic/raster oracles remain independent of the implementation.
 
 ## Selected public API
 

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 import { test } from 'node:test';
 import * as runtime from '@actor-animator/runtime';
-import { createActors, transform } from './actors.mjs';
+import { createActors, transform } from './analytic-fixtures.mjs';
 const {
   compileActorProject, createActorPose, evaluateActorPose, openActorProject, saveActorProject,
   validateActorProject, ActorProjectError, createActorAnimationPlayer, evaluateActorAnimation,

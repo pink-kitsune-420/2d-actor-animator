@@ -10,11 +10,9 @@ const selected = [
   'index.html','actor-tools.html',
   ...assets,
   ...files('dist/runtime').map(p=>'runtime/'+p),
-  ...files('dist/runtime-example').map(p=>'runtime-example/'+p),
   ...files('dist/spacelab-example').map(p=>'spacelab-example/'+p),
   ...files('dist/rendering-example').map(p=>'rendering-example/'+p),
   ...files('dist/conformance-example').map(p=>'conformance-example/'+p),
-  ...files('dist/sheet-example').map(p=>'sheet-example/'+p),
 ];
 // Reject additions before clearing/creating output. Never copy dist wholesale.
 for (const path of selected) assert.ok(sitePath(path), `Unreviewed Pages input: ${path}`);
@@ -31,7 +29,7 @@ copy('dist/2D Actor Animator.html','downloads/2D Actor Animator.html');
 copy('examples/spacelab/beacon.actorproject','examples/beacon.actorproject');
 // Served index gets a compact delivery footer; offline copy retains its own notices.
 const index=resolve(out,'index.html');
-writeFileSync(index,readFileSync(index,'utf8').replace('</body>',`<footer style="padding:12px 20px;color:#baddf3"><p><a style="color:inherit" href="./downloads/2D%20Actor%20Animator.html" download>Download offline HTML</a> · <a style="color:inherit" href="./examples/beacon.actorproject" download>Editable beacon example</a> · <a style="color:inherit" href="./runtime-example/">Runtime demo</a> · <a style="color:inherit" href="./rendering-example/">Rendering demo</a> · <a style="color:inherit" href="./sheet-example/">Sheet consumer</a> · <a style="color:inherit" href="./LICENSE">MIT license</a> · <a style="color:inherit" href="./CREDITS.md">Credits</a></p></footer></body>`));
+writeFileSync(index,readFileSync(index,'utf8').replace('</body>',`<footer style="padding:12px 20px;color:#baddf3"><p><a style="color:inherit" href="./downloads/2D%20Actor%20Animator.html" download>Download offline HTML</a> · <a style="color:inherit" href="./examples/beacon.actorproject" download>Editable beacon example</a> · <a style="color:inherit" href="./rendering-example/">Rendering demo</a> · <a style="color:inherit" href="./LICENSE">MIT license</a> · <a style="color:inherit" href="./CREDITS.md">Credits</a></p></footer></body>`));
 writeFileSync(resolve(out,'.nojekyll'),'');
 // Prove every local HTML/CSS/JS reference resolves within the staged site.
 for (const path of files(out)) {

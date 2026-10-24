@@ -22,7 +22,7 @@ Open the editor and choose **Help & shortcuts** for an offline copy of the essen
 
 ![Nonhuman beacon and sampled-sheet controls](images/nonhuman.png)
 
-A sheet samples a clip; it loses editable layers, the rig, continuous curves and composition. Keep PNG and matching metadata together and retain the original source. The [independent sheet consumer](../examples/sheet/index.html) is source for the built `/sheet-example/` demo; use a production build to run it.
+A sheet samples a clip; it loses editable layers, the rig, continuous curves and composition. Keep PNG and matching metadata together and retain the original source. Independent tests decode the actual exported PNG and metadata and check pixel centres, density, pivots and fractional frame timing.
 
 ## Files, recovery and mistakes
 

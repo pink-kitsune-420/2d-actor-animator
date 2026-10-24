@@ -14,7 +14,6 @@
     "build": "npm run typecheck && vite build && npm run build:runtime && npm run build:launcher",
     "build:runtime": "node scripts/build-runtime.mjs",
     "check:runtime": "node scripts/check-runtime.mjs",
-    "demo:runtime": "node scripts/check-runtime.mjs --demo",
     "test": "vitest run",
     "test:browser": "playwright test",
     "check:isolation": "node scripts/check-isolation.mjs",

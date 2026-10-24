@@ -8,7 +8,7 @@ describe('publication boundaries',()=>{
     for(const p of ['apps/web/src/actor-tools/main.ts','tests/fixtures/actor-projects/empty.project.json','LICENSE','scripts/stage-pages.mjs','.github/workflows/pages.yml','docs/images/character.png'])expect(sourcePath(p),p).toBe(true);
   });
   test('Pages accepts only deliberate served content',()=>{
-    for(const p of ['README.md','package-lock.json','test-results/a.png','runtime/secret.txt','assets/source.js.map','runtime/types/unknown/src/x.d.ts','downloads/project.actorproject','downloads/Actor Animator.html','conformance-example/node.mjs','conformance-example/fixtures/unreviewed.actorproject','conformance-example/package/secret.txt'])expect(sitePath(p),p).toBe(false);
+    for(const p of ['README.md','package-lock.json','test-results/a.png','runtime/secret.txt','assets/source.js.map','runtime/types/unknown/src/x.d.ts','downloads/project.actorproject','downloads/Actor Animator.html','runtime-example/index.html','sheet-example/browser.mjs','tests/support/runtime-oracle/browser.mjs','conformance-example/node.mjs','conformance-example/fixtures/unreviewed.actorproject','conformance-example/package/secret.txt'])expect(sitePath(p),p).toBe(false);
     for(const p of ['index.html','downloads/2D Actor Animator.html','runtime/core.js','runtime/types/runtime/src/index.d.ts','rendering-example/package/webgl2.js','conformance-example/runner.mjs','conformance-example/fixtures/preservation.canonical.json','conformance-example/package/RUNTIME-CONTRACT.md'])expect(sitePath(p),p).toBe(true);
   });
   test('machine paths and credential values are detected without echoing values',()=>{

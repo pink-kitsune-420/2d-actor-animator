@@ -7,7 +7,6 @@ import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 const root = fileURLToPath(new URL('..', import.meta.url));
 const scratch = mkdtempSync(join(tmpdir(), 'actor-runtime-consumer-'));
-const demoOnly = process.argv.includes('--demo');
 function run(bin, args, options = {}) {
   return execFileSync(bin, args, { cwd: scratch, encoding: 'utf8', maxBuffer: 2 * 1024 * 1024, ...options });
 }
@@ -53,35 +52,32 @@ try {
   for (const file of archive.files) {
     assert.equal(readFileSync(join(installed, file.path)).equals(readFileSync(resolve(root, 'dist/runtime', file.path))), true, `Archive changed ${file.path}`);
   }
-  for (const file of ['actors.mjs', 'node.mjs']) cpSync(resolve(root, 'examples/runtime', file), join(scratch, file));
-  if (!demoOnly) {
-    for (const file of ['consumer.mjs', 'consumer.ts', 'spacelab-consumer.mjs', 'rendering-consumer.mjs', 'rendering-consumer.ts']) cpSync(resolve(root, 'tests/runtime', file), join(scratch, file));
-    cpSync(resolve(root, 'examples/spacelab/beacon.actorproject'), join(scratch, 'beacon.actorproject'));
-    cpSync(resolve(root, 'tests/fixtures/actor-projects'), join(scratch, 'fixtures'), { recursive: true });
-    writeFileSync(join(scratch, 'tsconfig.json'), JSON.stringify({ compilerOptions: {
-      target: 'ES2022', lib: ['ES2022'], types: [], module: 'NodeNext', moduleResolution: 'NodeNext',
-      strict: true, skipLibCheck: false, noEmit: true,
-    }, include: ['consumer.ts'] }));
-    run(process.execPath, [resolve(root, 'node_modules/typescript/bin/tsc'), '-p', join(scratch, 'tsconfig.json')], { stdio: 'inherit' });
-    run(process.execPath, [resolve(root, 'node_modules/typescript/bin/tsc'), '-p', join(scratch, 'tsconfig.json'), '--module', 'ESNext', '--moduleResolution', 'Bundler'], { stdio: 'inherit' });
-    for (const [module, moduleResolution] of [['NodeNext','NodeNext'],['ESNext','Bundler']]) {
-      writeFileSync(join(scratch, 'tsconfig.rendering.json'), JSON.stringify({ compilerOptions: {
-        target:'ES2022', lib:['ES2022','DOM'], types:[], module, moduleResolution, strict:true, skipLibCheck:false, noEmit:true,
-      }, include:['rendering-consumer.ts'] }));
-      run(process.execPath,[resolve(root,'node_modules/typescript/bin/tsc'),'-p',join(scratch,'tsconfig.rendering.json')],{stdio:'inherit'});
-    }
-    run(process.execPath, ['--test', 'rendering-consumer.mjs'], { stdio: 'inherit' });
-    run(process.execPath, ['--test', 'consumer.mjs'], { stdio: 'inherit' });
-    run(process.execPath, ['--test', 'spacelab-consumer.mjs'], { stdio: 'inherit' });
-    // Production browser consumer must exercise the freshly installed archive.
-    cpSync(installed, resolve(root, 'dist/spacelab-example/package'), { recursive: true });
-    cpSync(installed, resolve(root, 'dist/rendering-example/package'), { recursive: true });
+  cpSync(resolve(root, 'tests/runtime/analytic-fixtures.mjs'), join(scratch, 'analytic-fixtures.mjs'));
+  for (const file of ['consumer.mjs', 'consumer.ts', 'spacelab-consumer.mjs', 'rendering-consumer.mjs', 'rendering-consumer.ts']) cpSync(resolve(root, 'tests/runtime', file), join(scratch, file));
+  cpSync(resolve(root, 'examples/spacelab/beacon.actorproject'), join(scratch, 'beacon.actorproject'));
+  cpSync(resolve(root, 'tests/fixtures/actor-projects'), join(scratch, 'fixtures'), { recursive: true });
+  writeFileSync(join(scratch, 'tsconfig.json'), JSON.stringify({ compilerOptions: {
+    target: 'ES2022', lib: ['ES2022'], types: [], module: 'NodeNext', moduleResolution: 'NodeNext',
+    strict: true, skipLibCheck: false, noEmit: true,
+  }, include: ['consumer.ts'] }));
+  run(process.execPath, [resolve(root, 'node_modules/typescript/bin/tsc'), '-p', join(scratch, 'tsconfig.json')], { stdio: 'inherit' });
+  run(process.execPath, [resolve(root, 'node_modules/typescript/bin/tsc'), '-p', join(scratch, 'tsconfig.json'), '--module', 'ESNext', '--moduleResolution', 'Bundler'], { stdio: 'inherit' });
+  for (const [module, moduleResolution] of [['NodeNext','NodeNext'],['ESNext','Bundler']]) {
+    writeFileSync(join(scratch, 'tsconfig.rendering.json'), JSON.stringify({ compilerOptions: {
+      target:'ES2022', lib:['ES2022','DOM'], types:[], module, moduleResolution, strict:true, skipLibCheck:false, noEmit:true,
+    }, include:['rendering-consumer.ts'] }));
+    run(process.execPath,[resolve(root,'node_modules/typescript/bin/tsc'),'-p',join(scratch,'tsconfig.rendering.json')],{stdio:'inherit'});
   }
-  run(process.execPath, ['node.mjs'], { stdio: 'inherit' });
+  run(process.execPath, ['--test', 'rendering-consumer.mjs'], { stdio: 'inherit' });
+  run(process.execPath, ['--test', 'consumer.mjs'], { stdio: 'inherit' });
+  run(process.execPath, ['--test', 'spacelab-consumer.mjs'], { stdio: 'inherit' });
+  // Production browser consumer must exercise the freshly installed archive.
+  cpSync(installed, resolve(root, 'dist/spacelab-example/package'), { recursive: true });
+  cpSync(installed, resolve(root, 'dist/rendering-example/package'), { recursive: true });
   console.log(JSON.stringify({ package: archive.name, version: archive.version, files: archive.files.length,
     archiveBytes: archive.size, unpackedBytes: archive.unpackedSize,
     sha256: createHash('sha256').update(readFileSync(join(scratch, archive.filename))).digest('hex'),
-    freshInstalledConsumer: 'passed', declarationsWithoutDOM: demoOnly ? 'not run' : 'passed',
+    freshInstalledConsumer: 'passed', declarationsWithoutDOM: 'passed',
   }, null, 2));
 } finally {
   rmSync(scratch, { recursive: true, force: true });

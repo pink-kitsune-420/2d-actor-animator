@@ -1,10 +1,12 @@
-import { cpSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
 const root = fileURLToPath(new URL('..', import.meta.url));
 const out = resolve(root, 'dist/runtime');
 rmSync(out, { recursive: true, force: true });
+// Also remove retired outputs when this command is run without a full editor build.
+for (const name of ['runtime-example', 'sheet-example']) rmSync(resolve(root, 'dist', name), { recursive: true, force: true });
 const run = args => execFileSync(process.execPath, args, { cwd: root, stdio: 'inherit' });
 run(['node_modules/typescript/bin/tsc', '-p', 'tsconfig.runtime.json']);
 run(['node_modules/typescript/bin/tsc', '-p', 'tsconfig.renderers.json']);
@@ -41,21 +43,15 @@ for (const name of ['README.md', 'ACTOR-PROJECT.md', 'SPACELAB.md', 'RENDERING.m
   const path = resolve(out, name);
   writeFileSync(path, readFileSync(path, 'utf8').replace(/\(([^()]+\.md)(#[^()]*)?\)/g, (match, file, anchor = '') => links[file] ? `(${links[file]}${anchor})` : match));
 }
-const demo = resolve(root, 'dist/runtime-example');
-rmSync(demo, { recursive: true, force: true });
-mkdirSync(demo, { recursive: true });
-for (const name of ['index.html', 'browser.mjs', 'actors.mjs']) cpSync(resolve(root, 'examples/runtime', name), resolve(demo, name));
-console.log('Built private local runtime package and native browser example.');
+// Public schematic runtime/sheet demos are archived; regression fixtures stay test-only.
 const profileDemo = resolve(root, 'dist/spacelab-example');
 rmSync(profileDemo, { recursive: true, force: true });
 cpSync(resolve(root, 'examples/spacelab'), profileDemo, { recursive: true });
 cpSync(out, resolve(profileDemo, 'package'), { recursive: true });
 cpSync(resolve(root, 'apps/web/src/actor-tools/classic-astronaut.project.json'), resolve(profileDemo, 'character.actorproject'));
-// Original built-runtime example data, serialized without source-path imports.
-const { createActors } = await import('../examples/runtime/actors.mjs');
+// Serialize retained analytic fixture values without shipping the test harness.
+const { createActors } = await import('../tests/runtime/analytic-fixtures.mjs');
 writeFileSync(resolve(profileDemo, 'nonhuman.actorproject'), JSON.stringify(createActors().creature, null, 2) + '\n');
-// Independent PNG + metadata consumer, with no private implementation imports.
-cpSync(resolve(root, 'examples/sheet'), resolve(root, 'dist/sheet-example'), { recursive: true });
 
 // Standalone bridge consumer. check-runtime replaces this with a fresh archive install.
 cpSync(resolve(root, 'examples/rendering'), resolve(root, 'dist/rendering-example'), { recursive: true });

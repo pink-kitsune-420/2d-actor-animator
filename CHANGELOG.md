@@ -2,6 +2,8 @@
 
 ## 0.1.0 — local release candidate, unpublished
 
+- Retired the credited schematic runtime and sheet demo pages; retained independent test fixtures and the editor’s Projects examples.
+
 - Added Runtime Contract Draft 1 semantic specification, portable analytic fixtures and fresh installed-package/browser conformance consumers over existing behavior; source and API identifiers unchanged.
 
 - Independent 2D actor parts, layered indexed artwork, arbitrary skeletons and scene attachments.

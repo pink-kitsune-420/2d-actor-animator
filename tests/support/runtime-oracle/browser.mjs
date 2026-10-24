@@ -1,5 +1,5 @@
-import { compileActorProject, createActorPose, evaluateActorPose } from '../runtime/runtime.js';
-import { createActors } from './actors.mjs';
+import { compileActorProject, createActorPose, evaluateActorPose } from '/runtime/runtime.js';
+import { createActors } from './analytic-fixtures.mjs';
 const { creature, marker } = createActors();
 const compiled = compileActorProject(creature), zero = compileActorProject(marker);
 const a = createActorPose(compiled), b = createActorPose(compiled), lamp = createActorPose(zero);

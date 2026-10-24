@@ -1,6 +1,6 @@
 # Editable actor-project contract /1
 
-The accepted format is `spacelab-actor-project/1`, commonly saved as `.actorproject`. Legacy `spacelab:*` identifiers remain compatibility identifiers. They do not require a game runtime. The package's TypeScript data declarations are the field reference; validation is the executable admission contract. A full original analytic example lives in `examples/runtime/actors.mjs` in the source repository.
+The accepted format is `spacelab-actor-project/1`, commonly saved as `.actorproject`. Legacy `spacelab:*` identifiers remain compatibility identifiers. They do not require a game runtime. The package's TypeScript data declarations are the field reference; validation is the executable admission contract. Original analytic admission and pose fixtures live in `tests/conformance/` in the source repository.
 
 See the [Runtime Contract Draft 1](runtime-contract.md) for evaluation/playback/lifecycle semantics and [conformance scope](runtime-conformance.md) for repeatable reference checks.
 

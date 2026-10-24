@@ -1,4 +1,4 @@
-// Original MIT example. Deliberately no runtime/editor/exporter imports.
+// Original MIT independent test oracle. Deliberately no runtime/editor/exporter imports.
 const el=id=>document.getElementById(id);
 let metadata=null,bitmap=null,generation=0,disposed=false;
 function release(){bitmap?.close();bitmap=null;el('view').getContext('2d').clearRect(0,0,512,384);el('report').textContent='';}
