@@ -1,0 +1,29 @@
+{
+  "format": "spacelab-actor-project/1",
+  "version": "0.1.0",
+  "id": "contract:empty",
+  "name": "empty",
+  "author": "Actor Animator contributors",
+  "license": "MIT",
+  "provenance": "Original analytic conformance fixture",
+  "units": {
+    "metresPerUnit": 0.25,
+    "coordinates": "x-right-y-up",
+    "angle": "radians-ccw",
+    "time": "seconds",
+    "origin": [
+      0,
+      0
+    ]
+  },
+  "requiredCapabilities": [
+    "spacelab:indexed-raster/1",
+    "spacelab:transform-clips/1"
+  ],
+  "parts": [],
+  "rigs": [],
+  "attachments": [],
+  "clips": [],
+  "actions": [],
+  "extensions": {}
+}

@@ -1,0 +1,101 @@
+{
+  "format": "spacelab-actor-project/1",
+  "version": "0.1.0",
+  "id": "contract:overflow",
+  "name": "overflow",
+  "author": "Actor Animator contributors",
+  "license": "MIT",
+  "provenance": "Original analytic conformance fixture",
+  "units": {
+    "metresPerUnit": 0.25,
+    "coordinates": "x-right-y-up",
+    "angle": "radians-ccw",
+    "time": "seconds",
+    "origin": [
+      0,
+      0
+    ]
+  },
+  "requiredCapabilities": [
+    "spacelab:indexed-raster/1",
+    "spacelab:transform-clips/1"
+  ],
+  "parts": [],
+  "rigs": [
+    {
+      "id": "contract:rig",
+      "name": "R",
+      "sockets": [],
+      "nodes": [
+        {
+          "id": "contract:root",
+          "name": "contract:root",
+          "parentId": null,
+          "rest": {
+            "x": 0,
+            "y": 0,
+            "rotation": 0,
+            "scaleX": 2,
+            "scaleY": 1
+          }
+        },
+        {
+          "id": "contract:child",
+          "name": "contract:child",
+          "parentId": "contract:root",
+          "rest": {
+            "x": 0,
+            "y": 0,
+            "rotation": 0,
+            "scaleX": 1,
+            "scaleY": 1
+          }
+        }
+      ]
+    }
+  ],
+  "attachments": [],
+  "clips": [
+    {
+      "id": "contract:overflow",
+      "name": "contract:overflow",
+      "duration": 2,
+      "playback": "once",
+      "tracks": [
+        {
+          "id": "contract:t",
+          "target": {
+            "kind": "node",
+            "rigId": "contract:rig",
+            "nodeId": "contract:child"
+          },
+          "interpolation": "linear",
+          "keys": [
+            {
+              "time": 0,
+              "value": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1e+308,
+                "scaleY": 1
+              }
+            },
+            {
+              "time": 2,
+              "value": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1e+308,
+                "scaleY": 1
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "actions": [],
+  "extensions": {}
+}

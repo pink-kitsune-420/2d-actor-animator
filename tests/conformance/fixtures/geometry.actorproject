@@ -1,0 +1,163 @@
+{
+  "format": "spacelab-actor-project/1",
+  "version": "0.1.0",
+  "id": "contract:geometry",
+  "name": "geometry",
+  "author": "Actor Animator contributors",
+  "license": "MIT",
+  "provenance": "Original analytic conformance fixture",
+  "units": {
+    "metresPerUnit": 0.25,
+    "coordinates": "x-right-y-up",
+    "angle": "radians-ccw",
+    "time": "seconds",
+    "origin": [
+      0,
+      0
+    ]
+  },
+  "requiredCapabilities": [
+    "spacelab:indexed-raster/1",
+    "spacelab:transform-clips/1"
+  ],
+  "parts": [
+    {
+      "id": "contract:red",
+      "name": "contract:red",
+      "revision": 1,
+      "pivot": [
+        0,
+        0
+      ],
+      "unitsPerPixel": 1,
+      "artwork": {
+        "kind": "indexed-raster",
+        "width": 1,
+        "height": 1,
+        "palette": [
+          "#ff0000ff"
+        ],
+        "layers": [
+          {
+            "id": "contract:ink",
+            "name": "Ink",
+            "opacity": 1,
+            "pixels": [
+              0
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "rigs": [
+    {
+      "id": "contract:zrig",
+      "name": "Z",
+      "nodes": [
+        {
+          "id": "contract:root",
+          "name": "contract:root",
+          "parentId": null,
+          "rest": {
+            "x": -3,
+            "y": 4,
+            "rotation": 0,
+            "scaleX": 0,
+            "scaleY": 1
+          }
+        }
+      ],
+      "sockets": []
+    },
+    {
+      "id": "contract:rig",
+      "name": "R",
+      "nodes": [
+        {
+          "id": "contract:child",
+          "name": "contract:child",
+          "parentId": "contract:root",
+          "rest": {
+            "x": 2,
+            "y": 0,
+            "rotation": 0.7853981633974483,
+            "scaleX": 1,
+            "scaleY": 1
+          }
+        },
+        {
+          "id": "contract:root",
+          "name": "contract:root",
+          "parentId": null,
+          "rest": {
+            "x": 2,
+            "y": 1,
+            "rotation": 0,
+            "scaleX": 2,
+            "scaleY": 1
+          }
+        },
+        {
+          "id": "contract:other",
+          "name": "contract:other",
+          "parentId": null,
+          "rest": {
+            "x": 9,
+            "y": -2,
+            "rotation": 0,
+            "scaleX": 1,
+            "scaleY": 1
+          }
+        }
+      ],
+      "sockets": [
+        {
+          "id": "contract:socket",
+          "name": "Socket",
+          "nodeId": "contract:root",
+          "transform": {
+            "x": 0,
+            "y": 2,
+            "rotation": 0,
+            "scaleX": 1,
+            "scaleY": 1
+          }
+        }
+      ]
+    }
+  ],
+  "attachments": [
+    {
+      "id": "contract:z",
+      "name": "contract:z",
+      "partId": "contract:red",
+      "drawOrder": 0,
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "contract:a",
+      "name": "contract:a",
+      "partId": "contract:red",
+      "drawOrder": 0,
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "scaleX": -1,
+        "scaleY": 1
+      },
+      "rigId": "contract:rig",
+      "nodeId": "contract:child"
+    }
+  ],
+  "clips": [],
+  "actions": [],
+  "extensions": {}
+}

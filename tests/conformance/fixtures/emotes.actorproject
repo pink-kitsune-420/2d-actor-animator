@@ -1,0 +1,66 @@
+{
+  "format": "spacelab-actor-project/1",
+  "version": "0.1.0",
+  "id": "contract:emotes",
+  "name": "emotes",
+  "author": "Actor Animator contributors",
+  "license": "MIT",
+  "provenance": "Original analytic conformance fixture",
+  "units": {
+    "metresPerUnit": 0.25,
+    "coordinates": "x-right-y-up",
+    "angle": "radians-ccw",
+    "time": "seconds",
+    "origin": [
+      0,
+      0
+    ]
+  },
+  "requiredCapabilities": [
+    "spacelab:indexed-raster/1",
+    "spacelab:transform-clips/1",
+    "spacelab:emote-authoring/1"
+  ],
+  "parts": [],
+  "rigs": [],
+  "attachments": [],
+  "clips": [
+    {
+      "id": "contract:idle",
+      "name": "contract:idle",
+      "duration": 2,
+      "playback": "once",
+      "tracks": []
+    }
+  ],
+  "actions": [],
+  "extensions": {},
+  "emotes": [
+    {
+      "id": "contract:greeting",
+      "label": "Greeting",
+      "revision": 1,
+      "duration": 2,
+      "playback": "loop",
+      "interruptPriority": 0,
+      "roles": [
+        {
+          "id": "contract:solo",
+          "label": "Solo",
+          "clipId": "contract:idle",
+          "rigId": null,
+          "socketBindings": {},
+          "start": 4,
+          "rate": -2,
+          "placement": {
+            "x": 0,
+            "y": 0,
+            "rotation": 0,
+            "scaleX": 1,
+            "scaleY": 1
+          }
+        }
+      ]
+    }
+  ]
+}

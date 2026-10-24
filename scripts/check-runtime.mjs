@@ -13,7 +13,7 @@ function run(bin, args, options = {}) {
 }
 try {
   const [archive] = JSON.parse(run('npm', ['pack', resolve(root, 'dist/runtime'), '--ignore-scripts', '--json', '--pack-destination', scratch]));
-  const allowed = /^(?:package\.json|(?:runtime|spacelab|canvas2d|webgl2|core|render-resources)\.js|README\.md|ACTOR-PROJECT\.md|SPACELAB\.md|RENDERING\.md|LICENSE|CREDITS\.md|UPSTREAM\.json|types\/(?:runtime|actor-tools|project-types|adapters\/(?:spacelab|canvas2d|webgl2|rendering))\/src\/[\w-]+\.d\.ts)$/;
+  const allowed = /^(?:package\.json|(?:runtime|spacelab|canvas2d|webgl2|core|render-resources)\.js|README\.md|ACTOR-PROJECT\.md|SPACELAB\.md|RENDERING\.md|RUNTIME-CONTRACT\.md|CONFORMANCE\.md|SHEETS\.md|LICENSE|CREDITS\.md|UPSTREAM\.json|types\/(?:runtime|actor-tools|project-types|adapters\/(?:spacelab|canvas2d|webgl2|rendering))\/src\/[\w-]+\.d\.ts)$/;
   for (const file of archive.files) {
     assert.match(file.path, allowed, `Unexpected package file ${file.path}`);
     const content = readFileSync(resolve(root, 'dist/runtime', file.path), 'utf8');

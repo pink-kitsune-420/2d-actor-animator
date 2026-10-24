@@ -13,3 +13,5 @@ The sampled-sheet consumer in `examples/sheet/` and its analytic verification ar
 ## Release tooling and documentation
 
 Creator tutorial screenshots are captured from first-party 2D Actor Animator examples and UI (MIT). No third-party branding or artwork is added. GitHub Actions checkout, setup-node, upload-artifact and deploy-pages are development/deployment-only tools from GitHub's official actions organization, under MIT licenses. Their reviewed revisions are pinned in the workflow files; they are not bundled into the editor or runtime.
+
+The Runtime Contract Draft 1 specification, analytic fixtures, conformance runner and standalone consumer are original MIT work by Actor Animator contributors. They add no third-party code, artwork or runtime dependency.

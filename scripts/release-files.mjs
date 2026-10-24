@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { lstatSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-export const runtimePath = /^(?:package\.json|(?:runtime|spacelab|canvas2d|webgl2|core|render-resources)\.js|README\.md|ACTOR-PROJECT\.md|SPACELAB\.md|RENDERING\.md|LICENSE|CREDITS\.md|UPSTREAM\.json|types\/(?:runtime|actor-tools|project-types|adapters\/(?:spacelab|canvas2d|webgl2|rendering))\/src\/[\w-]+\.d\.ts)$/;
+export const runtimePath = /^(?:package\.json|(?:runtime|spacelab|canvas2d|webgl2|core|render-resources)\.js|README\.md|ACTOR-PROJECT\.md|SPACELAB\.md|RENDERING\.md|RUNTIME-CONTRACT\.md|CONFORMANCE\.md|SHEETS\.md|LICENSE|CREDITS\.md|UPSTREAM\.json|types\/(?:runtime|actor-tools|project-types|adapters\/(?:spacelab|canvas2d|webgl2|rendering))\/src\/[\w-]+\.d\.ts)$/;
 const rootFiles = new Set(['.gitignore','ARCHITECTURE.md','CREDITS.md','LICENSE','README.md','UPSTREAM.json','CONTRIBUTING.md','SECURITY.md','CHANGELOG.md','package.json','package-lock.json']);
 export function sourcePath(path) {
   if (/(^|\/)(?:node_modules|dist|private-docs|\.tickets|\.worktrees|\.git|\.codex|\.agents|\.aws|coverage|test-results|playwright-report|release-artifacts|_site)(?:\/|$)|(?:^|\/)(?:AGENTS\.md|KICKOFF\.txt|tk|\.env(?:\..*)?)$|\.(?:log|trace|tgz|zip|tar|pyc)$/.test(path)) return false;
@@ -28,6 +28,7 @@ export function manifest(dir) {
 }
 export function sitePath(path) {
   return /^(?:index\.html|actor-tools\.html|\.nojekyll|LICENSE|CREDITS\.md|UPSTREAM\.json|downloads\/2D Actor Animator\.html|assets\/[\w-]+\.(?:js|css)|examples\/beacon\.actorproject|runtime-example\/(?:index\.html|browser\.mjs|actors\.mjs)|sheet-example\/(?:index\.html|browser\.mjs)|spacelab-example\/(?:index\.html|browser\.mjs|(?:beacon|character|nonhuman)\.actorproject)|rendering-example\/(?:index\.html|browser\.mjs|proofs\.mjs|(?:character|nonhuman|zero-bone)\.actorproject))$/.test(path)
+    || /^conformance-example\/(?:index\.html|browser\.mjs|runner\.mjs|manifest\.json|fixtures\/(?:empty|preservation|geometry|timing|composition|constraints|emotes|overflow)\.actorproject|fixtures\/preservation\.canonical\.json)$/.test(path)
     || (path.startsWith('runtime/') && runtimePath.test(path.slice(8)))
-    || /^(?:spacelab|rendering)-example\/package\//.test(path) && runtimePath.test(path.replace(/^[^/]+\/package\//,''));
+    || /^(?:spacelab|rendering|conformance)-example\/package\//.test(path) && runtimePath.test(path.replace(/^[^/]+\/package\//,''));
 }

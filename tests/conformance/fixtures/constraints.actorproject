@@ -1,0 +1,123 @@
+{
+  "format": "spacelab-actor-project/1",
+  "version": "0.1.0",
+  "id": "contract:constraints",
+  "name": "constraints",
+  "author": "Actor Animator contributors",
+  "license": "MIT",
+  "provenance": "Original analytic conformance fixture",
+  "units": {
+    "metresPerUnit": 0.25,
+    "coordinates": "x-right-y-up",
+    "angle": "radians-ccw",
+    "time": "seconds",
+    "origin": [
+      0,
+      0
+    ]
+  },
+  "requiredCapabilities": [
+    "spacelab:indexed-raster/1",
+    "spacelab:transform-clips/1",
+    "spacelab:rig-constraints/1"
+  ],
+  "parts": [],
+  "rigs": [
+    {
+      "id": "contract:rig",
+      "name": "R",
+      "nodes": [
+        {
+          "id": "contract:joint",
+          "name": "contract:joint",
+          "parentId": null,
+          "rest": {
+            "x": 0,
+            "y": 0,
+            "rotation": 0,
+            "scaleX": 1,
+            "scaleY": 1
+          }
+        },
+        {
+          "id": "contract:tip",
+          "name": "contract:tip",
+          "parentId": "contract:joint",
+          "rest": {
+            "x": 1,
+            "y": 0,
+            "rotation": 0,
+            "scaleX": 1,
+            "scaleY": 1
+          }
+        },
+        {
+          "id": "contract:target",
+          "name": "contract:target",
+          "parentId": null,
+          "rest": {
+            "x": 0,
+            "y": 1,
+            "rotation": 0,
+            "scaleX": 1,
+            "scaleY": 1
+          }
+        }
+      ],
+      "sockets": [],
+      "constraints": [
+        {
+          "id": "contract:ccd",
+          "name": "CCD",
+          "solver": "spacelab:ccd-chain/1",
+          "enabled": true,
+          "settings": {
+            "effector": {
+              "kind": "node",
+              "id": "contract:tip"
+            },
+            "chainRootId": "contract:joint",
+            "target": {
+              "kind": "node",
+              "id": "contract:target"
+            },
+            "iterations": 4,
+            "tolerance": 1e-05
+          }
+        },
+        {
+          "id": "contract:future",
+          "name": "Future",
+          "solver": "future:solver/9",
+          "enabled": true,
+          "settings": {
+            "url": "https://invalid.example/never-execute"
+          }
+        },
+        {
+          "id": "contract:off",
+          "name": "Off",
+          "solver": "spacelab:ccd-chain/1",
+          "enabled": false,
+          "settings": {
+            "effector": {
+              "kind": "node",
+              "id": "contract:tip"
+            },
+            "chainRootId": "contract:joint",
+            "target": {
+              "kind": "node",
+              "id": "contract:target"
+            },
+            "iterations": 4,
+            "tolerance": 1e-05
+          }
+        }
+      ]
+    }
+  ],
+  "attachments": [],
+  "clips": [],
+  "actions": [],
+  "extensions": {}
+}

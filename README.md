@@ -62,6 +62,8 @@ The rig interface offers both viewport and numeric controls. See [viewport editi
 
 `npm run build` produces the editor and a private local `@actor-animator/runtime` package in `dist/runtime`. Run `npm run demo:runtime` to install its archive into a fresh temporary Node consumer and sample two independent nonhuman actors plus zero-bone artwork. For the browser demo, start the production preview above and open http://127.0.0.1:4502/runtime-example/.
 
+The [Runtime Contract Draft 1](docs/runtime-contract.md) specifies existing asset, pose, timing and lifecycle semantics. [Conformance fixtures and the tested profile matrix](docs/runtime-conformance.md) provide independent expected outputs; `npm run check:conformance` tests a fresh installed archive and writes `dist/conformance-report.json`. After checking, `/conformance-example/` displays the browser results.
+
 See [the selected API and lifecycle](docs/runtime.md) and [editable project contract, units and limits](docs/actor-project.md). The examples consume built JS, and declaration checks require no DOM types. Compilation snapshots source; poses/animation players belong to individual instances. The generic root includes no editor, renderer or game dependency. Optional [WebGL2 primary and Canvas2D backup backends](docs/rendering.md) consume the same compiled objects/poses through separate browser entries. After `npm run check`, open `/rendering-example/` for an installed-output consumer with two independent actors.
 
 ## Space Lab compatibility

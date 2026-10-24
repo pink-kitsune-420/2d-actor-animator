@@ -1,0 +1,804 @@
+{
+  "format": "spacelab-actor-project/1",
+  "version": "0.1.0",
+  "id": "contract:timing",
+  "name": "timing",
+  "author": "Actor Animator contributors",
+  "license": "MIT",
+  "provenance": "Original analytic conformance fixture",
+  "units": {
+    "metresPerUnit": 0.25,
+    "coordinates": "x-right-y-up",
+    "angle": "radians-ccw",
+    "time": "seconds",
+    "origin": [
+      0,
+      0
+    ]
+  },
+  "requiredCapabilities": [
+    "spacelab:indexed-raster/1",
+    "spacelab:transform-clips/1",
+    "spacelab:animation-composition/1",
+    "spacelab:cel-tracks/1"
+  ],
+  "parts": [
+    {
+      "id": "contract:red",
+      "name": "contract:red",
+      "revision": 1,
+      "pivot": [
+        0,
+        0
+      ],
+      "unitsPerPixel": 1,
+      "artwork": {
+        "kind": "indexed-raster",
+        "width": 1,
+        "height": 1,
+        "palette": [
+          "#ff0000ff"
+        ],
+        "layers": [
+          {
+            "id": "contract:ink",
+            "name": "Ink",
+            "opacity": 1,
+            "pixels": [
+              0
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "contract:blue",
+      "name": "contract:blue",
+      "revision": 1,
+      "pivot": [
+        0.5,
+        1
+      ],
+      "unitsPerPixel": 0.25,
+      "artwork": {
+        "kind": "indexed-raster",
+        "width": 1,
+        "height": 1,
+        "palette": [
+          "#0000ffff"
+        ],
+        "layers": [
+          {
+            "id": "contract:ink",
+            "name": "Ink",
+            "opacity": 1,
+            "pixels": [
+              0
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "rigs": [
+    {
+      "id": "contract:rig",
+      "name": "R",
+      "nodes": [
+        {
+          "id": "contract:root",
+          "name": "contract:root",
+          "parentId": null,
+          "rest": {
+            "x": 0,
+            "y": 0,
+            "rotation": 0,
+            "scaleX": 1,
+            "scaleY": 1
+          }
+        }
+      ],
+      "sockets": []
+    }
+  ],
+  "attachments": [
+    {
+      "id": "contract:z",
+      "name": "contract:z",
+      "partId": "contract:red",
+      "drawOrder": 0,
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      },
+      "rigId": "contract:rig",
+      "nodeId": "contract:root"
+    },
+    {
+      "id": "contract:a",
+      "name": "contract:a",
+      "partId": "contract:red",
+      "drawOrder": 0,
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      },
+      "rigId": "contract:rig",
+      "nodeId": "contract:root"
+    }
+  ],
+  "clips": [
+    {
+      "id": "contract:once",
+      "name": "contract:once",
+      "duration": 2,
+      "playback": "once",
+      "tracks": [
+        {
+          "id": "contract:t",
+          "target": {
+            "kind": "attachment",
+            "attachmentId": "contract:a"
+          },
+          "interpolation": "linear",
+          "keys": [
+            {
+              "time": 0,
+              "value": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "time": 2,
+              "value": {
+                "x": 8,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "contract:loop",
+      "name": "contract:loop",
+      "duration": 2,
+      "playback": "loop",
+      "tracks": [
+        {
+          "id": "contract:t",
+          "target": {
+            "kind": "attachment",
+            "attachmentId": "contract:a"
+          },
+          "interpolation": "linear",
+          "keys": [
+            {
+              "time": 0,
+              "value": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "time": 2,
+              "value": {
+                "x": 8,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "contract:ping-pong",
+      "name": "contract:ping-pong",
+      "duration": 2,
+      "playback": "ping-pong",
+      "tracks": [
+        {
+          "id": "contract:t",
+          "target": {
+            "kind": "attachment",
+            "attachmentId": "contract:a"
+          },
+          "interpolation": "linear",
+          "keys": [
+            {
+              "time": 0,
+              "value": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "time": 2,
+              "value": {
+                "x": 8,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "contract:hold",
+      "name": "contract:hold",
+      "duration": 2,
+      "playback": "once",
+      "tracks": [
+        {
+          "id": "contract:t",
+          "target": {
+            "kind": "attachment",
+            "attachmentId": "contract:a"
+          },
+          "interpolation": "linear",
+          "keys": [
+            {
+              "time": 0.5,
+              "value": {
+                "x": 2,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "time": 1.5,
+              "value": {
+                "x": 6,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "contract:step",
+      "name": "contract:step",
+      "duration": 2,
+      "playback": "once",
+      "tracks": [
+        {
+          "id": "contract:t",
+          "target": {
+            "kind": "attachment",
+            "attachmentId": "contract:a"
+          },
+          "interpolation": "step",
+          "keys": [
+            {
+              "time": 0,
+              "value": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "time": 2,
+              "value": {
+                "x": 8,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "contract:curve-step",
+      "name": "contract:curve-step",
+      "duration": 2,
+      "playback": "once",
+      "tracks": [
+        {
+          "id": "contract:t",
+          "target": {
+            "kind": "attachment",
+            "attachmentId": "contract:a"
+          },
+          "interpolation": "linear",
+          "keys": [
+            {
+              "time": 0,
+              "value": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              },
+              "curve": "step"
+            },
+            {
+              "time": 2,
+              "value": {
+                "x": 8,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "contract:curve-linear",
+      "name": "contract:curve-linear",
+      "duration": 2,
+      "playback": "once",
+      "tracks": [
+        {
+          "id": "contract:t",
+          "target": {
+            "kind": "attachment",
+            "attachmentId": "contract:a"
+          },
+          "interpolation": "linear",
+          "keys": [
+            {
+              "time": 0,
+              "value": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              },
+              "curve": "linear"
+            },
+            {
+              "time": 2,
+              "value": {
+                "x": 8,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "contract:curve-ease-in",
+      "name": "contract:curve-ease-in",
+      "duration": 2,
+      "playback": "once",
+      "tracks": [
+        {
+          "id": "contract:t",
+          "target": {
+            "kind": "attachment",
+            "attachmentId": "contract:a"
+          },
+          "interpolation": "linear",
+          "keys": [
+            {
+              "time": 0,
+              "value": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              },
+              "curve": "ease-in"
+            },
+            {
+              "time": 2,
+              "value": {
+                "x": 8,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "contract:curve-ease-out",
+      "name": "contract:curve-ease-out",
+      "duration": 2,
+      "playback": "once",
+      "tracks": [
+        {
+          "id": "contract:t",
+          "target": {
+            "kind": "attachment",
+            "attachmentId": "contract:a"
+          },
+          "interpolation": "linear",
+          "keys": [
+            {
+              "time": 0,
+              "value": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              },
+              "curve": "ease-out"
+            },
+            {
+              "time": 2,
+              "value": {
+                "x": 8,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "contract:curve-ease-in-out",
+      "name": "contract:curve-ease-in-out",
+      "duration": 2,
+      "playback": "once",
+      "tracks": [
+        {
+          "id": "contract:t",
+          "target": {
+            "kind": "attachment",
+            "attachmentId": "contract:a"
+          },
+          "interpolation": "linear",
+          "keys": [
+            {
+              "time": 0,
+              "value": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              },
+              "curve": "ease-in-out"
+            },
+            {
+              "time": 2,
+              "value": {
+                "x": 8,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "contract:curve-cubic-bezier",
+      "name": "contract:curve-cubic-bezier",
+      "duration": 2,
+      "playback": "once",
+      "tracks": [
+        {
+          "id": "contract:t",
+          "target": {
+            "kind": "attachment",
+            "attachmentId": "contract:a"
+          },
+          "interpolation": "linear",
+          "keys": [
+            {
+              "time": 0,
+              "value": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              },
+              "curve": "cubic-bezier",
+              "bezier": [
+                0.3333333333333333,
+                2,
+                0.6666666666666666,
+                2
+              ]
+            },
+            {
+              "time": 2,
+              "value": {
+                "x": 8,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "contract:unwrapped",
+      "name": "contract:unwrapped",
+      "duration": 2,
+      "playback": "once",
+      "tracks": [
+        {
+          "id": "contract:t",
+          "target": {
+            "kind": "attachment",
+            "attachmentId": "contract:a"
+          },
+          "interpolation": "linear",
+          "keys": [
+            {
+              "time": 0,
+              "value": {
+                "x": 0,
+                "y": 0,
+                "rotation": 3,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "time": 2,
+              "value": {
+                "x": 0,
+                "y": 0,
+                "rotation": -3,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            }
+          ],
+          "angle": "unwrapped"
+        }
+      ]
+    },
+    {
+      "id": "contract:shortest",
+      "name": "contract:shortest",
+      "duration": 2,
+      "playback": "once",
+      "tracks": [
+        {
+          "id": "contract:t",
+          "target": {
+            "kind": "attachment",
+            "attachmentId": "contract:a"
+          },
+          "interpolation": "linear",
+          "keys": [
+            {
+              "time": 0,
+              "value": {
+                "x": 0,
+                "y": 0,
+                "rotation": 3,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "time": 2,
+              "value": {
+                "x": 0,
+                "y": 0,
+                "rotation": -3,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            }
+          ],
+          "angle": "shortest"
+        }
+      ]
+    },
+    {
+      "id": "contract:shortest-turn",
+      "name": "contract:shortest-turn",
+      "duration": 2,
+      "playback": "once",
+      "tracks": [
+        {
+          "id": "contract:t",
+          "target": {
+            "kind": "attachment",
+            "attachmentId": "contract:a"
+          },
+          "interpolation": "linear",
+          "keys": [
+            {
+              "time": 0,
+              "value": {
+                "x": 0,
+                "y": 0,
+                "rotation": 3,
+                "scaleX": 1,
+                "scaleY": 1
+              },
+              "turns": 1
+            },
+            {
+              "time": 2,
+              "value": {
+                "x": 0,
+                "y": 0,
+                "rotation": -3,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            }
+          ],
+          "angle": "shortest"
+        }
+      ]
+    },
+    {
+      "id": "contract:half-turn",
+      "name": "contract:half-turn",
+      "duration": 2,
+      "playback": "once",
+      "tracks": [
+        {
+          "id": "contract:t",
+          "target": {
+            "kind": "attachment",
+            "attachmentId": "contract:a"
+          },
+          "interpolation": "linear",
+          "keys": [
+            {
+              "time": 0,
+              "value": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "time": 2,
+              "value": {
+                "x": 0,
+                "y": 0,
+                "rotation": 3.141592653589793,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            }
+          ],
+          "angle": "shortest"
+        }
+      ]
+    },
+    {
+      "id": "contract:discrete",
+      "name": "contract:discrete",
+      "duration": 2,
+      "playback": "once",
+      "tracks": [],
+      "visibilityTracks": [
+        {
+          "id": "contract:v",
+          "target": {
+            "kind": "node",
+            "rigId": "contract:rig",
+            "nodeId": "contract:root"
+          },
+          "keys": [
+            {
+              "time": 0.5,
+              "visible": false
+            },
+            {
+              "time": 1,
+              "visible": true
+            }
+          ]
+        }
+      ],
+      "drawOrderTracks": [
+        {
+          "id": "contract:o",
+          "target": {
+            "kind": "attachment",
+            "attachmentId": "contract:a"
+          },
+          "keys": [
+            {
+              "time": 0,
+              "drawOrder": 2
+            },
+            {
+              "time": 1,
+              "drawOrder": 0
+            }
+          ]
+        }
+      ],
+      "celTracks": [
+        {
+          "id": "contract:cel",
+          "target": {
+            "kind": "attachment",
+            "attachmentId": "contract:a"
+          },
+          "keys": [
+            {
+              "time": 0.5,
+              "celId": "contract:blue-cel"
+            },
+            {
+              "time": 1,
+              "celId": "contract:red-cel"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "actions": [],
+  "extensions": {},
+  "cels": [
+    {
+      "id": "contract:blue-cel",
+      "name": "Blue",
+      "partId": "contract:blue"
+    },
+    {
+      "id": "contract:red-cel",
+      "name": "Red",
+      "partId": "contract:red"
+    }
+  ]
+}

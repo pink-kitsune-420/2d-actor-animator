@@ -2,6 +2,8 @@
 
 The accepted format is `spacelab-actor-project/1`, commonly saved as `.actorproject`. Legacy `spacelab:*` identifiers remain compatibility identifiers. They do not require a game runtime. The package's TypeScript data declarations are the field reference; validation is the executable admission contract. A full original analytic example lives in `examples/runtime/actors.mjs` in the source repository.
 
+See the [Runtime Contract Draft 1](runtime-contract.md) for evaluation/playback/lifecycle semantics and [conformance scope](runtime-conformance.md) for repeatable reference checks.
+
 ## Records and preservation
 
 The root requires `format`, semantic project `version`, namespaced `id`, nonempty `name`, `author`, `license`, `provenance`, `units`, `requiredCapabilities`, `parts`, `rigs`, `attachments`, `clips`, `actions` and `extensions`. `animators`, `cels` and `emotes` are optional. Names are free text; IDs are stable nonempty namespaced strings, with no whitespace or fixed anatomy names. ID scope follows each declared collection/reference (node and socket IDs belong to their rig). Multiple rigs, multiple roots, zero nodes and zero parts are valid when references remain valid. Arrays preserve authored order; compile slot order is separate and deterministic.

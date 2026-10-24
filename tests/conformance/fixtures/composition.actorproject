@@ -1,0 +1,336 @@
+{
+  "format": "spacelab-actor-project/1",
+  "version": "0.1.0",
+  "id": "contract:composition",
+  "name": "timing",
+  "author": "Actor Animator contributors",
+  "license": "MIT",
+  "provenance": "Original analytic conformance fixture",
+  "units": {
+    "metresPerUnit": 0.25,
+    "coordinates": "x-right-y-up",
+    "angle": "radians-ccw",
+    "time": "seconds",
+    "origin": [
+      0,
+      0
+    ]
+  },
+  "requiredCapabilities": [
+    "spacelab:indexed-raster/1",
+    "spacelab:transform-clips/1",
+    "spacelab:animation-composition/1",
+    "spacelab:cel-tracks/1"
+  ],
+  "parts": [
+    {
+      "id": "contract:red",
+      "name": "contract:red",
+      "revision": 1,
+      "pivot": [
+        0,
+        0
+      ],
+      "unitsPerPixel": 1,
+      "artwork": {
+        "kind": "indexed-raster",
+        "width": 1,
+        "height": 1,
+        "palette": [
+          "#ff0000ff"
+        ],
+        "layers": [
+          {
+            "id": "contract:ink",
+            "name": "Ink",
+            "opacity": 1,
+            "pixels": [
+              0
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "contract:blue",
+      "name": "contract:blue",
+      "revision": 1,
+      "pivot": [
+        0.5,
+        1
+      ],
+      "unitsPerPixel": 0.25,
+      "artwork": {
+        "kind": "indexed-raster",
+        "width": 1,
+        "height": 1,
+        "palette": [
+          "#0000ffff"
+        ],
+        "layers": [
+          {
+            "id": "contract:ink",
+            "name": "Ink",
+            "opacity": 1,
+            "pixels": [
+              0
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "rigs": [
+    {
+      "id": "contract:rig",
+      "name": "R",
+      "nodes": [
+        {
+          "id": "contract:root",
+          "name": "contract:root",
+          "parentId": null,
+          "rest": {
+            "x": 0,
+            "y": 0,
+            "rotation": 0,
+            "scaleX": 1,
+            "scaleY": 1
+          }
+        }
+      ],
+      "sockets": []
+    }
+  ],
+  "attachments": [
+    {
+      "id": "contract:z",
+      "name": "contract:z",
+      "partId": "contract:red",
+      "drawOrder": 0,
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      },
+      "rigId": "contract:rig",
+      "nodeId": "contract:root"
+    },
+    {
+      "id": "contract:a",
+      "name": "contract:a",
+      "partId": "contract:red",
+      "drawOrder": 0,
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      },
+      "rigId": "contract:rig",
+      "nodeId": "contract:root"
+    }
+  ],
+  "clips": [
+    {
+      "id": "contract:c0",
+      "name": "contract:c0",
+      "duration": 2,
+      "playback": "once",
+      "tracks": [
+        {
+          "id": "contract:t",
+          "target": {
+            "kind": "attachment",
+            "attachmentId": "contract:a"
+          },
+          "interpolation": "linear",
+          "keys": [
+            {
+              "time": 0,
+              "value": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "time": 2,
+              "value": {
+                "x": 2,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "contract:c1",
+      "name": "contract:c1",
+      "duration": 2,
+      "playback": "once",
+      "tracks": [
+        {
+          "id": "contract:t",
+          "target": {
+            "kind": "attachment",
+            "attachmentId": "contract:a"
+          },
+          "interpolation": "linear",
+          "keys": [
+            {
+              "time": 0,
+              "value": {
+                "x": 10,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "time": 2,
+              "value": {
+                "x": 12,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            }
+          ]
+        }
+      ],
+      "visibilityTracks": [
+        {
+          "id": "contract:v",
+          "target": {
+            "kind": "attachment",
+            "attachmentId": "contract:a"
+          },
+          "keys": [
+            {
+              "time": 0,
+              "visible": false
+            }
+          ]
+        }
+      ],
+      "celTracks": [
+        {
+          "id": "contract:cel",
+          "target": {
+            "kind": "attachment",
+            "attachmentId": "contract:a"
+          },
+          "keys": [
+            {
+              "time": 0,
+              "celId": "contract:blue-cel"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "contract:c2",
+      "name": "contract:c2",
+      "duration": 2,
+      "playback": "once",
+      "tracks": [
+        {
+          "id": "contract:t",
+          "target": {
+            "kind": "attachment",
+            "attachmentId": "contract:a"
+          },
+          "interpolation": "linear",
+          "keys": [
+            {
+              "time": 0,
+              "value": {
+                "x": 20,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "time": 2,
+              "value": {
+                "x": 22,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "actions": [],
+  "extensions": {},
+  "cels": [
+    {
+      "id": "contract:blue-cel",
+      "name": "Blue",
+      "partId": "contract:blue"
+    },
+    {
+      "id": "contract:red-cel",
+      "name": "Red",
+      "partId": "contract:red"
+    }
+  ],
+  "animators": [
+    {
+      "id": "contract:anim",
+      "name": "Animator",
+      "layers": [
+        {
+          "id": "contract:base",
+          "name": "contract:base",
+          "blend": "override",
+          "weight": 1,
+          "initialStateId": "contract:s0",
+          "defaultTransition": {
+            "duration": 2,
+            "priority": 0
+          },
+          "states": [
+            {
+              "id": "contract:s0",
+              "name": "S0",
+              "clipId": "contract:c0",
+              "rate": 1
+            },
+            {
+              "id": "contract:s1",
+              "name": "S1",
+              "clipId": "contract:c1",
+              "rate": 1
+            },
+            {
+              "id": "contract:s2",
+              "name": "S2",
+              "clipId": "contract:c2",
+              "rate": 1
+            }
+          ],
+          "transitions": []
+        }
+      ]
+    }
+  ]
+}

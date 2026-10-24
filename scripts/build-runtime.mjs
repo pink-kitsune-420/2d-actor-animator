@@ -32,13 +32,15 @@ for (const [src, dest] of [
   ['packages/runtime/package.json', 'package.json'], ['docs/runtime.md', 'README.md'],
   ['docs/actor-project.md', 'ACTOR-PROJECT.md'], ['LICENSE', 'LICENSE'],
   ['docs/spacelab.md', 'SPACELAB.md'], ['docs/rendering.md', 'RENDERING.md'],
+  ['docs/sheets.md', 'SHEETS.md'], ['docs/runtime-contract.md', 'RUNTIME-CONTRACT.md'], ['docs/runtime-conformance.md', 'CONFORMANCE.md'],
   ['CREDITS.md', 'CREDITS.md'], ['UPSTREAM.json', 'UPSTREAM.json'],
 ]) cpSync(resolve(root, src), resolve(out, dest));
-// Keep documentation links usable both in the source tree and installed archive.
-const readme = resolve(out, 'README.md');
-writeFileSync(readme, readFileSync(readme, 'utf8').replace('(actor-project.md)', '(ACTOR-PROJECT.md)').replace('(spacelab.md)', '(SPACELAB.md)').replace('(rendering.md)', '(RENDERING.md)'));
-const profileDoc = resolve(out, 'SPACELAB.md');
-writeFileSync(profileDoc, readFileSync(profileDoc, 'utf8').replace('(actor-project.md)', '(ACTOR-PROJECT.md)').replace('(runtime.md)', '(README.md)'));
+// Keep supported documentation links local in the installed archive.
+const links = { 'runtime.md':'README.md', 'actor-project.md':'ACTOR-PROJECT.md', 'rendering.md':'RENDERING.md', 'spacelab.md':'SPACELAB.md', 'runtime-contract.md':'RUNTIME-CONTRACT.md', 'runtime-conformance.md':'CONFORMANCE.md', 'sheets.md':'SHEETS.md', 'docs/sheets.md':'SHEETS.md' };
+for (const name of ['README.md', 'ACTOR-PROJECT.md', 'SPACELAB.md', 'RENDERING.md', 'RUNTIME-CONTRACT.md', 'CONFORMANCE.md', 'SHEETS.md']) {
+  const path = resolve(out, name);
+  writeFileSync(path, readFileSync(path, 'utf8').replace(/\(([^()]+\.md)(#[^()]*)?\)/g, (match, file, anchor = '') => links[file] ? `(${links[file]}${anchor})` : match));
+}
 const demo = resolve(root, 'dist/runtime-example');
 rmSync(demo, { recursive: true, force: true });
 mkdirSync(demo, { recursive: true });
@@ -60,3 +62,10 @@ cpSync(resolve(root, 'examples/rendering'), resolve(root, 'dist/rendering-exampl
 cpSync(out, resolve(root, 'dist/rendering-example/package'), { recursive: true });
 for (const name of ['character.actorproject', 'nonhuman.actorproject']) cpSync(resolve(profileDemo, name), resolve(root, 'dist/rendering-example', name));
 cpSync(resolve(root, 'examples/spacelab/beacon.actorproject'), resolve(root, 'dist/rendering-example/zero-bone.actorproject'));
+
+// Portable semantic conformance consumer; fixture expectations are static source.
+const conformance = resolve(root, 'dist/conformance-example');
+rmSync(conformance, { recursive: true, force: true });
+cpSync(resolve(root, 'examples/conformance'), conformance, { recursive: true });
+for (const name of ['manifest.json', 'runner.mjs', 'fixtures']) cpSync(resolve(root, 'tests/conformance', name), resolve(conformance, name), { recursive: true });
+cpSync(out, resolve(conformance, 'package'), { recursive: true });

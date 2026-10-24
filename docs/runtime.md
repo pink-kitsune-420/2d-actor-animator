@@ -2,6 +2,8 @@
 
 An engine-free ESM package for validating editable actor projects and sampling retained Float64 poses. It has zero runtime dependencies. The editor and runtime build use the same project validator, evaluator and animation implementation. This local package is private and has not been published to a registry.
 
+The [Runtime Contract Draft 1](runtime-contract.md) defines language-independent semantics; this page selects its JavaScript reference binding. [Conformance fixtures, commands and tested profiles](runtime-conformance.md) distinguish semantic, source and native-pixel evidence.
+
 ## Build and consume
 
 From the repository, run `npm ci --ignore-scripts --no-audit --no-fund`, then `npm run build`. The package directory is `dist/runtime`; `npm pack ./dist/runtime` produces an installable archive. In a separate application, install that archive with `npm install /path/to/actor-animator-runtime-0.1.0.tgz`, then:

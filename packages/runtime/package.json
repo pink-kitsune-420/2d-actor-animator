@@ -42,6 +42,9 @@
     "webgl2.js",
     "core.js",
     "render-resources.js",
-    "RENDERING.md"
+    "RENDERING.md",
+    "RUNTIME-CONTRACT.md",
+    "CONFORMANCE.md",
+    "SHEETS.md"
   ]
 }

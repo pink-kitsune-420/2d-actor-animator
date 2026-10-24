@@ -13,6 +13,7 @@ const selected = [
   ...files('dist/runtime-example').map(p=>'runtime-example/'+p),
   ...files('dist/spacelab-example').map(p=>'spacelab-example/'+p),
   ...files('dist/rendering-example').map(p=>'rendering-example/'+p),
+  ...files('dist/conformance-example').map(p=>'conformance-example/'+p),
   ...files('dist/sheet-example').map(p=>'sheet-example/'+p),
 ];
 // Reject additions before clearing/creating output. Never copy dist wholesale.

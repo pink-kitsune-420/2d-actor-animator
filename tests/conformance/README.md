@@ -1,0 +1,7 @@
+# Draft 1 portable semantic fixtures
+
+Original first-party MIT fixtures. See the source repository's docs/runtime-contract.md and docs/runtime-conformance.md for normative semantics, manifest operations, oracle derivations, tolerances and limits.
+
+`manifest.json` contains hand-authored expected semantic outputs; `fixtures/` contains exact editable inputs and one separately authored canonical string (no trailing newline). The JSON patches are test variations, not actor wire fields. No evaluator is used to generate answers. `runner.mjs` receives the existing supported JS binding object, manifest and basename-to-text map. `node.mjs` is a fresh-installed reference consumer and includes four deliberately wrong expectation controls. `npm run check:conformance` owns archive installation/reporting and runs it outside the repository. The browser example uses the same portable runner and inputs.
+
+The kit checks selected fields, not every possible asset. Source/IDs/discrete values are exact; numeric channels have declared tolerances. The Node lifecycle scenario tests JS brands, independent retained buffers and rejected-call preservation. Core has no disposal method. Native pixel/owned-resource/context-loss checks remain independent in tests/browser/actor-rendering.spec.ts; incomplete overflow-pose admission is in tests/browser/runtime-conformance.spec.ts. No asset URL is fetched or extension executed.

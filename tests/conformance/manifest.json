@@ -1,0 +1,2870 @@
+{
+  "contract": "2D Actor Runtime Contract",
+  "revision": "draft-1",
+  "fixtureRevision": 1,
+  "tolerance": {
+    "absolute": 1e-10,
+    "relative": 1e-12
+  },
+  "profiles": {
+    "base": [
+      "spacelab:indexed-raster/1",
+      "spacelab:transform-clips/1"
+    ],
+    "composition": [
+      "spacelab:animation-composition/1"
+    ],
+    "cels": [
+      "spacelab:cel-tracks/1"
+    ],
+    "constraints": [
+      "spacelab:rig-constraints/1",
+      "spacelab:ccd-chain/1"
+    ],
+    "emotes": [
+      "spacelab:emote-authoring/1"
+    ]
+  },
+  "cases": [
+    {
+      "id": "preserve-canonical-values",
+      "kind": "admission",
+      "fixture": "preservation.actorproject",
+      "profiles": [
+        "base"
+      ],
+      "canonical": "preservation.canonical.json",
+      "expect": {
+        "ok": true
+      }
+    },
+    {
+      "id": "empty-zero-slots",
+      "kind": "pose",
+      "fixture": "empty.actorproject",
+      "profiles": [
+        "base"
+      ],
+      "samples": [
+        {
+          "clip": null,
+          "time": 0,
+          "expect": {
+            "slotCount": 0,
+            "draw": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "unknown-required",
+      "kind": "admission",
+      "fixture": "empty.actorproject",
+      "profiles": [
+        "base"
+      ],
+      "patch": [
+        [
+          [
+            "requiredCapabilities",
+            2
+          ],
+          "future:required/9"
+        ]
+      ],
+      "expect": {
+        "ok": false,
+        "diagnostic": {
+          "code": "capability",
+          "path": "/requiredCapabilities/2"
+        }
+      }
+    },
+    {
+      "id": "unknown-schema",
+      "kind": "admission",
+      "fixture": "empty.actorproject",
+      "profiles": [
+        "base"
+      ],
+      "patch": [
+        [
+          [
+            "format"
+          ],
+          "future:actor/2"
+        ]
+      ],
+      "expect": {
+        "ok": false,
+        "diagnostic": {
+          "code": "format",
+          "path": "/format"
+        }
+      }
+    },
+    {
+      "id": "unknown-core",
+      "kind": "admission",
+      "fixture": "empty.actorproject",
+      "profiles": [
+        "base"
+      ],
+      "patch": [
+        [
+          [
+            "future"
+          ],
+          1
+        ]
+      ],
+      "expect": {
+        "ok": false,
+        "diagnostic": {
+          "code": "field",
+          "path": "/future"
+        }
+      }
+    },
+    {
+      "id": "missing-part-reference",
+      "kind": "admission",
+      "fixture": "geometry.actorproject",
+      "profiles": [
+        "base"
+      ],
+      "patch": [
+        [
+          [
+            "attachments",
+            0,
+            "partId"
+          ],
+          "contract:missing"
+        ]
+      ],
+      "expect": {
+        "ok": false,
+        "diagnostic": {
+          "code": "reference",
+          "path": "/attachments/0/partId"
+        }
+      }
+    },
+    {
+      "id": "collection-limit",
+      "kind": "admission",
+      "fixture": "geometry.actorproject",
+      "profiles": [
+        "base"
+      ],
+      "patch": [],
+      "limits": {
+        "maxParts": 0
+      },
+      "expect": {
+        "ok": false,
+        "diagnostic": {
+          "code": "limit",
+          "path": "/parts"
+        }
+      }
+    },
+    {
+      "id": "byte-limit",
+      "kind": "admission",
+      "fixture": "empty.actorproject",
+      "profiles": [
+        "base"
+      ],
+      "patch": [],
+      "limits": {
+        "maxJsonBytes": 2
+      },
+      "expect": {
+        "ok": false,
+        "diagnostic": {
+          "code": "limit",
+          "path": ""
+        }
+      }
+    },
+    {
+      "id": "missing-composition-capability",
+      "kind": "admission",
+      "fixture": "timing.actorproject",
+      "profiles": [
+        "base"
+      ],
+      "patch": [
+        [
+          [
+            "requiredCapabilities"
+          ],
+          [
+            "spacelab:indexed-raster/1",
+            "spacelab:transform-clips/1",
+            "spacelab:cel-tracks/1"
+          ]
+        ]
+      ],
+      "expect": {
+        "ok": false,
+        "diagnostic": {
+          "code": "capability",
+          "path": "/clips/2/playback"
+        }
+      }
+    },
+    {
+      "id": "malformed-json",
+      "kind": "admission",
+      "fixture": "empty.actorproject",
+      "profiles": [
+        "base"
+      ],
+      "text": "{",
+      "expect": {
+        "ok": false,
+        "diagnostic": {
+          "code": "json",
+          "path": ""
+        }
+      }
+    },
+    {
+      "id": "geometry-rest",
+      "kind": "pose",
+      "fixture": "geometry.actorproject",
+      "profiles": [
+        "base"
+      ],
+      "samples": [
+        {
+          "clip": null,
+          "time": 123,
+          "expect": {
+            "slotCount": 7,
+            "draw": [
+              "contract:a",
+              "contract:z"
+            ],
+            "slots": [
+              {
+                "kind": "node",
+                "rigId": "contract:rig",
+                "id": "contract:child",
+                "worldMatrices": [
+                  1.4142135623730951,
+                  0.7071067811865476,
+                  -1.4142135623730951,
+                  0.7071067811865476,
+                  6,
+                  1
+                ]
+              },
+              {
+                "kind": "node",
+                "rigId": "contract:zrig",
+                "id": "contract:root",
+                "worldMatrices": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  -3,
+                  4
+                ]
+              },
+              {
+                "kind": "socket",
+                "rigId": "contract:rig",
+                "id": "contract:socket",
+                "worldMatrices": [
+                  2,
+                  0,
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              },
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "worldMatrices": [
+                  -1.4142135623730951,
+                  -0.7071067811865476,
+                  -1.4142135623730951,
+                  0.7071067811865476,
+                  6,
+                  1
+                ],
+                "part": "contract:red"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "metre-calibration-inert",
+      "kind": "pose",
+      "fixture": "geometry.actorproject",
+      "profiles": [
+        "base"
+      ],
+      "patch": [
+        [
+          [
+            "units",
+            "metresPerUnit"
+          ],
+          17
+        ]
+      ],
+      "samples": [
+        {
+          "clip": null,
+          "time": 0,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "worldMatrices": [
+                  -1.4142135623730951,
+                  -0.7071067811865476,
+                  -1.4142135623730951,
+                  0.7071067811865476,
+                  6,
+                  1
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "timing-once",
+      "kind": "pose",
+      "fixture": "timing.actorproject",
+      "profiles": [
+        "base"
+      ],
+      "samples": [
+        {
+          "clip": "contract:once",
+          "time": -1,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "clip": "contract:once",
+          "time": 0,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "clip": "contract:once",
+          "time": 0.5,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  2,
+                  0,
+                  0,
+                  1,
+                  1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "clip": "contract:once",
+          "time": 2,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  8,
+                  0,
+                  0,
+                  1,
+                  1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "clip": "contract:once",
+          "time": 3,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  8,
+                  0,
+                  0,
+                  1,
+                  1
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "timing-loop",
+      "kind": "pose",
+      "fixture": "timing.actorproject",
+      "profiles": [
+        "base"
+      ],
+      "samples": [
+        {
+          "clip": "contract:loop",
+          "time": -2,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "clip": "contract:loop",
+          "time": -0.5,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  6,
+                  0,
+                  0,
+                  1,
+                  1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "clip": "contract:loop",
+          "time": 0,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "clip": "contract:loop",
+          "time": 2,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "clip": "contract:loop",
+          "time": 2.5,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  2,
+                  0,
+                  0,
+                  1,
+                  1
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "timing-ping-pong",
+      "kind": "pose",
+      "fixture": "timing.actorproject",
+      "profiles": [
+        "composition"
+      ],
+      "samples": [
+        {
+          "clip": "contract:ping-pong",
+          "time": -0.5,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  2,
+                  0,
+                  0,
+                  1,
+                  1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "clip": "contract:ping-pong",
+          "time": 0,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "clip": "contract:ping-pong",
+          "time": 2,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  8,
+                  0,
+                  0,
+                  1,
+                  1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "clip": "contract:ping-pong",
+          "time": 3,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  4,
+                  0,
+                  0,
+                  1,
+                  1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "clip": "contract:ping-pong",
+          "time": 4,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  1
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "endpoint-holds",
+      "kind": "pose",
+      "fixture": "timing.actorproject",
+      "profiles": [
+        "base"
+      ],
+      "samples": [
+        {
+          "clip": "contract:hold",
+          "time": 0,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  2,
+                  0,
+                  0,
+                  1,
+                  1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "clip": "contract:hold",
+          "time": 0.5,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  2,
+                  0,
+                  0,
+                  1,
+                  1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "clip": "contract:hold",
+          "time": 1,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  4,
+                  0,
+                  0,
+                  1,
+                  1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "clip": "contract:hold",
+          "time": 1.5,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  6,
+                  0,
+                  0,
+                  1,
+                  1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "clip": "contract:hold",
+          "time": 2,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  6,
+                  0,
+                  0,
+                  1,
+                  1
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "step-exact-end",
+      "kind": "pose",
+      "fixture": "timing.actorproject",
+      "profiles": [
+        "base"
+      ],
+      "samples": [
+        {
+          "clip": "contract:step",
+          "time": 0,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "clip": "contract:step",
+          "time": 1.999,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "clip": "contract:step",
+          "time": 2,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  8,
+                  0,
+                  0,
+                  1,
+                  1
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "curve-step",
+      "kind": "pose",
+      "fixture": "timing.actorproject",
+      "profiles": [
+        "composition"
+      ],
+      "samples": [
+        {
+          "clip": "contract:curve-step",
+          "time": 1,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  1
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "curve-linear",
+      "kind": "pose",
+      "fixture": "timing.actorproject",
+      "profiles": [
+        "composition"
+      ],
+      "samples": [
+        {
+          "clip": "contract:curve-linear",
+          "time": 1,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  4,
+                  0,
+                  0,
+                  1,
+                  1
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "curve-ease-in",
+      "kind": "pose",
+      "fixture": "timing.actorproject",
+      "profiles": [
+        "composition"
+      ],
+      "samples": [
+        {
+          "clip": "contract:curve-ease-in",
+          "time": 1.315,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  4,
+                  0,
+                  0,
+                  1,
+                  1
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "curve-ease-out",
+      "kind": "pose",
+      "fixture": "timing.actorproject",
+      "profiles": [
+        "composition"
+      ],
+      "samples": [
+        {
+          "clip": "contract:curve-ease-out",
+          "time": 0.685,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  4,
+                  0,
+                  0,
+                  1,
+                  1
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "curve-ease-in-out",
+      "kind": "pose",
+      "fixture": "timing.actorproject",
+      "profiles": [
+        "composition"
+      ],
+      "samples": [
+        {
+          "clip": "contract:curve-ease-in-out",
+          "time": 1,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  4,
+                  0,
+                  0,
+                  1,
+                  1
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "curve-cubic-bezier",
+      "kind": "pose",
+      "fixture": "timing.actorproject",
+      "profiles": [
+        "composition"
+      ],
+      "samples": [
+        {
+          "clip": "contract:curve-cubic-bezier",
+          "time": 1,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  13,
+                  0,
+                  0,
+                  1,
+                  1
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "angle-unwrapped",
+      "kind": "pose",
+      "fixture": "timing.actorproject",
+      "profiles": [
+        "composition"
+      ],
+      "samples": [
+        {
+          "clip": "contract:unwrapped",
+          "time": 1,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "clip": "contract:unwrapped",
+          "time": 2,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  0,
+                  0,
+                  -3,
+                  1,
+                  1
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "angle-shortest",
+      "kind": "pose",
+      "fixture": "timing.actorproject",
+      "profiles": [
+        "composition"
+      ],
+      "samples": [
+        {
+          "clip": "contract:shortest",
+          "time": 1,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  0,
+                  0,
+                  3.141592653589793,
+                  1,
+                  1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "clip": "contract:shortest",
+          "time": 2,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  0,
+                  0,
+                  -3,
+                  1,
+                  1
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "angle-shortest-turn",
+      "kind": "pose",
+      "fixture": "timing.actorproject",
+      "profiles": [
+        "composition"
+      ],
+      "samples": [
+        {
+          "clip": "contract:shortest-turn",
+          "time": 1,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  0,
+                  0,
+                  6.283185307179586,
+                  1,
+                  1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "clip": "contract:shortest-turn",
+          "time": 2,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  0,
+                  0,
+                  -3,
+                  1,
+                  1
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "angle-half-turn",
+      "kind": "pose",
+      "fixture": "timing.actorproject",
+      "profiles": [
+        "composition"
+      ],
+      "samples": [
+        {
+          "clip": "contract:half-turn",
+          "time": 1,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  0,
+                  0,
+                  -1.5707963267948966,
+                  1,
+                  1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "clip": "contract:half-turn",
+          "time": 2,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  0,
+                  0,
+                  3.141592653589793,
+                  1,
+                  1
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "rest-resets-all-channels",
+      "kind": "pose",
+      "fixture": "timing.actorproject",
+      "profiles": [
+        "base",
+        "cels"
+      ],
+      "samples": [
+        {
+          "clip": "contract:discrete",
+          "time": 0,
+          "expect": {
+            "draw": [
+              "contract:z",
+              "contract:a"
+            ],
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "visible": 0,
+                "part": "contract:blue"
+              }
+            ]
+          }
+        },
+        {
+          "clip": null,
+          "time": 0,
+          "expect": {
+            "draw": [
+              "contract:a",
+              "contract:z"
+            ],
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "visible": 1,
+                "localVisible": 1,
+                "part": "contract:red",
+                "drawOrder": 0
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "discrete-first-hold-exact-tie",
+      "kind": "pose",
+      "fixture": "timing.actorproject",
+      "profiles": [
+        "composition",
+        "cels"
+      ],
+      "samples": [
+        {
+          "clip": "contract:discrete",
+          "time": 0,
+          "expect": {
+            "draw": [
+              "contract:z",
+              "contract:a"
+            ],
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "visible": 0,
+                "part": "contract:blue"
+              }
+            ]
+          }
+        },
+        {
+          "clip": "contract:discrete",
+          "time": 0.999,
+          "expect": {
+            "draw": [
+              "contract:z",
+              "contract:a"
+            ],
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "visible": 0,
+                "part": "contract:blue"
+              }
+            ]
+          }
+        },
+        {
+          "clip": "contract:discrete",
+          "time": 1,
+          "expect": {
+            "draw": [
+              "contract:a",
+              "contract:z"
+            ],
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "visible": 1,
+                "part": "contract:red"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "crossfade-threshold-replay",
+      "kind": "animation",
+      "fixture": "composition.actorproject",
+      "profiles": [
+        "composition"
+      ],
+      "animator": "contract:anim",
+      "patch": [],
+      "operations": [
+        {
+          "op": "request",
+          "layer": "contract:base",
+          "state": "contract:s1",
+          "time": 0,
+          "expect": "accepted"
+        },
+        {
+          "op": "sample",
+          "time": 0.5,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  3,
+                  0,
+                  0,
+                  1,
+                  1
+                ],
+                "localVisible": 1,
+                "part": "contract:red"
+              }
+            ]
+          }
+        },
+        {
+          "op": "sample",
+          "time": 1,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  6,
+                  0,
+                  0,
+                  1,
+                  1
+                ],
+                "localVisible": 0,
+                "part": "contract:blue"
+              }
+            ]
+          }
+        },
+        {
+          "op": "sample",
+          "time": 2,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  12,
+                  0,
+                  0,
+                  1,
+                  1
+                ],
+                "localVisible": 0,
+                "part": "contract:blue"
+              }
+            ]
+          }
+        },
+        {
+          "op": "sample",
+          "time": 0.5,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  3,
+                  0,
+                  0,
+                  1,
+                  1
+                ],
+                "localVisible": 1,
+                "part": "contract:red"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "request-outcomes-trim",
+      "kind": "animation",
+      "fixture": "composition.actorproject",
+      "profiles": [
+        "composition"
+      ],
+      "animator": "contract:anim",
+      "patch": [],
+      "operations": [
+        {
+          "op": "request",
+          "layer": "contract:base",
+          "state": "contract:s0",
+          "time": 0,
+          "expect": "already-active"
+        },
+        {
+          "op": "request",
+          "layer": "contract:base",
+          "state": "contract:s1",
+          "time": 0,
+          "expect": "accepted"
+        },
+        {
+          "op": "request",
+          "layer": "contract:base",
+          "state": "contract:s2",
+          "time": -0.1,
+          "expect": "out-of-order"
+        },
+        {
+          "op": "request",
+          "layer": "contract:base",
+          "state": "contract:s2",
+          "time": 1,
+          "expect": "capacity"
+        },
+        {
+          "op": "sample",
+          "time": 1,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  6,
+                  0,
+                  0,
+                  1,
+                  1
+                ],
+                "localVisible": 0,
+                "part": "contract:blue"
+              }
+            ]
+          }
+        },
+        {
+          "op": "trim"
+        },
+        {
+          "op": "sample-error",
+          "time": 0.5,
+          "expect": "RangeError"
+        },
+        {
+          "op": "request",
+          "layer": "contract:base",
+          "state": "contract:s2",
+          "time": 1,
+          "expect": "accepted"
+        },
+        {
+          "op": "sample",
+          "time": 1,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  6,
+                  0,
+                  0,
+                  1,
+                  1
+                ],
+                "localVisible": 0,
+                "part": "contract:blue"
+              }
+            ]
+          }
+        }
+      ],
+      "options": {
+        "maxRequests": 2
+      }
+    },
+    {
+      "id": "priority-interrupt",
+      "kind": "animation",
+      "fixture": "composition.actorproject",
+      "profiles": [
+        "composition"
+      ],
+      "animator": "contract:anim",
+      "patch": [
+        [
+          [
+            "animators",
+            0,
+            "layers",
+            0,
+            "transitions"
+          ],
+          [
+            {
+              "id": "contract:high",
+              "from": null,
+              "to": "contract:s1",
+              "duration": 2,
+              "priority": 5
+            }
+          ]
+        ]
+      ],
+      "operations": [
+        {
+          "op": "request",
+          "layer": "contract:base",
+          "state": "contract:s1",
+          "time": 0,
+          "expect": "accepted"
+        },
+        {
+          "op": "request",
+          "layer": "contract:base",
+          "state": "contract:s2",
+          "time": 0.5,
+          "expect": "rejected-priority"
+        },
+        {
+          "op": "sample",
+          "time": 1,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  6,
+                  0,
+                  0,
+                  1,
+                  1
+                ],
+                "localVisible": 0,
+                "part": "contract:blue"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "state-rate-2",
+      "kind": "animation",
+      "fixture": "composition.actorproject",
+      "profiles": [
+        "composition"
+      ],
+      "animator": "contract:anim",
+      "patch": [
+        [
+          [
+            "animators",
+            0,
+            "layers",
+            0,
+            "states",
+            0,
+            "rate"
+          ],
+          2
+        ]
+      ],
+      "operations": [
+        {
+          "op": "sample",
+          "time": 0.5,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  1,
+                  0,
+                  0,
+                  1,
+                  1
+                ],
+                "localVisible": 1,
+                "part": "contract:red"
+              }
+            ]
+          }
+        },
+        {
+          "op": "sample",
+          "time": 1,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  2,
+                  0,
+                  0,
+                  1,
+                  1
+                ],
+                "localVisible": 1,
+                "part": "contract:red"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "state-rate--1",
+      "kind": "animation",
+      "fixture": "composition.actorproject",
+      "profiles": [
+        "composition"
+      ],
+      "animator": "contract:anim",
+      "patch": [
+        [
+          [
+            "animators",
+            0,
+            "layers",
+            0,
+            "states",
+            0,
+            "rate"
+          ],
+          -1
+        ]
+      ],
+      "operations": [
+        {
+          "op": "sample",
+          "time": 0,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  2,
+                  0,
+                  0,
+                  1,
+                  1
+                ],
+                "localVisible": 1,
+                "part": "contract:red"
+              }
+            ]
+          }
+        },
+        {
+          "op": "sample",
+          "time": 0.5,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  1.5,
+                  0,
+                  0,
+                  1,
+                  1
+                ],
+                "localVisible": 1,
+                "part": "contract:red"
+              }
+            ]
+          }
+        },
+        {
+          "op": "sample",
+          "time": 2,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  1
+                ],
+                "localVisible": 1,
+                "part": "contract:red"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "state-rate-0",
+      "kind": "animation",
+      "fixture": "composition.actorproject",
+      "profiles": [
+        "composition"
+      ],
+      "animator": "contract:anim",
+      "patch": [
+        [
+          [
+            "animators",
+            0,
+            "layers",
+            0,
+            "states",
+            0,
+            "rate"
+          ],
+          0
+        ]
+      ],
+      "operations": [
+        {
+          "op": "sample",
+          "time": 0,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  1
+                ],
+                "localVisible": 1,
+                "part": "contract:red"
+              }
+            ]
+          }
+        },
+        {
+          "op": "sample",
+          "time": 2,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  1
+                ],
+                "localVisible": 1,
+                "part": "contract:red"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "override-weight-0.49",
+      "kind": "animation",
+      "fixture": "composition.actorproject",
+      "profiles": [
+        "composition"
+      ],
+      "animator": "contract:anim",
+      "patch": [
+        [
+          [
+            "animators",
+            0,
+            "layers",
+            0,
+            "weight"
+          ],
+          0.49
+        ],
+        [
+          [
+            "animators",
+            0,
+            "layers",
+            0,
+            "initialStateId"
+          ],
+          "contract:s1"
+        ]
+      ],
+      "operations": [
+        {
+          "op": "sample",
+          "time": 0,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  4.9,
+                  0,
+                  0,
+                  1,
+                  1
+                ],
+                "localVisible": 1,
+                "part": "contract:red"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "override-weight-0.5",
+      "kind": "animation",
+      "fixture": "composition.actorproject",
+      "profiles": [
+        "composition"
+      ],
+      "animator": "contract:anim",
+      "patch": [
+        [
+          [
+            "animators",
+            0,
+            "layers",
+            0,
+            "weight"
+          ],
+          0.5
+        ],
+        [
+          [
+            "animators",
+            0,
+            "layers",
+            0,
+            "initialStateId"
+          ],
+          "contract:s1"
+        ]
+      ],
+      "operations": [
+        {
+          "op": "sample",
+          "time": 0,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  5,
+                  0,
+                  0,
+                  1,
+                  1
+                ],
+                "localVisible": 0,
+                "part": "contract:blue"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "empty-mask",
+      "kind": "animation",
+      "fixture": "composition.actorproject",
+      "profiles": [
+        "composition"
+      ],
+      "animator": "contract:anim",
+      "patch": [
+        [
+          [
+            "animators",
+            0,
+            "layers",
+            0,
+            "mask"
+          ],
+          []
+        ]
+      ],
+      "operations": [
+        {
+          "op": "request",
+          "layer": "contract:base",
+          "state": "contract:s1",
+          "time": 0,
+          "expect": "accepted"
+        },
+        {
+          "op": "sample",
+          "time": 2,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  1
+                ],
+                "localVisible": 1,
+                "part": "contract:red"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "additive-reference-discrete-inert",
+      "kind": "animation",
+      "fixture": "composition.actorproject",
+      "profiles": [
+        "composition"
+      ],
+      "animator": "contract:anim",
+      "patch": [
+        [
+          [
+            "animators",
+            0,
+            "layers",
+            0
+          ],
+          {
+            "id": "contract:add",
+            "name": "contract:add",
+            "blend": "additive",
+            "weight": 0.5,
+            "initialStateId": "contract:s1",
+            "defaultTransition": {
+              "duration": 2,
+              "priority": 0
+            },
+            "states": [
+              {
+                "id": "contract:s0",
+                "name": "S0",
+                "clipId": "contract:c0",
+                "rate": 1
+              },
+              {
+                "id": "contract:s1",
+                "name": "S1",
+                "clipId": "contract:c1",
+                "rate": 0
+              },
+              {
+                "id": "contract:s2",
+                "name": "S2",
+                "clipId": "contract:c2",
+                "rate": 1
+              }
+            ],
+            "transitions": [],
+            "reference": {
+              "clipId": "contract:c1",
+              "time": 1
+            },
+            "mask": [
+              {
+                "kind": "attachment",
+                "attachmentId": "contract:a"
+              }
+            ]
+          }
+        ]
+      ],
+      "operations": [
+        {
+          "op": "sample",
+          "time": 0,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  -0.5,
+                  0,
+                  0,
+                  1,
+                  1
+                ],
+                "localVisible": 1,
+                "part": "contract:red"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "automatic-before-equal-request",
+      "kind": "animation",
+      "fixture": "composition.actorproject",
+      "profiles": [
+        "composition"
+      ],
+      "animator": "contract:anim",
+      "patch": [
+        [
+          [
+            "animators",
+            0,
+            "layers",
+            0,
+            "states",
+            0,
+            "next"
+          ],
+          "contract:s1"
+        ]
+      ],
+      "operations": [
+        {
+          "op": "request",
+          "layer": "contract:base",
+          "state": "contract:s1",
+          "time": 2,
+          "expect": "already-active"
+        },
+        {
+          "op": "sample",
+          "time": 2,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  2,
+                  0,
+                  0,
+                  1,
+                  1
+                ],
+                "localVisible": 1,
+                "part": "contract:red"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "constraint-status-solved-bypass",
+      "kind": "pose",
+      "fixture": "constraints.actorproject",
+      "profiles": [
+        "constraints"
+      ],
+      "statuses": [
+        "active",
+        "unsupported",
+        "disabled"
+      ],
+      "samples": [
+        {
+          "clip": null,
+          "time": 0,
+          "expect": {
+            "residuals": [
+              0,
+              "NaN",
+              "NaN"
+            ],
+            "slots": [
+              {
+                "kind": "node",
+                "rigId": "contract:rig",
+                "id": "contract:tip",
+                "worldMatrices": [
+                  0,
+                  1,
+                  -1,
+                  0,
+                  0,
+                  1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "clip": null,
+          "time": 0,
+          "applyConstraints": false,
+          "expect": {
+            "residuals": [
+              "NaN",
+              "NaN",
+              "NaN"
+            ],
+            "slots": [
+              {
+                "kind": "node",
+                "rigId": "contract:rig",
+                "id": "contract:tip",
+                "worldMatrices": [
+                  1,
+                  0,
+                  0,
+                  1,
+                  1,
+                  0
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "emote-time-mapping",
+      "kind": "emote",
+      "fixture": "emotes.actorproject",
+      "profiles": [
+        "emotes"
+      ],
+      "emote": "contract:greeting",
+      "samples": [
+        {
+          "time": -0.5,
+          "expect": [
+            1,
+            1.5
+          ]
+        },
+        {
+          "time": 0,
+          "expect": [
+            4,
+            0
+          ]
+        },
+        {
+          "time": 2,
+          "expect": [
+            4,
+            0
+          ]
+        },
+        {
+          "time": 2.5,
+          "expect": [
+            3,
+            0.5
+          ]
+        }
+      ],
+      "compatibility": [
+        {
+          "patch": [],
+          "expect": "compatible"
+        },
+        {
+          "patch": [
+            [
+              [
+                "emotes",
+                0,
+                "revision"
+              ],
+              2
+            ]
+          ],
+          "expect": "definition-mismatch"
+        },
+        {
+          "patch": [
+            [
+              [
+                "emotes"
+              ],
+              []
+            ]
+          ],
+          "expect": "missing-emote"
+        }
+      ]
+    },
+    {
+      "id": "emote-once-clamps",
+      "kind": "emote",
+      "fixture": "emotes.actorproject",
+      "profiles": [
+        "emotes"
+      ],
+      "patch": [
+        [
+          [
+            "emotes",
+            0,
+            "playback"
+          ],
+          "once"
+        ]
+      ],
+      "emote": "contract:greeting",
+      "samples": [
+        {
+          "time": -1,
+          "expect": [
+            4,
+            0
+          ]
+        },
+        {
+          "time": 3,
+          "expect": [
+            0,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "id": "instance-errors-source-lifetime",
+      "kind": "lifecycle",
+      "fixture": "timing.actorproject",
+      "profiles": [
+        "base",
+        "composition",
+        "cels"
+      ]
+    },
+    {
+      "id": "overflow-and-recovery",
+      "kind": "overflow",
+      "fixture": "overflow.actorproject",
+      "profiles": [
+        "base"
+      ]
+    },
+    {
+      "id": "admission-limit-depth",
+      "kind": "admission",
+      "fixture": "empty.actorproject",
+      "profiles": [
+        "base"
+      ],
+      "limits": {
+        "maxJsonDepth": 0
+      },
+      "expect": {
+        "ok": false,
+        "diagnostic": {
+          "path": "/format",
+          "code": "limit"
+        }
+      }
+    },
+    {
+      "id": "admission-limit-values",
+      "kind": "admission",
+      "fixture": "empty.actorproject",
+      "profiles": [
+        "base"
+      ],
+      "limits": {
+        "maxJsonValues": 1
+      },
+      "expect": {
+        "ok": false,
+        "diagnostic": {
+          "path": "",
+          "code": "limit"
+        }
+      }
+    },
+    {
+      "id": "admission-limit-string",
+      "kind": "admission",
+      "fixture": "empty.actorproject",
+      "profiles": [
+        "base"
+      ],
+      "limits": {
+        "maxStringLength": 1
+      },
+      "expect": {
+        "ok": false,
+        "diagnostic": {
+          "path": "/format",
+          "code": "limit"
+        }
+      }
+    },
+    {
+      "id": "optional-unknown-inert",
+      "kind": "admission",
+      "fixture": "empty.actorproject",
+      "profiles": [
+        "base"
+      ],
+      "patch": [
+        [
+          [
+            "extensions"
+          ],
+          {
+            "future:optional/9": {
+              "code": "never execute",
+              "url": "https://invalid.example/never-fetch"
+            }
+          }
+        ]
+      ],
+      "expect": {
+        "ok": true
+      }
+    },
+    {
+      "id": "missing-cel-capability",
+      "kind": "admission",
+      "fixture": "timing.actorproject",
+      "profiles": [
+        "cels"
+      ],
+      "patch": [
+        [
+          [
+            "requiredCapabilities"
+          ],
+          [
+            "spacelab:indexed-raster/1",
+            "spacelab:transform-clips/1",
+            "spacelab:animation-composition/1"
+          ]
+        ]
+      ],
+      "expect": {
+        "ok": false,
+        "diagnostic": {
+          "code": "capability",
+          "path": "/cels"
+        }
+      }
+    },
+    {
+      "id": "disabled-unknown-remains-unsupported",
+      "kind": "pose",
+      "fixture": "constraints.actorproject",
+      "profiles": [
+        "constraints"
+      ],
+      "patch": [
+        [
+          [
+            "rigs",
+            0,
+            "constraints",
+            1,
+            "enabled"
+          ],
+          false
+        ]
+      ],
+      "statuses": [
+        "active",
+        "unsupported",
+        "disabled"
+      ],
+      "samples": [
+        {
+          "clip": null,
+          "time": 0,
+          "expect": {
+            "residuals": [
+              0,
+              "NaN",
+              "NaN"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "node-mask-descendants-false",
+      "kind": "animation",
+      "fixture": "composition.actorproject",
+      "profiles": [
+        "composition"
+      ],
+      "animator": "contract:anim",
+      "patch": [
+        [
+          [
+            "animators",
+            0,
+            "layers",
+            0,
+            "mask"
+          ],
+          [
+            {
+              "kind": "node",
+              "rigId": "contract:rig",
+              "nodeId": "contract:root",
+              "descendants": false
+            }
+          ]
+        ]
+      ],
+      "operations": [
+        {
+          "op": "request",
+          "layer": "contract:base",
+          "state": "contract:s1",
+          "time": 0,
+          "expect": "accepted"
+        },
+        {
+          "op": "sample",
+          "time": 2,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  1
+                ],
+                "localVisible": 1,
+                "part": "contract:red"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "node-mask-descendants-true",
+      "kind": "animation",
+      "fixture": "composition.actorproject",
+      "profiles": [
+        "composition"
+      ],
+      "animator": "contract:anim",
+      "patch": [
+        [
+          [
+            "animators",
+            0,
+            "layers",
+            0,
+            "mask"
+          ],
+          [
+            {
+              "kind": "node",
+              "rigId": "contract:rig",
+              "nodeId": "contract:root",
+              "descendants": true
+            }
+          ]
+        ]
+      ],
+      "operations": [
+        {
+          "op": "request",
+          "layer": "contract:base",
+          "state": "contract:s1",
+          "time": 0,
+          "expect": "accepted"
+        },
+        {
+          "op": "sample",
+          "time": 2,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  12,
+                  0,
+                  0,
+                  1,
+                  1
+                ],
+                "localVisible": 0,
+                "part": "contract:blue"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "null-state-passes-base",
+      "kind": "animation",
+      "fixture": "composition.actorproject",
+      "profiles": [
+        "composition"
+      ],
+      "animator": "contract:anim",
+      "patch": [
+        [
+          [
+            "animators",
+            0,
+            "layers",
+            0,
+            "states",
+            0,
+            "clipId"
+          ],
+          null
+        ]
+      ],
+      "operations": [
+        {
+          "op": "sample",
+          "time": 1,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  1
+                ],
+                "localVisible": 1,
+                "part": "contract:red"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "origin-time-domain",
+      "kind": "animation",
+      "fixture": "composition.actorproject",
+      "profiles": [
+        "composition"
+      ],
+      "animator": "contract:anim",
+      "patch": [],
+      "operations": [
+        {
+          "op": "request",
+          "layer": "contract:base",
+          "state": "contract:s1",
+          "time": 4,
+          "expect": "out-of-order"
+        },
+        {
+          "op": "sample",
+          "time": 5,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  0,
+                  0,
+                  0,
+                  1,
+                  1
+                ],
+                "localVisible": 1,
+                "part": "contract:red"
+              }
+            ]
+          }
+        },
+        {
+          "op": "sample",
+          "time": 6,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  1,
+                  0,
+                  0,
+                  1,
+                  1
+                ],
+                "localVisible": 1,
+                "part": "contract:red"
+              }
+            ]
+          }
+        }
+      ],
+      "options": {
+        "origin": 5
+      }
+    },
+    {
+      "id": "cut-transition",
+      "kind": "animation",
+      "fixture": "composition.actorproject",
+      "profiles": [
+        "composition"
+      ],
+      "animator": "contract:anim",
+      "patch": [
+        [
+          [
+            "animators",
+            0,
+            "layers",
+            0,
+            "defaultTransition",
+            "duration"
+          ],
+          0
+        ]
+      ],
+      "operations": [
+        {
+          "op": "request",
+          "layer": "contract:base",
+          "state": "contract:s1",
+          "time": 0,
+          "expect": "accepted"
+        },
+        {
+          "op": "sample",
+          "time": 0,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  10,
+                  0,
+                  0,
+                  1,
+                  1
+                ],
+                "localVisible": 0,
+                "part": "contract:blue"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "transition-specific-before-wildcard",
+      "kind": "animation",
+      "fixture": "composition.actorproject",
+      "profiles": [
+        "composition"
+      ],
+      "animator": "contract:anim",
+      "patch": [
+        [
+          [
+            "animators",
+            0,
+            "layers",
+            0,
+            "transitions"
+          ],
+          [
+            {
+              "id": "contract:wild",
+              "from": null,
+              "to": "contract:s1",
+              "duration": 2,
+              "priority": 0
+            },
+            {
+              "id": "contract:exact",
+              "from": "contract:s0",
+              "to": "contract:s1",
+              "duration": 0,
+              "priority": 0
+            }
+          ]
+        ]
+      ],
+      "operations": [
+        {
+          "op": "request",
+          "layer": "contract:base",
+          "state": "contract:s1",
+          "time": 0,
+          "expect": "accepted"
+        },
+        {
+          "op": "sample",
+          "time": 0,
+          "expect": {
+            "slots": [
+              {
+                "kind": "attachment",
+                "id": "contract:a",
+                "localTRS": [
+                  10,
+                  0,
+                  0,
+                  1,
+                  1
+                ],
+                "localVisible": 0,
+                "part": "contract:blue"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "bounded-blend-stack",
+      "kind": "animation",
+      "fixture": "composition.actorproject",
+      "profiles": [
+        "composition"
+      ],
+      "animator": "contract:anim",
+      "patch": [],
+      "operations": [
+        {
+          "op": "request",
+          "layer": "contract:base",
+          "state": "contract:s1",
+          "time": 0.0,
+          "expect": "accepted"
+        },
+        {
+          "op": "request",
+          "layer": "contract:base",
+          "state": "contract:s2",
+          "time": 0.01,
+          "expect": "accepted"
+        },
+        {
+          "op": "request",
+          "layer": "contract:base",
+          "state": "contract:s0",
+          "time": 0.02,
+          "expect": "accepted"
+        },
+        {
+          "op": "request",
+          "layer": "contract:base",
+          "state": "contract:s1",
+          "time": 0.03,
+          "expect": "accepted"
+        },
+        {
+          "op": "request",
+          "layer": "contract:base",
+          "state": "contract:s2",
+          "time": 0.04,
+          "expect": "accepted"
+        },
+        {
+          "op": "request",
+          "layer": "contract:base",
+          "state": "contract:s0",
+          "time": 0.05,
+          "expect": "accepted"
+        },
+        {
+          "op": "request",
+          "layer": "contract:base",
+          "state": "contract:s1",
+          "time": 0.06,
+          "expect": "accepted"
+        },
+        {
+          "op": "request",
+          "layer": "contract:base",
+          "state": "contract:s2",
+          "time": 0.07,
+          "expect": "accepted"
+        },
+        {
+          "op": "request",
+          "layer": "contract:base",
+          "state": "contract:s0",
+          "time": 0.08,
+          "expect": "accepted"
+        },
+        {
+          "op": "request",
+          "layer": "contract:base",
+          "state": "contract:s1",
+          "time": 0.09,
+          "expect": "accepted"
+        },
+        {
+          "op": "status",
+          "time": 0.1,
+          "expect": {
+            "droppedEntries": 3
+          }
+        }
+      ]
+    }
+  ]
+}
