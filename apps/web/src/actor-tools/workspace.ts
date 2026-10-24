@@ -27,7 +27,7 @@ export class ActorWorkspace {
     guide.setAttribute('aria-labelledby', 'guide-title');
     guide.innerHTML = `<h2 id="guide-title">Create your first animation</h2><form method="dialog"><button autofocus>Close help</button></form>
       <ol><li><strong>Projects:</strong> choose Empty project, Open source, or Example: classic astronaut under Examples.</li>
-      <li><strong>Parts → Part setup:</strong> name a part and choose Create part. Choose Paint to work on it. Paint with the selected palette colour.</li>
+      <li><strong>Parts → Part setup:</strong> name a part and choose Create part. Choose Paint to work on it. Click a swatch or choose Paint color, then paint. Eraser removes pixels. Edit existing colors is for deliberate recoloring and exact transparency.</li>
       <li><strong>Rig:</strong> create a rig in Hierarchy and joints in Item, or attach a part directly to the scene with no bones. Rest edits the base shape; Pose keys the selected clip. Numeric transforms are available beside the viewport.</li>
       <li><strong>Animate:</strong> create a motion in Clips, then select a target and insert timed poses in Keys. Play and scrub in Preview. Emotes previews solo or paired gestures on a separate clock.</li>
       <li><strong>Keep your original:</strong> Download editable source saves every layer, rig and clip as .actorproject. Reopen with Projects → Open source. Confirm “I retained this source” only after keeping the current file.</li>

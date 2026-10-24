@@ -12,6 +12,8 @@ Choose a task across the top, then a section in its inspector. The preview and p
 | Rig | Item, Hierarchy, Artwork, Advanced |
 | Animate | Keys, Timeline, Clips, Curves, Compose, Cels & export |
 
+In **Parts → Paint**, click a color swatch or choose **Paint color**, then draw. The picker selects an existing opaque color or adds a new one, leaving existing pixels unchanged. **Eraser** removes pixels. The highlighted swatch is your brush ink; Left/Right/Home/End also choose swatches when the color toolbar has focus. **Edit existing colors** contains deliberate recoloring and exact alpha: changing a palette color affects every pixel using it, so it requires **Recolor this palette color**. Alpha 0 is transparent and 255 is opaque. New colors and painting accepted artwork follow the same explicit revision/undo workflow.
+
 A **part** is painted artwork. A **joint** (Node) is a pivot; its children follow it. A **bone** is the connection between joints. An **attachment** places artwork on a joint or in the scene. A **rig** groups joints. A **clip** is a named motion, and a **key** saves a pose at a time. **Rest** changes the starting shape; **Pose** records a key in the selected clip. **Curves** control the blend between keys.
 
 Empty projects show a next-step button: create a part, attach it, then create a clip. These buttons open the relevant controls; you still choose when to apply each edit.

@@ -28,7 +28,7 @@ test('tail and antenna draw → undo → save → close → reopen → reuse, wi
 
 test('layers, palette alpha, fill, selection move, pivot, dimensions and grid survive source', async ({ page }) => {
   await page.goto('/actor-tools.html'); await page.getByRole('button', { name: 'All tools', exact: true }).click(); await create(page, 'Free form');
-  await page.getByLabel('Alpha (0–255)', { exact: true }).fill('127'); await page.getByRole('button', { name: 'Apply palette entry', exact: true }).click();
+  await page.getByLabel('Alpha (0–255)', { exact: true }).fill('127'); await page.getByRole('button', { name: 'Recolor this palette color', exact: true }).click();
   await dot(page, 1, 1); await page.getByRole('combobox', { name: 'Tool', exact: true }).selectOption('select');
   await dot(page, 1, 1); await page.getByRole('button', { name: 'Move selection', exact: true }).click();
   await page.getByLabel('Layer name', { exact: true }).fill('Glow'); await page.getByRole('button', { name: 'Add layer', exact: true }).click();

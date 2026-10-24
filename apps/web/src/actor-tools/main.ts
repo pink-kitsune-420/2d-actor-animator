@@ -18,6 +18,7 @@ export class ActorEditor {
   private partId = '';
   private layerIndex = 0;
   private color = 1;
+  private paletteStamp = '';
   private pointer: { id: number; partId: string; x: number; y: number; lastX: number; lastY: number } | null = null;
   private selection: PixelRect | null = null;
   private lastDownload: string | null = null;
@@ -35,7 +36,8 @@ export class ActorEditor {
       <div class="pair"><label>Width<input id="width" type="number" min="1" max="256" value="16"></label><label>Height<input id="height" type="number" min="1" max="256" value="16"></label></div><button id="resize">Apply dimensions</button>
       <details><summary>Pivot &amp; pixel scale</summary><p>Pivot X/Y use project units from the bottom-left of the image. Positive Y points up. Pixel scale is project units per pixel.</p><div class="pair"><label>Pivot X<input id="pivot-x" type="number" step="any" value="0"></label><label>Pivot Y<input id="pivot-y" type="number" step="any" value="0"></label></div><label>Units per pixel<input id="units" type="number" step="any" min="0.000001" value="1"></label><button id="pivot">Apply pivot and scale</button></details>
       </div><details data-workspace-section="layers"><summary>Layers &amp; opacity</summary><h2>Layers</h2><label>Layer<select id="layers"></select></label><label>Layer name<input id="layer-name" value="Ink"></label><label>Layer opacity<input id="opacity" type="number" min="0" max="1" step="0.05" value="1"></label><button id="add-layer">Add layer</button><button id="edit-layer">Apply layer</button><button id="layer-up">Raise layer</button><button id="remove-layer">Remove layer</button>
-      </details><div data-workspace-section="paint"><h2>Palette</h2><label>Palette entry<select id="palette"></select></label><label>Colour<input id="colour" type="color" value="#d5e8ff"></label><label>Alpha (0–255)<input id="alpha" type="number" min="0" max="255" value="255"></label><button id="apply-colour">Apply palette entry</button><button id="add-colour">Add colour</button>
+      </details><div data-workspace-section="paint"><h2>Paint color</h2><div id="paint-swatches" role="toolbar" aria-label="Paint colors" aria-describedby="paint-color-help"></div><p id="paint-color-selection"></p><label>Paint color<input id="paint-colour" type="color" value="#d5e8ff" aria-describedby="paint-color-help"></label><button id="paint-eraser" type="button" aria-pressed="false">Eraser</button><p id="paint-color-help">Click a swatch or choose a color, then paint. New colors leave existing pixels unchanged.</p>
+      <details id="palette-editor"><summary>Edit existing colors</summary><p>Recolor changes every pixel using this palette color. Attached artwork keeps its accepted revision until you update it in Rig. The paint picker above chooses opaque colors; use Alpha here for exact transparency.</p><label>Palette entry<select id="palette"></select></label><label>Replacement color<input id="colour" type="color" value="#d5e8ff"></label><label>Alpha (0–255)<input id="alpha" type="number" min="0" max="255" value="255"></label><p>0 = transparent · 255 = opaque.</p><button id="apply-colour">Recolor this palette color</button><button id="add-colour">Add as new color</button></details>
       </div><details data-workspace-section="files"><summary>PNG import &amp; export</summary><h2>Files</h2><label class="file">Import PNG as new part<input id="png" type="file" accept="image/png"></label><button id="export">Download flattened PNG</button><p>PNG is flattened output: no layers, pivot, rig or editable project. Import: ≤4 MiB, ≤256×256, ≤256 palette colours including transparency.</p></details></aside>
       <section><nav aria-label="Painting"><label>Tool<select id="tool"><option value="brush">Brush</option><option value="erase">Erase</option><option value="fill">Fill</option><option value="select">Select rectangle</option></select></label><label>Zoom<select id="zoom"><option>4</option><option>8</option><option selected>16</option><option>24</option><option>32</option></select></label><label><input id="grid" type="checkbox" checked>Grid</label></nav>
       <div class="viewport"><div id="stage"><canvas id="paint" aria-label="Part painting canvas" tabindex="0"></canvas><div id="grid-lines"></div><div id="pivot-marker">+</div><div id="selection"></div></div></div>
@@ -63,6 +65,33 @@ export class ActorEditor {
     const colour = () => { const alpha = this.num('alpha'); if (!Number.isInteger(alpha) || alpha < 0 || alpha > 255) throw new Error('Alpha must be 0–255.'); return `${this.value('colour')}${alpha.toString(16).padStart(2, '0')}`; };
     click('apply-colour', () => this.editPart(p => { p.artwork.palette[this.color] = colour(); }));
     click('add-colour', () => { this.editPart(p => p.artwork.palette.push(colour())); this.color = this.part().artwork.palette.length - 1; this.render(); });
+    click('paint-eraser', () => { this.el<HTMLSelectElement>('tool').value = 'erase'; this.render(); });
+    this.el('paint-colour').addEventListener('change', () => this.perform(() => {
+      this.cancelGesture(); this.assembly.pause();
+      const rgb = this.value('paint-colour').toLowerCase();
+      if (!/^#[0-9a-f]{6}$/.test(rgb)) throw new Error('Choose a valid paint color.');
+      const rgba = `${rgb}ff`, part = this.part();
+      let index = part.artwork.palette.findIndex(c => c.toLowerCase() === rgba);
+      if (index < 0) {
+        if (part.artwork.palette.length >= 256) { this.render(); throw new Error('This part already has 256 colors. Choose a swatch or use Edit existing colors.'); }
+        index = part.artwork.palette.length;
+        this.editPart(p => p.artwork.palette.push(rgba));
+      }
+      this.choosePaint(index);
+    }), { signal });
+    this.el('paint-swatches').addEventListener('click', event => {
+      const button = (event.target as Element).closest<HTMLButtonElement>('button[data-color]');
+      if (button) this.perform(() => this.choosePaint(Number(button.dataset.color)));
+    }, { signal });
+    this.el('paint-swatches').addEventListener('keydown', event => {
+      const target = (event.target as Element).closest<HTMLButtonElement>('button[data-color]');
+      if (!target || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+      event.preventDefault(); this.perform(() => {
+        const length = this.part().artwork.palette.length, at = Number(target.dataset.color);
+        const index = event.key === 'Home' ? 0 : event.key === 'End' ? length - 1 : (at + (event.key === 'ArrowRight' ? 1 : -1) + length) % length;
+        this.choosePaint(index); this.el('paint-swatches').querySelector<HTMLButtonElement>(`[data-color="${index}"]`)!.focus();
+      });
+    }, { signal });
     click('move', () => { if (!this.selection) throw new Error('Select a rectangle on the canvas first.'); const rect = this.selection, dx = this.num('move-x'), dy = this.num('move-y'); this.editPart(p => movePixels(p, this.layerIndex, rect, dx, dy)); this.selection = { ...rect, x: rect.x + dx, y: rect.y + dy }; this.draw(); });
     click('undo', () => { this.draft.undo(); this.changed(); }); click('redo', () => { this.draft.redo(); this.changed(); });
     click('export', () => { const canvas = rasterCanvas(this.part()), generation = this.generation, epoch = this.draft.epoch; canvas.toBlob(blob => { canvas.width = canvas.height = 0; if (this.disposed || generation !== this.generation || epoch !== this.draft.epoch) return; if (!blob) { this.message('PNG encoding failed.'); return; } this.download(blob, 'part.flattened.png'); this.message('Flattened PNG download initiated. Editable source is separate; retention is unverified.'); }, 'image/png'); });
@@ -174,11 +203,45 @@ export class ActorEditor {
         'layer-name': part.artwork.layers[this.layerIndex]?.name ?? 'Ink', opacity: part.artwork.layers[this.layerIndex]?.opacity ?? 1, colour: part.artwork.palette[this.color]!.slice(0, 7), alpha: parseInt(part.artwork.palette[this.color]!.slice(7, 9), 16) };
       for (const [id, value] of Object.entries(fields)) this.el<HTMLInputElement>(id).value = String(value);
     } else { options('layers', [], ''); options('palette', [], ''); }
+    this.renderPaintColors(part);
     this.el('state').textContent = `${this.draft.dirty ? 'Unsaved source edits' : 'Source unchanged'} · ${source.parts.length} parts · ${source.rigs.length} rigs · ${source.clips.length} clips`;
     this.el<HTMLButtonElement>('undo').disabled = !this.draft.canUndo; this.el<HTMLButtonElement>('redo').disabled = !this.draft.canRedo;
     this.draw();
     this.assembly.render();
     this.workspace.render();
+  }
+  private choosePaint(index: number) {
+    this.cancelGesture(); this.assembly.pause();
+    if (!this.part().artwork.palette[index]) throw new Error('Choose a paint swatch.');
+    this.color = index; this.el<HTMLSelectElement>('tool').value = 'brush'; this.render();
+  }
+  private renderPaintColors(part?: ActorPart) {
+    const root = this.el('paint-swatches'), palette = part?.artwork.palette ?? [];
+    const stamp = JSON.stringify([part?.id, palette]);
+    if (stamp !== this.paletteStamp) {
+      const focused = root.contains(document.activeElement);
+      this.paletteStamp = stamp;
+      root.replaceChildren(...palette.map((color, index) => {
+        const button = document.createElement('button'); button.type = 'button'; button.dataset.color = String(index);
+        const alpha = parseInt(color.slice(7, 9), 16);
+        const opacity = alpha === 0 ? 'transparent' : alpha === 255 ? 'opaque' : `${Math.round(alpha / 255 * 100)}% opacity`;
+        button.setAttribute('aria-label', `Color ${index + 1}: ${color.slice(0, 7).toUpperCase()}, ${opacity}`);
+        button.title = `${button.getAttribute('aria-label')} · Arrow keys choose a swatch`;
+        const fill = document.createElement('span'); fill.style.backgroundColor = color; fill.setAttribute('aria-hidden', 'true');
+        button.append(fill); return button;
+      }));
+      if (focused) root.querySelector<HTMLButtonElement>(`[data-color="${this.color}"]`)?.focus({ preventScroll: true });
+    }
+    const erasing = this.value('tool') === 'erase';
+    for (const button of root.querySelectorAll<HTMLButtonElement>('button')) {
+      const selected = Number(button.dataset.color) === this.color;
+      button.tabIndex = selected ? 0 : -1; button.setAttribute('aria-pressed', String(selected && !erasing));
+    }
+    const color = palette[this.color], alpha = color ? parseInt(color.slice(7, 9), 16) : 0;
+    this.el('paint-color-selection').textContent = !color ? 'Create or select a part to paint.' : erasing ? 'Eraser selected' : alpha === 0 ? 'Transparent paint' : `${color!.slice(0, 7).toUpperCase()} · ${alpha === 255 ? 'Opaque' : `${Math.round(alpha / 255 * 100)}% opacity`}`;
+    const picker = this.el<HTMLInputElement>('paint-colour'); picker.disabled = !part;
+    if (color) picker.value = color.slice(0, 7);
+    const eraser = this.el<HTMLButtonElement>('paint-eraser'); eraser.disabled = !part; eraser.setAttribute('aria-pressed', String(erasing));
   }
   draw() {
     const part = this.draft.source.parts.find(p => p.id === this.partId), stage = this.el('stage'); stage.hidden = !part; if (!part) return;

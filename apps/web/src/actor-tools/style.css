@@ -268,3 +268,16 @@ nav[aria-label=Project] > .file { flex-direction: row; align-items: center; gap:
 #task-rig fieldset.transform { margin: 8px 0; padding: 6px 8px 8px; }
 #task-rig fieldset.transform label { margin: 0; }
 #task-animate #timeline-summary { margin: 6px 0; }
+
+/* Paint with visible colors; exact indexed palette edits remain optional. */
+#paint-swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(30px, 1fr)); gap: 6px; margin: 8px 0; }
+#paint-swatches button { position: relative; min-width: 0; height: 32px; padding: 3px; border: 2px solid #567; background: repeating-conic-gradient(#aab6bf 0% 25%, #485c6c 0% 50%) 0 / 10px 10px; }
+#paint-swatches button > span { display: block; width: 100%; height: 100%; border-radius: 1px; }
+#paint-swatches button[aria-pressed=true] { border-color: #ffce84; box-shadow: 0 0 0 1px #ffce84; }
+#paint-swatches button[aria-pressed=true]::after { content: '✓'; position: absolute; right: 1px; bottom: 0; background: #101820; color: #ffce84; font-size: 12px; line-height: 14px; }
+#paint-color-selection { font-size: 12px; margin: 6px 0; }
+#paint-color-help, #palette-editor p { font-size: 11px; color: #b4cbdc; }
+#paint-colour { height: 42px; cursor: pointer; }
+#paint-eraser { width: 100%; }
+#palette-editor button { width: 100%; margin-top: 6px; font-size: 12px; }
+#paint-swatches { max-height: 200px; overflow: auto; padding: 3px; scroll-padding: 4px; }
